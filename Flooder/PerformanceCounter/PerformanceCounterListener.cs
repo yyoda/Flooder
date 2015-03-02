@@ -24,8 +24,6 @@ namespace Flooder.PerformanceCounter
 
         public void OnNext(long value)
         {
-            var tag = _tag + ".log";
-
             var payload = _settings.SelectMany(setting =>
             {
                 return new PerformanceCounterCategory(setting.CategoryName)
@@ -61,7 +59,7 @@ namespace Flooder.PerformanceCounter
             })
             .ToDictionary(x => x.Path, x => (object)x.CookedValue);
 
-            Task.Factory.StartNew(() => _emitter.Emit(tag, payload));
+            Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
         }
 
         public void OnError(Exception error)
@@ -85,6 +83,11 @@ namespace Flooder.PerformanceCounter
                 CategoryName = categoryName;
                 CounterName  = counterName;
                 InstanceName = instanceName;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("{{ CategoryName:{0}, CounterName:{1}, InstanceName:{2} }}", CategoryName, CounterName, InstanceName);
             }
         }
     }

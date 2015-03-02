@@ -13,12 +13,12 @@ namespace Flooder.FileSystem
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly string _tag;
+        private readonly Func<string, string> _tag;
         private readonly IEmitter _emitter;
 
         public ConcurrentDictionary<string, long> FileSeekStore { get; set; }
 
-        public FileSystemEventListener(string tag, IEmitter emitter)
+        public FileSystemEventListener(Func<string, string> tag, IEmitter emitter)
         {
             FileSeekStore = new ConcurrentDictionary<string, long>();
             _tag          = tag;
@@ -52,7 +52,7 @@ namespace Flooder.FileSystem
                         var buffer = sr.ReadToEnd();
                         if (buffer.Length <= 0) return;
 
-                        var tag = _tag + ".log";
+                        var tag = _tag(e.Name);
 
                         #region old code.
                         //const int newLineSize = 2;

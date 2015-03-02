@@ -48,8 +48,6 @@ namespace Flooder.EventLog
                     return;
             }
 
-            var tag = _tag + ".log";
-
             var payload = new Dictionary<string, object>
             {
                 {"Category", e.Entry.Category},
@@ -71,7 +69,7 @@ namespace Flooder.EventLog
                 {"UserName", e.Entry.UserName},
             };
 
-            Task.Factory.StartNew(() => _emitter.Emit(tag, payload));
+            Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
         }
 
         public void OnError(Exception error)

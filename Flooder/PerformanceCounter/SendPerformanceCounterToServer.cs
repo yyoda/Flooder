@@ -12,7 +12,7 @@ namespace Flooder.PerformanceCounter
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly double _interval;
 
-        public SendPerformanceCounterToServer(double interval = 60000)
+        public SendPerformanceCounterToServer(double interval = 60)
         {
             _interval = interval;
         }
@@ -26,12 +26,17 @@ namespace Flooder.PerformanceCounter
 
         public static IDisposable Start(PerformanceCounterElementCollection config, IEmitter emitter)
         {
+            var tag = config.Tag + ".log";
+
             var settings = config
                 .Select(x => new PerformanceCounterListener.Setting(x.CategoryName, x.CounterName, x.InstanceName))
                 .ToArray();
 
             var subject = new SendPerformanceCounterToServer(config.Interval);
-            return subject.Subscribe(new PerformanceCounterListener(config.Tag, settings, emitter));
+            var subscribe = subject.Subscribe(new PerformanceCounterListener(tag, settings, emitter));
+
+            Logger.Info("PerformanceCounterListener start. tag:{0}, settings:[{1}]", tag, string.Join(",", settings.Select(x => x.ToString())));
+            return subscribe;
         }
     }
 }

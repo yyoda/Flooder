@@ -42,8 +42,10 @@ namespace Flooder.Core.Transfer
                 {
                     packer.PackString(row.Key);
 
+                    var type = row.Value != null ? row.Value.GetType() : typeof (string);
+
                     new SerializationContext()
-                        .GetSerializer(row.Value.GetType(), DefaultContext)
+                        .GetSerializer(type, DefaultContext)
                         .PackTo(packer, row.Value);
                 }
 

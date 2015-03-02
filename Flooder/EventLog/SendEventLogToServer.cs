@@ -24,24 +24,37 @@ namespace Flooder.EventLog
 
         public IDisposable Subscribe(IObserver<EntryWrittenEventArgs> observer)
         {
-            return new System.Diagnostics.EventLog(_logName)
-                .EntryWrittenAsObservable()
-                .Subscribe(observer);
+
+            var watcher = new System.Diagnostics.EventLog
+            {
+                Log                 = _logName,
+                EnableRaisingEvents = true
+            };
+
+            return watcher.EntryWrittenAsObservable().Subscribe(observer);
+
+            //return new System.Diagnostics.EventLog(_logName)
+            //    .EntryWrittenAsObservable()
+            //    .Subscribe(observer);
         }
 
-        public static IDisposable[] Start(EventLogElementCollection config, IEmitter emitter)
+         public static IDisposable[] Start(EventLogElementCollection config, IEmitter emitter)
         {
             if (config.Any())
             {
                 return config.Scopes.Select(scope =>
                 {
+                    var tag = config.Tag + ".log";
                     var subject = new SendEventLogToServer(scope);
-                    return subject.Subscribe(new EventLogListener(config.Tag, emitter)
+                    var subscribe = subject.Subscribe(new EventLogListener(tag, emitter)
                     {
                         TrapInfomations = new HashSet<Tuple<string, string>>(config.GetTrapInfomations().Select(x => Tuple.Create(x.Source, x.Id))),
                         TrapWarnings    = new HashSet<Tuple<string, string>>(config.GetTrapWarnings().Select(x => Tuple.Create(x.Source, x.Id))),
                         SkipErrors      = new HashSet<Tuple<string, string>>(config.GetSkipErrors().Select(x => Tuple.Create(x.Source, x.Id))),
                     });
+
+                    Logger.Info("EventLogListener start. tag:{0}", tag);
+                    return subscribe;
                 })
                 .ToArray();
             }

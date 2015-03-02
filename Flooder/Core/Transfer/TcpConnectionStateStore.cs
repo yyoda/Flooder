@@ -155,6 +155,8 @@ namespace Flooder.Core.Transfer
                         {
                             throw new Exception("Problem has occurred. to help CircuitBreaker");
                         }
+
+                        Logger.Debug("Healthy now...");
                     });
                 }
             })

@@ -51,8 +51,12 @@ namespace Flooder.FileSystem
             {
                 return config.Select(x =>
                 {
+                    var tagGen = new Func<string, string>(fileName => string.Format("{0}.{1}.log", x.Tag, fileName.Split('.').FirstOrDefault() ?? "unknown"));
                     var subject = new SendFileSystemToServer(x.Path);
-                    return subject.Subscribe(new FileSystemEventListener(x.Tag, emitter));
+                    var subscribe = subject.Subscribe(new FileSystemEventListener(tagGen, emitter));
+
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", x.Tag, x.Path);
+                    return subscribe;
                 })
                 .ToArray();
             }
