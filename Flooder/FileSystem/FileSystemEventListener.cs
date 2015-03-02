@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Flooder.Core.Transfer;
+using NLog;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Flooder.Core.Logging;
-using Flooder.Core.Transfer;
-using NLog;
 
 namespace Flooder.FileSystem
 {
@@ -16,16 +13,16 @@ namespace Flooder.FileSystem
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly string _appName;
+        private readonly string _tag;
         private readonly IEmitter _emitter;
 
         public ConcurrentDictionary<string, long> FileSeekStore { get; set; }
 
-        public FileSystemEventListener(string appName, IEmitter emitter)
+        public FileSystemEventListener(string tag, IEmitter emitter)
         {
             FileSeekStore = new ConcurrentDictionary<string, long>();
-            _appName = appName;
-            _emitter = emitter;
+            _tag          = tag;
+            _emitter      = emitter;
         }
 
         public void InitFileSeekStore(string fullPath)
@@ -55,7 +52,7 @@ namespace Flooder.FileSystem
                         var buffer = sr.ReadToEnd();
                         if (buffer.Length <= 0) return;
 
-                        var tag = string.Format("{0}.{1}.log", _appName, e.FullPath.Split('\\').Last().Split('.').First());
+                        var tag = _tag + ".log";
 
                         #region old code.
                         //const int newLineSize = 2;

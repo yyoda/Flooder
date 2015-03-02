@@ -12,9 +12,9 @@ namespace Flooder.Core.CircuitBreaker
         public CircuitBreakerStateStore()
         {
             _exceptions = new List<Exception>();
-            _exception = null;
-            _now = DateTimeOffset.Now;
-            State = CircuitBreakerState.Close;
+            _exception  = null;
+            _now        = DateTimeOffset.Now;
+            State       = CircuitBreakerState.Close;
         }
 
         public CircuitBreakerState State { get; private set; }
@@ -27,19 +27,19 @@ namespace Flooder.Core.CircuitBreaker
         {
             _exceptions.Add(ex);
             _exception = ex;
-            _now = DateTimeOffset.Now;
-            State = CircuitBreakerState.Open;
+            _now       = DateTimeOffset.Now;
+            State      = CircuitBreakerState.Open;
         }
 
         public void Reset()
         {
-            _now = DateTimeOffset.Now;
+            _now  = DateTimeOffset.Now;
             State = CircuitBreakerState.Close;
         }
 
         public void HalfOpen()
         {
-            _now = DateTimeOffset.Now;
+            _now  = DateTimeOffset.Now;
             State = CircuitBreakerState.HalfOpen;
         }
 

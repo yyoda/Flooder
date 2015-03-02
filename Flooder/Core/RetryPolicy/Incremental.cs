@@ -5,7 +5,6 @@ namespace Flooder.Core.RetryPolicy
 {
     public class Incremental : IRetryPolicy
     {
-        private static readonly ILogger Logger = LoggerFactory.GetLogger();
         private int _currentRetryCount;
         private int? _maxRetryCount;
         private readonly TimeSpan _initial, _incremental;
@@ -13,9 +12,9 @@ namespace Flooder.Core.RetryPolicy
 
         public Incremental(TimeSpan initial, TimeSpan incremental, int? retryCount = null)
         {
-            _initial = initial;
-            _incremental = incremental;
-            _maxRetryCount = retryCount;
+            _initial         = initial;
+            _incremental     = incremental;
+            _maxRetryCount   = retryCount;
             _currentInterval = _initial;
         }
 

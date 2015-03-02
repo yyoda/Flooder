@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using Flooder.Core.Configuration;
+﻿using Flooder.Core.Configuration;
 using Flooder.Core.Transfer;
 using Flooder.EventLog;
 using Flooder.FileSystem;
 using Flooder.PerformanceCounter;
 using NLog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Flooder.Console
 {
@@ -25,16 +23,13 @@ namespace Flooder.Console
 
             try
             {
-                if (config.Out.Wokers.Type == "fluentd")
+                if (config.Out.Wokers.Type == "fluentd" && tcp.Connect())
                 {
-                    if (tcp.Connect())
-                    {
-                        var client = new FluentEmitter(tcp);
-                        instances.AddRange(SendFileSystemToServer.Start(config.In.FileSystems, client));
-                        instances.AddRange(SendEventLogToServer.Start(config.In.EventLogs, client));
-                        instances.Add(SendPerformanceCounterToServer.Start(config.In.PerformanceCounters, client));
-                        instances.Add(tcp.HealthCheck());
-                    }
+                    var client = new FluentEmitter(tcp);
+                    instances.AddRange(SendFileSystemToServer.Start(config.In.FileSystems, client));
+                    instances.AddRange(SendEventLogToServer.Start(config.In.EventLogs, client));
+                    instances.Add(SendPerformanceCounterToServer.Start(config.In.PerformanceCounters, client));
+                    instances.Add(tcp.HealthCheck());
                 }
 
                 if (!instances.Any())

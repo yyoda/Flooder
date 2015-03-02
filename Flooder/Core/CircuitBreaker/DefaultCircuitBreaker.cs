@@ -20,7 +20,7 @@ namespace Flooder.Core.CircuitBreaker
         public DefaultCircuitBreaker(ICircuitBreakerStateStore stateStore)
         {
             _stateStore = stateStore;
-            _interval = _retryPolicy.CurrentInterval;
+            _interval   = _retryPolicy.CurrentInterval;
         }
 
         public void ExecuteAction(Action action)

@@ -5,8 +5,8 @@ namespace Flooder.Core.RetryPolicy
 {
     public class ExponentialBackoff : IRetryPolicy
     {
-        private static readonly ILogger Logger = LoggerFactory.GetLogger();
-        private int _currentRetryCount, _maxRetryCount;
+        private int _currentRetryCount;
+        private readonly int _maxRetryCount;
         private TimeSpan _minBackoff, _maxBackoff, _deltaBackoff, _currentInterval;
 
         public ExponentialBackoff(int retryCount)
@@ -16,17 +16,14 @@ namespace Flooder.Core.RetryPolicy
 
         public ExponentialBackoff(TimeSpan minBackoff, TimeSpan maxBackoff, TimeSpan deltaBackoff, int maxRetryCount)
         {
-            _minBackoff = minBackoff;
-            _maxBackoff = maxBackoff;
-            _deltaBackoff = deltaBackoff;
-            _maxRetryCount = maxRetryCount;
+            _minBackoff      = minBackoff;
+            _maxBackoff      = maxBackoff;
+            _deltaBackoff    = deltaBackoff;
+            _maxRetryCount   = maxRetryCount;
             _currentInterval = minBackoff;
         }
 
-        public TimeSpan CurrentInterval
-        {
-            get { return _currentInterval; }
-        }
+        public TimeSpan CurrentInterval { get { return _currentInterval; } }
 
         public bool TryGetNext(out TimeSpan retryInterval)
         {
@@ -49,13 +46,13 @@ namespace Flooder.Core.RetryPolicy
         public void Reset()
         {
             _currentRetryCount = 0;
-            _currentInterval = _minBackoff;
+            _currentInterval   = _minBackoff;
         }
 
         public void Reset(out TimeSpan retryInterval)
         {
             _currentRetryCount = 0;
-            retryInterval = _currentInterval = _minBackoff;
+            retryInterval      = _currentInterval = _minBackoff;
         }
     }
 }

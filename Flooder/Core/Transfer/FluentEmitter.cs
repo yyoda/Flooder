@@ -76,12 +76,12 @@ namespace Flooder.Core.Transfer
                 {
                     if (_retryPolicy.TryGetNext(out interval))
                     {
-                        Logger.WarnException(string.Format("emit fails. waiting for {0}sec.", interval.TotalSeconds), ex);
+                        Logger.WarnException(string.Format("Emit failed. wait for {0} second.", interval.TotalSeconds), ex);
                         Thread.Sleep(interval);
                         continue;
                     }
 
-                    Logger.WarnException("give up the emit.", ex);
+                    Logger.WarnException("Has encountered a problem, skip.", ex);
                     break;
                 }
             }

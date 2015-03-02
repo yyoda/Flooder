@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using Flooder.Core.Configuration.In;
 using Flooder.Core.Transfer;
@@ -25,8 +26,12 @@ namespace Flooder.PerformanceCounter
 
         public static IDisposable Start(PerformanceCounterElementCollection config, IEmitter emitter)
         {
+            var settings = config
+                .Select(x => new PerformanceCounterListener.Setting(x.CategoryName, x.CounterName, x.InstanceName))
+                .ToArray();
+
             var subject = new SendPerformanceCounterToServer(config.Interval);
-            return subject.Subscribe(new PerformanceCounterListener(config.Tag, emitter));
+            return subject.Subscribe(new PerformanceCounterListener(config.Tag, settings, emitter));
         }
     }
 }

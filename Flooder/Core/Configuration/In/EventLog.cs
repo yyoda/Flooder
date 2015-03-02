@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 
 namespace Flooder.Core.Configuration.In
 {
@@ -47,6 +48,21 @@ namespace Flooder.Core.Configuration.In
             {
                 yield return (EventLogElement)e.Current;
             }
+        }
+
+        public IEnumerable<EventLogElement> GetTrapInfomations()
+        {
+            return this.Where(x => x.Type == "info" && x.Mode == "trap");
+        }
+
+        public IEnumerable<EventLogElement> GetTrapWarnings()
+        {
+            return this.Where(x => x.Type == "warn" && x.Mode == "trap");
+        }
+
+        public IEnumerable<EventLogElement> GetSkipErrors()
+        {
+            return this.Where(x => x.Type == "error" && x.Mode == "skip");
         }
     }
 }

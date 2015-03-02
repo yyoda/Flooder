@@ -1,12 +1,10 @@
-﻿using Flooder.Core.RetryPolicy;
-using Flooder.Core.Utility;
+﻿using Flooder.Core.Utility;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
-using System.Threading;
 using Flooder.Core.CircuitBreaker;
 
 namespace Flooder.Core.Transfer
@@ -16,17 +14,16 @@ namespace Flooder.Core.Transfer
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly object _syncObject;
         private readonly Tuple<string, int>[] _hosts;
-
-        private IDictionary<Tuple<string, int>, TcpClient> _connectionPool; //必ず _syncObject で保護してアクセスすること
+        private IDictionary<Tuple<string, int>, TcpClient> _connectionPool;
         
-        public bool HasConnection { get { return _connectionPool.Count > 0; } }
-
         public TcpConnectionStateStore(Tuple<string, int>[] hosts)
         {
-            _syncObject = new object();
+            _syncObject     = new object();
             _connectionPool = new Dictionary<Tuple<string, int>, TcpClient>();
-            _hosts = hosts;
+            _hosts          = hosts;
         }
+
+        public bool HasConnection { get { return _connectionPool.Count > 0; } }
 
         public bool Connect()
         {
@@ -42,7 +39,6 @@ namespace Flooder.Core.Transfer
                     }
                     catch (SocketException)
                     {
-                        tcp = null;
                         return new KeyValuePair<Tuple<string, int>, TcpClient>(host, null);
                     }
 
@@ -89,7 +85,7 @@ namespace Flooder.Core.Transfer
                         }
                         catch (Exception ex)
                         {
-                            Logger.ErrorException("エラーになるケースが存在する気がしたのでトラップ. ここで中断させたくないので処理継続", ex);
+                            Logger.ErrorException("Possibly...case A", ex);
                         }
 
                         tcp.Value.Close();
@@ -106,10 +102,6 @@ namespace Flooder.Core.Transfer
 
             return Observable.Start(() =>
             {
-                //var interval = TimeSpan.FromSeconds(1);
-                //IRetryPolicy retryPolicy = new ExponentialBackoff(
-                //    TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), 1);
-
                 while (true)
                 {
                     breaker.ExecuteAction(() =>
@@ -139,47 +131,30 @@ namespace Flooder.Core.Transfer
                                 lock (_syncObject)
                                 {
                                     TcpClient pooledClient;
-                                    if (_connectionPool.TryGetValue(host, out pooledClient))
+                                    if (!_connectionPool.TryGetValue(host, out pooledClient))
                                     {
-                                        try
-                                        {
-                                            pooledClient.GetStream().Close();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Logger.ErrorException("ひょっとしたらエラーになるかもしれないのでトラップ", ex);
-                                        }
-
-                                        pooledClient.Close();
-                                        _connectionPool.Remove(host);
+                                        continue;
                                     }
+
+                                    try
+                                    {
+                                        pooledClient.GetStream().Close();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.ErrorException("Possibly...case B", ex);
+                                    }
+
+                                    pooledClient.Close();
+                                    _connectionPool.Remove(host);
                                 }
                             }
                         }
 
-                        if (_connectionPool.Any())
+                        if (!_connectionPool.Any())
                         {
-                            Logger.Debug("enable {0} connection", _connectionPool.Count());
-                            //retryPolicy.Reset(out interval);
+                            throw new Exception("Problem has occurred. to help CircuitBreaker");
                         }
-                        else
-                        {
-                            throw new Exception("CircuitBreaker is Open.");
-
-                            //if (retryPolicy.TryGetNext(out interval))
-                            //{
-                            //    //Update next interval time.
-                            //    Logger.Debug("next retry interval:{0}sec", interval.TotalSeconds);
-                            //}
-                            //else
-                            //{
-                            //    retryPolicy.Reset(out interval);
-                            //    throw new Exception("CircuitBreaker is Open.");
-                            //    //break;
-                            //}
-                        }
-
-                        //Thread.Sleep(interval);
                     });
                 }
             })

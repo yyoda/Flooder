@@ -36,7 +36,12 @@ namespace Flooder.EventLog
                 return config.Scopes.Select(scope =>
                 {
                     var subject = new SendEventLogToServer(scope);
-                    return subject.Subscribe(new EventLogListener(config.Tag, emitter));
+                    return subject.Subscribe(new EventLogListener(config.Tag, emitter)
+                    {
+                        TrapInfomations = new HashSet<Tuple<string, string>>(config.GetTrapInfomations().Select(x => Tuple.Create(x.Source, x.Id))),
+                        TrapWarnings    = new HashSet<Tuple<string, string>>(config.GetTrapWarnings().Select(x => Tuple.Create(x.Source, x.Id))),
+                        SkipErrors      = new HashSet<Tuple<string, string>>(config.GetSkipErrors().Select(x => Tuple.Create(x.Source, x.Id))),
+                    });
                 })
                 .ToArray();
             }

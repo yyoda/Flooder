@@ -5,7 +5,6 @@ namespace Flooder.Core.RetryPolicy
 {
     public class FixedInterval : IRetryPolicy
     {
-        private static readonly ILogger Logger = LoggerFactory.GetLogger();
         private int _currentRetryCount;
         private int? _maxRetryCount;
         private readonly TimeSpan _fixedInterval;
@@ -46,7 +45,7 @@ namespace Flooder.Core.RetryPolicy
         public void Reset(out TimeSpan retryInterval)
         {
             _currentRetryCount = 0;
-            retryInterval = _fixedInterval;
+            retryInterval      = _fixedInterval;
         }
     }
 }

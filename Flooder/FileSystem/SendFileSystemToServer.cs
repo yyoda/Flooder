@@ -26,7 +26,7 @@ namespace Flooder.FileSystem
         {
             if (!Directory.Exists(_filePath))
             {
-                Logger.Debug("[{0}] will be skipped because it does not exist.", _filePath);
+                Logger.Warn("[{0}] will be skipped because it does not exist.", _filePath);
                 return Observable.Never<FileSystemEventArgs>().Subscribe(observer);
             }
 
@@ -52,7 +52,7 @@ namespace Flooder.FileSystem
                 return config.Select(x =>
                 {
                     var subject = new SendFileSystemToServer(x.Path);
-                    return subject.Subscribe(new FileSystemEventListener(config.Tag, emitter));
+                    return subject.Subscribe(new FileSystemEventListener(x.Tag, emitter));
                 })
                 .ToArray();
             }
