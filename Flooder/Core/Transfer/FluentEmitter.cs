@@ -16,9 +16,9 @@ namespace Flooder.Core.Transfer
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly SerializationContext DefaultContext = new SerializationContext();
         private readonly IRetryPolicy _retryPolicy = new FixedInterval(TimeSpan.FromSeconds(1), 3);
-        private readonly TcpCore _tcp;
+        private readonly TcpConnectionStateStore _tcp;
 
-        public FluentEmitter(TcpCore tcp)
+        public FluentEmitter(TcpConnectionStateStore tcp)
         {
             _tcp = tcp;
         }
@@ -64,15 +64,16 @@ namespace Flooder.Core.Transfer
 
             while (true)
             {
+                TimeSpan interval;
+
                 try
                 {
                     _tcp.Transfer(bytes);
-                    _retryPolicy.Reset();
+                    _retryPolicy.Reset(out interval);
                     break;
                 }
                 catch (Exception ex)
                 {
-                    TimeSpan interval;
                     if (_retryPolicy.TryGetNext(out interval))
                     {
                         Logger.WarnException(string.Format("emit fails. waiting for {0}sec.", interval.TotalSeconds), ex);

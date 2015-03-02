@@ -79,13 +79,14 @@
     <Compile Include="Core\Logging\NLogLogger.cs" />
     <Compile Include="Core\Logging\NullLogger.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
+    <Compile Include="Core\RetryPolicy\Incremental.cs" />
     <Compile Include="Core\RetryPolicy\FixedInterval.cs" />
     <Compile Include="Core\RetryPolicy\IRetryPolicy.cs" />
-    <Compile Include="Core\CircuitBreaker\InfiniteCircuitBreaker.cs" />
+    <Compile Include="Core\CircuitBreaker\DefaultCircuitBreaker.cs" />
     <Compile Include="Core\Transfer\FluentClient.cs" />
     <Compile Include="Core\Transfer\FluentEmitter.cs" />
     <Compile Include="Core\Transfer\IEmitter.cs" />
-    <Compile Include="Core\Transfer\TcpCore.cs" />
+    <Compile Include="Core\Transfer\TcpConnectionStateStore.cs" />
     <Compile Include="Core\Utility\DateTimeExtensions.cs" />
     <Compile Include="Core\Utility\IEnumerableExtensions.cs" />
     <Compile Include="EventLog\EventLogListener.cs" />

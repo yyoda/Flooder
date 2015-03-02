@@ -7,10 +7,11 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Threading;
+using Flooder.Core.CircuitBreaker;
 
 namespace Flooder.Core.Transfer
 {
-    public class TcpCore
+    public class TcpConnectionStateStore
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly object _syncObject;
@@ -20,7 +21,7 @@ namespace Flooder.Core.Transfer
         
         public bool HasConnection { get { return _connectionPool.Count > 0; } }
 
-        public TcpCore(Tuple<string, int>[] hosts)
+        public TcpConnectionStateStore(Tuple<string, int>[] hosts)
         {
             _syncObject = new object();
             _connectionPool = new Dictionary<Tuple<string, int>, TcpClient>();
@@ -101,76 +102,85 @@ namespace Flooder.Core.Transfer
 
         public IDisposable HealthCheck()
         {
+            var breaker = new DefaultCircuitBreaker(new CircuitBreakerStateStore());
+
             return Observable.Start(() =>
             {
-                var interval = TimeSpan.FromSeconds(1);
-                IRetryPolicy retryPolicy = new ExponentialBackoff(
-                    TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1), 3);
+                //var interval = TimeSpan.FromSeconds(1);
+                //IRetryPolicy retryPolicy = new ExponentialBackoff(
+                //    TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1), 1);
 
                 while (true)
                 {
-                    foreach (var host in _hosts)
+                    breaker.ExecuteAction(() =>
                     {
-                        try
+                        foreach (var host in _hosts)
                         {
-                            var trialClient = new TcpClient();
-                            trialClient.Connect(host.Item1, host.Item2);
-
-                            lock (_syncObject)
+                            try
                             {
-                                TcpClient pooledClient;
-                                if (_connectionPool.TryGetValue(host, out pooledClient) && pooledClient.Connected)
+                                var trial = new TcpClient();
+                                trial.Connect(host.Item1, host.Item2);
+
+                                lock (_syncObject)
                                 {
-                                    trialClient.Close();
+                                    TcpClient pooledClient;
+                                    if (_connectionPool.TryGetValue(host, out pooledClient) && pooledClient.Connected)
+                                    {
+                                        trial.Close();
+                                    }
+                                    else
+                                    {
+                                        _connectionPool[host] = trial;
+                                    }
                                 }
-                                else
+                            }
+                            catch (SocketException)
+                            {
+                                lock (_syncObject)
                                 {
-                                    _connectionPool[host] = trialClient;
+                                    TcpClient pooledClient;
+                                    if (_connectionPool.TryGetValue(host, out pooledClient))
+                                    {
+                                        try
+                                        {
+                                            pooledClient.GetStream().Close();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Logger.ErrorException("ひょっとしたらエラーになるかもしれないのでトラップ", ex);
+                                        }
+
+                                        pooledClient.Close();
+                                        _connectionPool.Remove(host);
+                                    }
                                 }
                             }
                         }
-                        catch (SocketException)
-                        {
-                            lock (_syncObject)
-                            {
-                                TcpClient pooledClient;
-                                if (_connectionPool.TryGetValue(host, out pooledClient))
-                                {
-                                    try
-                                    {
-                                        pooledClient.GetStream().Close();
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logger.ErrorException("ひょっとしたらエラーになるかもしれないのでトラップ", ex);
-                                    }
 
-                                    pooledClient.Close();
-                                    _connectionPool.Remove(host);
-                                }
-                            }
-                        }
-                    }
-
-                    if (_connectionPool.Any())
-                    {
-                        //Logger.Debug("enable {0} connection", ConnectionPool.Count());
-                        retryPolicy.Reset();
-                    }
-                    else
-                    {
-                        if (retryPolicy.TryGetNext(out interval))
+                        if (_connectionPool.Any())
                         {
-                            //Update next interval time.
-                            Logger.Debug("next retry interval:{0}sec", interval.TotalSeconds);
+                            Logger.Debug("enable {0} connection", _connectionPool.Count());
+                            //retryPolicy.Reset(out interval);
                         }
                         else
                         {
-                            break;
-                        }
-                    }
+                            throw new Exception("CircuitBreaker is Open.");
 
-                    Thread.Sleep(interval);
+                            //if (retryPolicy.TryGetNext(out interval))
+                            //{
+                            //    //Update next interval time.
+                            //    Logger.Debug("next retry interval:{0}sec", interval.TotalSeconds);
+                            //}
+                            //else
+                            //{
+                            //    retryPolicy.Reset(out interval);
+                            //    throw new Exception("CircuitBreaker is Open.");
+                            //    //break;
+                            //}
+                        }
+
+                        //Thread.Sleep(interval);
+                    });
                 }
             })
             .Subscribe(

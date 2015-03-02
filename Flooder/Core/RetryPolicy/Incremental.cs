@@ -3,20 +3,23 @@ using Flooder.Core.Logging;
 
 namespace Flooder.Core.RetryPolicy
 {
-    public class FixedInterval : IRetryPolicy
+    public class Incremental : IRetryPolicy
     {
         private static readonly ILogger Logger = LoggerFactory.GetLogger();
         private int _currentRetryCount;
         private int? _maxRetryCount;
-        private readonly TimeSpan _fixedInterval;
+        private readonly TimeSpan _initial, _incremental;
+        private TimeSpan _currentInterval;
 
-        public FixedInterval(TimeSpan interval, int? retryCount = null)
+        public Incremental(TimeSpan initial, TimeSpan incremental, int? retryCount = null)
         {
+            _initial = initial;
+            _incremental = incremental;
             _maxRetryCount = retryCount;
-            _fixedInterval = interval;
+            _currentInterval = _initial;
         }
 
-        public TimeSpan CurrentInterval { get { return _fixedInterval; } }
+        public TimeSpan CurrentInterval { get { return _currentInterval; } }
 
         public bool TryGetNext(out TimeSpan retryInterval)
         {
@@ -34,19 +37,20 @@ namespace Flooder.Core.RetryPolicy
                 _currentRetryCount++;
             }
 
-            retryInterval = _fixedInterval;
+            retryInterval = _currentInterval = _currentInterval.Add(_incremental);
             return true;
         }
 
         public void Reset()
         {
             _currentRetryCount = 0;
+            _currentInterval = _initial;
         }
 
         public void Reset(out TimeSpan retryInterval)
         {
             _currentRetryCount = 0;
-            retryInterval = _fixedInterval;
+            retryInterval = _currentInterval = _initial;
         }
     }
 }
