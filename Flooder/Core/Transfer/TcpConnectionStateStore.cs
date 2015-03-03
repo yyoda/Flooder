@@ -79,15 +79,7 @@ namespace Flooder.Core.Transfer
                 {
                     if (tcp.Value.Connected)
                     {
-                        try
-                        {
-                            tcp.Value.GetStream().Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.ErrorException("Possibly...case A", ex);
-                        }
-
+                        tcp.Value.GetStream().Close();
                         tcp.Value.Close();
                     }
 
@@ -136,15 +128,7 @@ namespace Flooder.Core.Transfer
                                         continue;
                                     }
 
-                                    try
-                                    {
-                                        pooledClient.GetStream().Close();
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logger.ErrorException("Possibly...case B", ex);
-                                    }
-
+                                    pooledClient.GetStream().Close();
                                     pooledClient.Close();
                                     _connectionPool.Remove(host);
                                 }
@@ -156,13 +140,13 @@ namespace Flooder.Core.Transfer
                             throw new Exception("Problem has occurred. to help CircuitBreaker");
                         }
 
-                        Logger.Debug("Healthy now...");
+                        Logger.Trace("Healthy now...");
                     });
                 }
             })
             .Subscribe(
                 e => { /* nothing. */ },
-                ex => Logger.ErrorException("Inability to continue.", ex),
+                ex => Logger.FatalException("Inability to continue.", ex),
                 () => Logger.Fatal("HealthCheck stoped.")
             );
         }

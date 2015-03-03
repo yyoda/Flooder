@@ -111,12 +111,12 @@ namespace Flooder.FileSystem
 
         public void OnError(Exception error)
         {
-            Logger.ErrorException("FileSystemEventListener", error);
+            Logger.FatalException("FileSystemEventListener", error);
         }
 
         public void OnCompleted()
         {
-            Logger.Debug("FileSystemEventListener#OnCompleted");
+            Logger.Fatal("FileSystemEventListener#OnCompleted");
         }
     }
 }

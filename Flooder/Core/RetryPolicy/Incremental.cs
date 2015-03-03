@@ -1,5 +1,4 @@
 ﻿using System;
-using Flooder.Core.Logging;
 
 namespace Flooder.Core.RetryPolicy
 {

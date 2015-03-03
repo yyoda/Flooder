@@ -43,13 +43,13 @@ namespace Flooder.Core.CircuitBreaker
 
                             _stateStore.Reset();
                             _retryPolicy.Reset(out _interval);
-                            Logger.Debug("Recovery is success! CircuitBreaker is closed.");
+                            Logger.Warn("Recovery is success! CircuitBreaker is closed.");
                         }
                     }
                     catch (Exception ex)
                     {
                         _stateStore.Trip(ex);
-                        Logger.Debug("CircuitBreaker is opened (rollbacked).");
+                        Logger.Warn("CircuitBreaker is opened (rollbacked).");
                     }
                     finally
                     {
@@ -59,7 +59,7 @@ namespace Flooder.Core.CircuitBreaker
                         }
                     }
 
-                    Logger.Debug("CircuitBreaker try the recovery after {0} second.", _interval);
+                    Logger.Warn("CircuitBreaker try the recovery after {0} second.", _interval);
                     Thread.Sleep(_interval);
                     return;
                 }
@@ -74,7 +74,7 @@ namespace Flooder.Core.CircuitBreaker
             catch (Exception ex)
             {
                 _stateStore.Trip(ex);
-                Logger.DebugException("Emergency! CircuitBreaker is opend.", ex);
+                Logger.Error("Emergency! CircuitBreaker is opend.", ex);
             }
 
             Thread.Sleep(_interval);

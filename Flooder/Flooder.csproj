@@ -83,7 +83,6 @@
     <Compile Include="Core\RetryPolicy\FixedInterval.cs" />
     <Compile Include="Core\RetryPolicy\IRetryPolicy.cs" />
     <Compile Include="Core\CircuitBreaker\DefaultCircuitBreaker.cs" />
-    <Compile Include="Core\Transfer\FluentClient.cs" />
     <Compile Include="Core\Transfer\FluentEmitter.cs" />
     <Compile Include="Core\Transfer\IEmitter.cs" />
     <Compile Include="Core\Transfer\TcpConnectionStateStore.cs" />
@@ -96,7 +95,6 @@
     <Compile Include="FileSystem\FileSystemWatcherExtensions.cs" />
     <Compile Include="FileSystem\SendFileSystemToServer.cs" />
     <Compile Include="PerformanceCounter\PerformanceCounterListener.cs" />
-    <Compile Include="PerformanceCounter\PerformanceCounterUtility.cs" />
     <Compile Include="PerformanceCounter\SendPerformanceCounterToServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

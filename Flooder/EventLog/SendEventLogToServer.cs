@@ -38,14 +38,34 @@ namespace Flooder.EventLog
                 {
                     var tag = config.Tag;
                     var subject = new SendEventLogToServer(scope);
+
+                    var includeInfo  = config.GetIncludeInfo().Select(x => Tuple.Create(x.Source, x.Id)).ToArray();
+                    var includeWarn  = config.GetIncludeWarn().Select(x => Tuple.Create(x.Source, x.Id)).ToArray();
+                    var includeError = config.GetIncludeError().Select(x => Tuple.Create(x.Source, x.Id)).ToArray();
+                    var excludeInfo  = config.GetExcludeInfo().Select(x => Tuple.Create(x.Source, x.Id)).ToArray();
+                    var excludeWarn  = config.GetExcludeWarn().Select(x => Tuple.Create(x.Source, x.Id)).ToArray();
+                    var excludeError = config.GetExcludeError().Select(x => Tuple.Create(x.Source, x.Id)).ToArray();
+
                     var subscribe = subject.Subscribe(new EventLogListener(tag, emitter)
                     {
-                        TrapInfomations = new HashSet<Tuple<string, string>>(config.GetIncludeInfo().Select(x => Tuple.Create(x.Source, x.Id))),
-                        TrapWarnings    = new HashSet<Tuple<string, string>>(config.GetIncludeWarn().Select(x => Tuple.Create(x.Source, x.Id))),
-                        SkipErrors      = new HashSet<Tuple<string, string>>(config.GetExcludeError().Select(x => Tuple.Create(x.Source, x.Id))),
+                        IncludeInfo  = new HashSet<Tuple<string, string>>(includeInfo),
+                        IncludeWarn  = new HashSet<Tuple<string, string>>(includeWarn),
+                        IncludeError = new HashSet<Tuple<string, string>>(includeError),
+                        ExcludeInfo  = new HashSet<Tuple<string, string>>(excludeInfo),
+                        ExcludeWarn  = new HashSet<Tuple<string, string>>(excludeWarn),
+                        ExcludeError = new HashSet<Tuple<string, string>>(excludeError),
                     });
 
                     Logger.Info("EventLogListener start. tag:{0}", tag);
+                    Logger.Debug("EventLogListener IncludeInfo:[{0}], IncludeWarn:[{1}], IncludeError:[{2}], ExcludeInfo:[{3}], ExcludeWarn:[{4}], ExcludeError:[{5}]",
+                        string.Join(",", includeInfo.Select(x => x.ToString())),
+                        string.Join(",", includeWarn.Select(x => x.ToString())),
+                        string.Join(",", includeError.Select(x => x.ToString())),
+                        string.Join(",", excludeInfo.Select(x => x.ToString())),
+                        string.Join(",", excludeWarn.Select(x => x.ToString())),
+                        string.Join(",", excludeError.Select(x => x.ToString()))
+                    );
+
                     return subscribe;
                 })
                 .ToArray();

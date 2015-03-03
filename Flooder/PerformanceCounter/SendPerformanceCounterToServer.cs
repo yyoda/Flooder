@@ -35,7 +35,8 @@ namespace Flooder.PerformanceCounter
             var subject = new SendPerformanceCounterToServer(config.Interval);
             var subscribe = subject.Subscribe(new PerformanceCounterListener(tag, settings, emitter));
 
-            Logger.Info("PerformanceCounterListener start. tag:{0}, settings:[{1}]", tag, string.Join(",", settings.Select(x => x.ToString())));
+            Logger.Info("PerformanceCounterListener start. tag:{0}", tag);
+            Logger.Debug("PerformanceCounterListener settings:[{0}]", string.Join(",", settings.Select(x => x.ToString())));
             return subscribe;
         }
     }

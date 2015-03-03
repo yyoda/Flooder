@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Flooder.Core.Transfer;
 using NLog;
@@ -16,14 +17,17 @@ namespace Flooder.EventLog
 
         public EventLogListener(string tag, IEmitter emitter)
         {
-            _tag            = tag;
-            _emitter        = emitter;
-            TrapInfomations = TrapWarnings = SkipErrors = new HashSet<Tuple<string, string>>();
+            _tag        = tag;
+            _emitter    = emitter;
+            IncludeInfo = IncludeWarn = IncludeError = ExcludeInfo = ExcludeWarn = ExcludeError = new HashSet<Tuple<string, string>>();
         }
 
-        public HashSet<Tuple<string, string>> SkipErrors { get; set; }
-        public HashSet<Tuple<string, string>> TrapWarnings { get; set; }
-        public HashSet<Tuple<string, string>> TrapInfomations { get; set; }
+        public HashSet<Tuple<string, string>> IncludeInfo { get; set; }
+        public HashSet<Tuple<string, string>> IncludeWarn { get; set; }
+        public HashSet<Tuple<string, string>> IncludeError { get; set; }
+        public HashSet<Tuple<string, string>> ExcludeInfo { get; set; }
+        public HashSet<Tuple<string, string>> ExcludeWarn { get; set; }
+        public HashSet<Tuple<string, string>> ExcludeError { get; set; }
 
         public void OnNext(EntryWrittenEventArgs e)
         {
@@ -31,21 +35,20 @@ namespace Flooder.EventLog
 
             switch (e.Entry.EntryType)
             {
-                case EventLogEntryType.Error:
-                    if (SkipErrors.Contains(checkValue)) return;
-                    break;
-                case EventLogEntryType.FailureAudit:
-                    return;
                 case EventLogEntryType.Information:
-                    if (TrapInfomations.Contains(checkValue)) break;
-                    return;
-                case EventLogEntryType.SuccessAudit:
-                    return;
+                    if (IncludeInfo.Any() && !IncludeInfo.Contains(checkValue)) return;
+                    if (ExcludeInfo.Contains(checkValue)) return;
+                    break;
                 case EventLogEntryType.Warning:
-                    if (TrapWarnings.Contains(checkValue)) break;
+                    if (IncludeWarn.Any() && !IncludeWarn.Contains(checkValue)) return;
+                    if (ExcludeWarn.Contains(checkValue)) return;
                     return;
+                case EventLogEntryType.Error:
+                    if (IncludeError.Any() && !IncludeError.Contains(checkValue)) return;
+                    if (ExcludeError.Contains(checkValue)) return;
+                    break;
                 default:
-                    return;
+                    break;
             }
 
             var payload = new Dictionary<string, object>
@@ -74,12 +77,12 @@ namespace Flooder.EventLog
 
         public void OnError(Exception error)
         {
-            Logger.ErrorException("EventLogListener", error);
+            Logger.FatalException("EventLogListener", error);
         }
 
         public void OnCompleted()
         {
-            Logger.Debug("EventLogListener#OnCompleted");
+            Logger.Fatal("EventLogListener#OnCompleted");
         }
     }
 }

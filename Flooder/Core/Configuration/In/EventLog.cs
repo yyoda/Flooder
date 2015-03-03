@@ -18,6 +18,11 @@ namespace Flooder.Core.Configuration.In
 
         [ConfigurationProperty("id", IsRequired = true)]
         public string Id { get { return (string)base["id"]; } }
+
+        public override string ToString()
+        {
+            return string.Format("{{ Type:{0}, Mode:{1}, Source:{2}, Id:{3} }}", Type, Mode, Source, Id);
+        }
     }
 
     [ConfigurationCollection(typeof(EventLogElement))]

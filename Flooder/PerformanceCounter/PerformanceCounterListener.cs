@@ -51,7 +51,7 @@ namespace Flooder.PerformanceCounter
                         }
                         catch (Exception e)
                         {
-                            Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), e);
+                            Logger.WarnException(string.Format("Skip because an error has occurred. path:{0}", path), e);
                             return null;
                         }
                     })
@@ -64,12 +64,12 @@ namespace Flooder.PerformanceCounter
 
         public void OnError(Exception error)
         {
-            Logger.ErrorException("PerformanceCounterListener", error);
+            Logger.FatalException("PerformanceCounterListener", error);
         }
 
         public void OnCompleted()
         {
-            Logger.Debug("PerformanceCounterListener#OnCompleted");
+            Logger.Fatal("PerformanceCounterListener#OnCompleted");
         }
 
         public class Setting
