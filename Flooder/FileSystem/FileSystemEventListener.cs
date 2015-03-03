@@ -49,7 +49,7 @@ namespace Flooder.FileSystem
                 case WatcherChangeTypes.Created:
                 case WatcherChangeTypes.Changed:
                     using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    using (var sr = new StreamReader(fs, Encoding.UTF8))
+                    using (var sr = new StreamReader(fs, Encoding.GetEncoding("Shift_JIS")))
                     {
                         fs.Position = _fileSeekStore.GetOrAdd(e.FullPath, key => 0);
 
@@ -94,9 +94,11 @@ namespace Flooder.FileSystem
                     {
                         _fileSeekStore.AddOrUpdate(e.FullPath, key => fs.Length, (key, value) => fs.Length);
 
-                        foreach (var fullPath in _fileSeekStore.Where(x => !File.Exists(x.Key)).Select(x => x.Key))
+                        var removeFiles = _fileSeekStore.Where(x => !File.Exists(x.Key)).Select(x => x.Key).ToArray();
+
+                        for (var i = 0; i < removeFiles.Length; i++)
                         {
-                            _fileSeekStore.TryRemove(fullPath, out _);
+                            _fileSeekStore.TryRemove(removeFiles[i], out _);
                         }
 
                         return;

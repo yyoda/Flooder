@@ -59,12 +59,11 @@ namespace Flooder.Core.Transfer
                 if (source.Any())
                 {
                     var client = source.First().Value;
-                    using (var stream = client.GetStream())
-                    {
-                        stream.Write(bytes, 0, bytes.Length);
-                        stream.Flush();
-                        return;
-                    }
+                    var stream = client.GetStream();
+
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Flush();
+                    return;
                 }
 
                 throw new NullReferenceException("Zero connection.");
@@ -75,8 +74,12 @@ namespace Flooder.Core.Transfer
         {
             lock (_syncObject)
             {
-                foreach (var tcp in _connectionPool)
+                var tcpClients = _connectionPool.ToArray();
+
+                for (var i = 0; i < tcpClients.Length; i++)
                 {
+                    var tcp = tcpClients[i];
+
                     if (tcp.Value.Connected)
                     {
                         tcp.Value.GetStream().Close();
@@ -140,7 +143,7 @@ namespace Flooder.Core.Transfer
                             throw new Exception("Problem has occurred. to help CircuitBreaker");
                         }
 
-                        Logger.Trace("Healthy now...");
+                        //Logger.Trace("Healthy now...");
                     });
                 }
             })

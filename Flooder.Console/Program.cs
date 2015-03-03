@@ -17,6 +17,8 @@ namespace Flooder.Console
             var logger = LogManager.GetCurrentClassLogger();
             var instances = new List<IDisposable>();
 
+            logger.Info("Flooder start.");
+
             var config = Section.GetSectionFromAppConfig();
             var hosts = config.Out.Wokers.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
             var tcp = new TcpConnectionStateStore(hosts);
@@ -49,6 +51,8 @@ namespace Flooder.Console
                 instances.ForEach(x => x.Dispose());
                 tcp.Close();
             }
+
+            logger.Info("Flooder stoped.");
         }
     }
 }
