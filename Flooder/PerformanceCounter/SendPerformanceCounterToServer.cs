@@ -26,7 +26,7 @@ namespace Flooder.PerformanceCounter
 
         public static IDisposable Start(PerformanceCounterElementCollection config, IEmitter emitter)
         {
-            var tag = config.Tag + ".log";
+            var tag = config.Tag;
 
             var settings = config
                 .Select(x => new PerformanceCounterListener.Setting(x.CategoryName, x.CounterName, x.InstanceName))

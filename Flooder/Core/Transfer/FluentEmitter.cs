@@ -14,7 +14,9 @@ namespace Flooder.Core.Transfer
     public class FluentEmitter : IEmitter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly SerializationContext DefaultContext = new SerializationContext();
+        private static readonly SerializationContext MsgPackDefaultContext = new SerializationContext();
+        private static readonly JavaScriptSerializer JsonSerializer = new JavaScriptSerializer();
+
         private readonly IRetryPolicy _retryPolicy = new FixedInterval(TimeSpan.FromSeconds(1), 3);
         private readonly TcpConnectionStateStore _tcp;
 
@@ -45,7 +47,7 @@ namespace Flooder.Core.Transfer
                     var type = row.Value != null ? row.Value.GetType() : typeof (string);
 
                     new SerializationContext()
-                        .GetSerializer(type, DefaultContext)
+                        .GetSerializer(type, MsgPackDefaultContext)
                         .PackTo(packer, row.Value);
                 }
 
@@ -53,7 +55,7 @@ namespace Flooder.Core.Transfer
                 var bytes = arraySegment.ToArray();
 
 #if DEBUG
-                Logger.Debug("{0} {1} {2}", timestamp, tag, new JavaScriptSerializer().Serialize(payload));
+                Logger.Debug("{0} {1} {2}", timestamp, tag, JsonSerializer.Serialize(payload));
 #endif
 
                 Emit(bytes);
@@ -87,10 +89,6 @@ namespace Flooder.Core.Transfer
                     break;
                 }
             }
-        }
-
-        public void Dispose()
-        {
         }
     }
 }

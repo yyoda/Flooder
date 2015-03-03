@@ -50,19 +50,34 @@ namespace Flooder.Core.Configuration.In
             }
         }
 
-        public IEnumerable<EventLogElement> GetTrapInfomations()
+        public IEnumerable<EventLogElement> GetIncludeInfo()
         {
-            return this.Where(x => x.Type == "info" && x.Mode == "trap");
+            return this.Where(x => x.Mode == "include" && x.Type == "info");
         }
 
-        public IEnumerable<EventLogElement> GetTrapWarnings()
+        public IEnumerable<EventLogElement> GetIncludeWarn()
         {
-            return this.Where(x => x.Type == "warn" && x.Mode == "trap");
+            return this.Where(x => x.Mode == "include" && x.Type == "warn");
         }
 
-        public IEnumerable<EventLogElement> GetSkipErrors()
+        public IEnumerable<EventLogElement> GetIncludeError()
         {
-            return this.Where(x => x.Type == "error" && x.Mode == "skip");
+            return this.Where(x => x.Mode == "include" && x.Type == "error");
+        }
+
+        public IEnumerable<EventLogElement> GetExcludeInfo()
+        {
+            return this.Where(x => x.Mode == "exclude" && x.Type == "info");
+        }
+
+        public IEnumerable<EventLogElement> GetExcludeWarn()
+        {
+            return this.Where(x => x.Mode == "exclude" && x.Type == "warn");
+        }
+
+        public IEnumerable<EventLogElement> GetExcludeError()
+        {
+            return this.Where(x => x.Mode == "exclude" && x.Type == "error");
         }
     }
 }

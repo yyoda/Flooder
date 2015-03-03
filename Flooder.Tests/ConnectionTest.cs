@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
 using Flooder.Core.Transfer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,8 +12,8 @@ namespace Flooder.Tests
         {
             var hosts = new[]
             {
-                Tuple.Create("192.168.233.162", 5140),
-                Tuple.Create("192.168.233.162", 5141),
+                Tuple.Create("localhost", 888),
+                Tuple.Create("localhost", 999),
             };
 
             IDisposable subscribe = null;

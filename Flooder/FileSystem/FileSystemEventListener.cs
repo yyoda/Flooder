@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,15 +13,17 @@ namespace Flooder.FileSystem
     public class FileSystemEventListener : IObserver<FileSystemEventArgs>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private readonly Func<string, string> _tag;
+        private readonly ConcurrentDictionary<string, long> _fileSeekStore;
+        private readonly string _tag;
         private readonly IEmitter _emitter;
 
-        public ConcurrentDictionary<string, long> FileSeekStore { get; set; }
+        /// <summary>inject option.</summary>
+        public static Func<string, string, string> TagGen =
+            (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
-        public FileSystemEventListener(Func<string, string> tag, IEmitter emitter)
+        public FileSystemEventListener(string tag, IEmitter emitter)
         {
-            FileSeekStore = new ConcurrentDictionary<string, long>();
+            _fileSeekStore = new ConcurrentDictionary<string, long>();
             _tag          = tag;
             _emitter      = emitter;
         }
@@ -33,13 +36,14 @@ namespace Flooder.FileSystem
                 using (var sr = new StreamReader(fs, Encoding.UTF8))
                 {
                     var _ = sr.ReadToEnd();
-                    FileSeekStore.AddOrUpdate(filePath, key => fs.Position, (key, value) => fs.Position);
+                    _fileSeekStore.AddOrUpdate(filePath, key => fs.Position, (key, value) => fs.Position);
                 }
             }
         }
 
         public void OnNext(FileSystemEventArgs e)
         {
+            long _; //unused
             switch (e.ChangeType)
             {
                 case WatcherChangeTypes.Created:
@@ -47,12 +51,12 @@ namespace Flooder.FileSystem
                     using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (var sr = new StreamReader(fs, Encoding.UTF8))
                     {
-                        fs.Position = FileSeekStore.GetOrAdd(e.FullPath, key => 0);
+                        fs.Position = _fileSeekStore.GetOrAdd(e.FullPath, key => 0);
 
                         var buffer = sr.ReadToEnd();
                         if (buffer.Length <= 0) return;
 
-                        var tag = _tag(e.Name);
+                        var tag = TagGen(_tag, e.Name);
 
                         #region old code.
                         //const int newLineSize = 2;
@@ -81,19 +85,24 @@ namespace Flooder.FileSystem
                             { "message", buffer }
                         };
 
+                        _fileSeekStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
                         Task.Factory.StartNew(() => _emitter.Emit(tag, payload));
-                        FileSeekStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
                         return;
                     }
                 case WatcherChangeTypes.Renamed:
                     using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        FileSeekStore.AddOrUpdate(e.FullPath, key => fs.Length, (key, value) => fs.Length);
+                        _fileSeekStore.AddOrUpdate(e.FullPath, key => fs.Length, (key, value) => fs.Length);
+
+                        foreach (var fullPath in _fileSeekStore.Where(x => !File.Exists(x.Key)).Select(x => x.Key))
+                        {
+                            _fileSeekStore.TryRemove(fullPath, out _);
+                        }
+
                         return;
                     }
                 case WatcherChangeTypes.Deleted:
-                    long _; //unused
-                    FileSeekStore.TryRemove(e.FullPath, out _);
+                    _fileSeekStore.TryRemove(e.FullPath, out _);
                     return;
                 default:
                     throw new InvalidOperationException(string.Format("unknown WatcherChangeTypes:{0}", e.ChangeType));

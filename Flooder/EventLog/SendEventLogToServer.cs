@@ -1,13 +1,10 @@
-﻿using Flooder.Core.Logging;
+﻿using Flooder.Core.Configuration.In;
+using Flooder.Core.Transfer;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Flooder.Core.Configuration;
-using Flooder.Core.Configuration.In;
-using Flooder.Core.Transfer;
-using Flooder.FileSystem;
-using NLog;
 
 namespace Flooder.EventLog
 {
@@ -24,18 +21,13 @@ namespace Flooder.EventLog
 
         public IDisposable Subscribe(IObserver<EntryWrittenEventArgs> observer)
         {
-
-            var watcher = new System.Diagnostics.EventLog
+            return new System.Diagnostics.EventLog
             {
                 Log                 = _logName,
                 EnableRaisingEvents = true
-            };
-
-            return watcher.EntryWrittenAsObservable().Subscribe(observer);
-
-            //return new System.Diagnostics.EventLog(_logName)
-            //    .EntryWrittenAsObservable()
-            //    .Subscribe(observer);
+            }
+            .EntryWrittenAsObservable()
+            .Subscribe(observer);
         }
 
          public static IDisposable[] Start(EventLogElementCollection config, IEmitter emitter)
@@ -44,13 +36,13 @@ namespace Flooder.EventLog
             {
                 return config.Scopes.Select(scope =>
                 {
-                    var tag = config.Tag + ".log";
+                    var tag = config.Tag;
                     var subject = new SendEventLogToServer(scope);
                     var subscribe = subject.Subscribe(new EventLogListener(tag, emitter)
                     {
-                        TrapInfomations = new HashSet<Tuple<string, string>>(config.GetTrapInfomations().Select(x => Tuple.Create(x.Source, x.Id))),
-                        TrapWarnings    = new HashSet<Tuple<string, string>>(config.GetTrapWarnings().Select(x => Tuple.Create(x.Source, x.Id))),
-                        SkipErrors      = new HashSet<Tuple<string, string>>(config.GetSkipErrors().Select(x => Tuple.Create(x.Source, x.Id))),
+                        TrapInfomations = new HashSet<Tuple<string, string>>(config.GetIncludeInfo().Select(x => Tuple.Create(x.Source, x.Id))),
+                        TrapWarnings    = new HashSet<Tuple<string, string>>(config.GetIncludeWarn().Select(x => Tuple.Create(x.Source, x.Id))),
+                        SkipErrors      = new HashSet<Tuple<string, string>>(config.GetExcludeError().Select(x => Tuple.Create(x.Source, x.Id))),
                     });
 
                     Logger.Info("EventLogListener start. tag:{0}", tag);

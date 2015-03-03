@@ -7,67 +7,57 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.ServiceProcess;
 
 namespace Flooder.Service
 {
     public partial class FlooderService : ServiceBase
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-        List<IDisposable> instances;
+        private readonly Logger _logger;
+        private readonly List<IDisposable> _instances;
+        private TcpConnectionStateStore _tcp;
 
         public FlooderService()
         {
             InitializeComponent();
-            instances = new List<IDisposable>();
+            _logger = LogManager.GetCurrentClassLogger();
+            _instances = new List<IDisposable>();
         }
 
         protected override void OnStart(string[] args)
         {
-            logger.Debug("flooder start.");
-
             var config = Section.GetSectionFromAppConfig();
             var hosts = config.Out.Wokers.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
-            var tcp = new TcpConnectionStateStore(hosts);
 
             try
             {
-                if (config.Out.Wokers.Type == "fluentd")
+                _tcp = new TcpConnectionStateStore(hosts);
+
+                if (config.Out.Wokers.Type == "fluentd" && _tcp.Connect())
                 {
-                    if (tcp.Connect())
-                    {
-                        var client = new FluentEmitter(tcp);
-                        instances.AddRange(SendFileSystemToServer.Start(config.In.FileSystems, client));
-                        instances.AddRange(SendEventLogToServer.Start(config.In.EventLogs, client));
-                        instances.Add(SendPerformanceCounterToServer.Start(config.In.PerformanceCounters, client));
-                        instances.Add(tcp.HealthCheck());
-                    }
+                    var client = new FluentEmitter(_tcp);
+                    _instances.AddRange(SendFileSystemToServer.Start(config.In.FileSystems, client));
+                    _instances.AddRange(SendEventLogToServer.Start(config.In.EventLogs, client));
+                    _instances.Add(SendPerformanceCounterToServer.Start(config.In.PerformanceCounters, client));
+                    _instances.Add(_tcp.HealthCheck());
                 }
 
-                if (!instances.Any())
+                if (!_instances.Any())
                 {
                     throw new InvalidOperationException("Instances is empty.");
                 }
-
-                //listening...
-                System.Console.ReadLine();
             }
             catch (Exception e)
             {
-                logger.ErrorException("Problem occurs.", e);
-            }
-            finally
-            {
-                instances.ForEach(x => x.Dispose());
-                tcp.Close();
+                _logger.ErrorException("Problem occurs.", e);
             }
         }
 
         protected override void OnStop()
         {
-            instances.ForEach(x => x.Dispose());
-            logger.Debug("flooder stoped.");
+            _instances.ForEach(x => x.Dispose());
+            _tcp.Close();
+            _logger.Debug("flooder stoped.");
         }
     }
 }
