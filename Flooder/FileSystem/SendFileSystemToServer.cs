@@ -13,10 +13,12 @@ namespace Flooder.FileSystem
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly string _filePath;
+        private readonly string _fileName;
         
-        public SendFileSystemToServer(string filePath)
+        public SendFileSystemToServer(string filePath, string fileName)
         {
             _filePath = filePath;
+            _fileName = fileName;
         }
 
         public IDisposable Subscribe(IObserver<FileSystemEventArgs> observer)
@@ -29,7 +31,7 @@ namespace Flooder.FileSystem
 
             ((FileSystemEventListener) observer).InitFileSeekStore(_filePath);
 
-            var fsw = new FileSystemWatcher(_filePath, "*.log") { EnableRaisingEvents = true };
+            var fsw = new FileSystemWatcher(_filePath, _fileName) { EnableRaisingEvents = true };
 
             var sources = new[]
             {
@@ -48,7 +50,7 @@ namespace Flooder.FileSystem
             {
                 return config.Select(x =>
                 {
-                    var subject = new SendFileSystemToServer(x.Path);
+                    var subject = new SendFileSystemToServer(x.Path, x.File);
                     var subscribe = subject.Subscribe(new FileSystemEventListener(x.Tag, emitter));
 
                     Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", x.Tag, x.Path);
