@@ -13,3 +13,10 @@ eventlog.
   port 9901
 </source>
 ```
+
+##Dependency
+MsgPack
+NLog
+System.Reactive.Core
+System.Reactive.Linq
+System.Reactive.Interfaces
