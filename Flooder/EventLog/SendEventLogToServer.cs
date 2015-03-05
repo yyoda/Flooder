@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Flooder.Core.Settings;
+using Flooder.Core.Settings.In;
 
 namespace Flooder.EventLog
 {
@@ -29,22 +31,24 @@ namespace Flooder.EventLog
             .EntryWrittenAsObservable()
             .Subscribe(observer);
         }
-
-         public static IDisposable[] Start(EventLogElementCollection config, IEmitter emitter)
+ 
+        public static IDisposable[] Start(Settings settings, IEmitter emitter)
         {
-            if (config.Any())
+            var eventLog = settings.In.EventLogs;
+
+            if (eventLog.Scopes.Any())
             {
-                return config.Scopes.Select(scope =>
+                return eventLog.Scopes.Select(scope =>
                 {
-                    var tag = config.Tag;
+                    var tag = eventLog.Tag;
                     var subject = new SendEventLogToServer(scope);
 
-                    var includeInfo  = config.GetIncludeInfo().ToArray();
-                    var includeWarn = config.GetIncludeWarn().ToArray();
-                    var includeError = config.GetIncludeError().ToArray();
-                    var excludeInfo = config.GetExcludeInfo().ToArray();
-                    var excludeWarn = config.GetExcludeWarn().ToArray();
-                    var excludeError = config.GetExcludeError().ToArray();
+                    var includeInfo  = eventLog.GetIncludeInfo().ToArray();
+                    var includeWarn  = eventLog.GetIncludeWarn().ToArray();
+                    var includeError = eventLog.GetIncludeError().ToArray();
+                    var excludeInfo  = eventLog.GetExcludeInfo().ToArray();
+                    var excludeWarn  = eventLog.GetExcludeWarn().ToArray();
+                    var excludeError = eventLog.GetExcludeError().ToArray();
 
                     var subscribe = subject.Subscribe(new EventLogListener(tag, emitter)
                     {

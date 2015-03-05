@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Flooder.Core.Transfer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,13 +18,13 @@ namespace Flooder.Tests
                 Tuple.Create("localhost", 999),
             };
 
-            IDisposable subscribe = null;
+            var subscribe = new List<IDisposable>();
 
             try
             {
-                var tcp = new TcpConnectionStateStore(hosts);
+                var tcp = new TcpConnectionManager(hosts);
                 tcp.Connect();
-                subscribe = tcp.HealthCheck();
+                subscribe = tcp.HealthCheck().ToList();
 
                 Console.ReadLine();
             }
@@ -30,10 +32,7 @@ namespace Flooder.Tests
             {
             }
 
-            if (subscribe != null)
-            {
-                subscribe.Dispose();
-            }
+            subscribe.ForEach(x => x.Dispose());
         }
     }
 }

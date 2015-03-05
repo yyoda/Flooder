@@ -1,0 +1,70 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Flooder.Core.Settings.In
+{
+    public class EventLogSettings
+    {
+        public EventLogSettings(string tag, string[] scopes, IEnumerable<EventLogSettingsDetail> details)
+        {
+            Tag     = tag;
+            Scopes  = scopes;
+            Details = details;
+        }
+
+        public string Tag { get; private set; }
+        public string[] Scopes { get; private set; }
+        public IEnumerable<EventLogSettingsDetail> Details { get; private set; }
+
+        public class EventLogSettingsDetail
+        {
+            public EventLogSettingsDetail(string type, string mode, string source, string id)
+            {
+                Type   = type;
+                Mode   = mode;
+                Source = source;
+                Id     = id;
+            }
+
+            public string Type { get; private set; }
+            public string Mode { get; private set; }
+            public string Source { get; private set; }
+            public string Id { get; private set; }
+
+            public override string ToString()
+            {
+                return string.Format("{{ Type:{0}, Mode:{1}, Source:{2}, Id:{3} }}", Type, Mode, Source, Id);
+            }
+        }
+
+        public IEnumerable<EventLogSettingsDetail> GetIncludeInfo()
+        {
+            return Details.Where(x => x.Mode == "include" && x.Type == "info");
+        }
+
+        public IEnumerable<EventLogSettingsDetail> GetIncludeWarn()
+        {
+            return Details.Where(x => x.Mode == "include" && x.Type == "warn");
+        }
+
+        public IEnumerable<EventLogSettingsDetail> GetIncludeError()
+        {
+            return Details.Where(x => x.Mode == "include" && x.Type == "error");
+        }
+
+        public IEnumerable<EventLogSettingsDetail> GetExcludeInfo()
+        {
+            return Details.Where(x => x.Mode == "exclude" && x.Type == "info");
+        }
+
+        public IEnumerable<EventLogSettingsDetail> GetExcludeWarn()
+        {
+            return Details.Where(x => x.Mode == "exclude" && x.Type == "warn");
+        }
+
+        public IEnumerable<EventLogSettingsDetail> GetExcludeError()
+        {
+            return Details.Where(x => x.Mode == "exclude" && x.Type == "error");
+        }
+    }
+}

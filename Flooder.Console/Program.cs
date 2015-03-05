@@ -7,6 +7,8 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flooder.Core.Settings;
+using Flooder.IIS;
 
 namespace Flooder.Console
 {
@@ -19,19 +21,26 @@ namespace Flooder.Console
 
             logger.Info("Flooder start.");
 
-            var config = Section.GetSectionFromAppConfig();
-            var hosts = config.Out.Wokers.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
-            var tcp = new TcpConnectionStateStore(hosts);
+            var settings = SettingsFactory.Create<Section>();
+            var hosts = settings.Out.Worker.Details.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
+            var tcp = new TcpConnectionManager(hosts);
 
             try
             {
-                if (config.Out.Wokers.Type == "fluentd" && tcp.Connect())
+                if (settings.Out.Worker.Type == "fluentd" && tcp.Connect())
                 {
-                    var client = new FluentEmitter(tcp);
-                    instances.AddRange(SendFileSystemToServer.Start(config.In.FileSystems, client));
-                    instances.AddRange(SendEventLogToServer.Start(config.In.EventLogs, client));
-                    instances.Add(SendPerformanceCounterToServer.Start(config.In.PerformanceCounters, client));
-                    instances.Add(tcp.HealthCheck());
+                    var fluent = new FluentEmitter(tcp);
+
+                    instances = new[]
+                    {
+                        SendIISLogToServer.Start(settings, fluent),
+                        SendFileSystemToServer.Start(settings, fluent),
+                        SendEventLogToServer.Start(settings, fluent),
+                        SendPerformanceCounterToServer.Start(settings, fluent),
+                        tcp.HealthCheck(),
+                    }
+                    .SelectMany(x => x)
+                    .ToList();
                 }
 
                 if (!instances.Any())

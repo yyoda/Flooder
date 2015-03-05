@@ -16,7 +16,7 @@ namespace Flooder.Core.Utility
             return ShuffleCore(source, rnd);
         }
 
-        //Thread unsafe. but fast.
+        //Thread unsafe. but slightly fast.
         public static IEnumerable<T> ShuffleSlim<T>(this IEnumerable<T> source, Random rnd = null)
         {
             rnd = rnd ?? new Random(_shuffleSeed);

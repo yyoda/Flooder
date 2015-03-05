@@ -1,10 +1,10 @@
-﻿using Flooder.Core.Configuration.In;
-using Flooder.Core.Transfer;
+﻿using Flooder.Core.Transfer;
 using NLog;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using Flooder.Core.Settings;
 
 namespace Flooder.FileSystem
 {
@@ -29,7 +29,7 @@ namespace Flooder.FileSystem
                 return Observable.Never<FileSystemEventArgs>().Subscribe(observer);
             }
 
-            ((FileSystemEventListener) observer).InitFileSeekStore(_filePath);
+            ((FileSystemEventListener) observer).OnInitAction(_filePath);
 
             var fsw = new FileSystemWatcher(_filePath, _fileName) { EnableRaisingEvents = true };
 
@@ -44,14 +44,24 @@ namespace Flooder.FileSystem
             return Observable.Merge(sources).Subscribe(observer);
         }
 
-        public static IDisposable[] Start(FileSystemElementCollection config, IEmitter emitter)
+        public static IDisposable[] Start(Settings settings, IEmitter emitter)
         {
-            if (config.Any())
+            var fileSystem = settings.In.FileSystems.Details.ToArray();
+
+            if (fileSystem.Any())
             {
-                return config.Select(x =>
+                return fileSystem.Select(x =>
                 {
                     var subject = new SendFileSystemToServer(x.Path, x.File);
-                    var subscribe = subject.Subscribe(new FileSystemEventListener(x.Tag, emitter));
+                    IDisposable subscribe;
+
+                    switch (x.Format)
+                    {
+                        //additional.
+                        default:
+                            subscribe = subject.Subscribe(new TxtEventListener(x.Tag, emitter));
+                            break;
+                    }
 
                     Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", x.Tag, x.Path);
                     return subscribe;

@@ -11,8 +11,11 @@ namespace Flooder.Core.Configuration.In
         [ConfigurationProperty("path", IsRequired = true)]
         public string Path { get { return (string)base["path"]; } }
 
-        [ConfigurationProperty("file", IsRequired = true)]
+        [ConfigurationProperty("file", IsRequired = false, DefaultValue = "*")]
         public string File { get { return (string)base["file"]; } }
+
+        [ConfigurationProperty("format", IsRequired = false, DefaultValue = "default")]
+        public string Format { get { return (string) base["format"]; } }
     }
 
     [ConfigurationCollection(typeof(FileSystemElement))]

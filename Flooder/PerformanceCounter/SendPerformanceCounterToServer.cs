@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Reactive.Linq;
-using Flooder.Core.Configuration.In;
+﻿using Flooder.Core.Settings;
 using Flooder.Core.Transfer;
 using NLog;
+using System;
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace Flooder.PerformanceCounter
 {
@@ -24,20 +24,21 @@ namespace Flooder.PerformanceCounter
                 .Subscribe(observer);
         }
 
-        public static IDisposable Start(PerformanceCounterElementCollection config, IEmitter emitter)
+        public static IDisposable[] Start(Settings settings, IEmitter emitter)
         {
-            var tag = config.Tag;
+            var performanceCounter = settings.In.PerformanceCounters;
 
-            var settings = config
+            var details = performanceCounter.Details
                 .Select(x => new PerformanceCounterListener.Setting(x.CategoryName, x.CounterName, x.InstanceName))
                 .ToArray();
 
-            var subject = new SendPerformanceCounterToServer(config.Interval);
-            var subscribe = subject.Subscribe(new PerformanceCounterListener(tag, settings, emitter));
+            var subject = new SendPerformanceCounterToServer(performanceCounter.Interval);
+            var subscribe = subject.Subscribe(new PerformanceCounterListener(performanceCounter.Tag, details, emitter));
 
-            Logger.Info("PerformanceCounterListener start. tag:{0}", tag);
-            Logger.Trace("PerformanceCounterListener settings:[{0}]", string.Join(",", settings.Select(x => x.ToString())));
-            return subscribe;
+            Logger.Info("PerformanceCounterListener start. tag:{0}", performanceCounter.Tag);
+            Logger.Trace("PerformanceCounterListener settings:[{0}]", string.Join(",", details.Select(x => x.ToString())));
+
+            return new []{ subscribe };
         }
     }
 }

@@ -1,35 +1,36 @@
-﻿using Flooder.Core.Utility;
+﻿using Flooder.Core.CircuitBreaker;
+using Flooder.Core.Utility;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
-using Flooder.Core.CircuitBreaker;
 
 namespace Flooder.Core.Transfer
 {
-    public class TcpConnectionStateStore
+    public class TcpConnectionManager
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly object _syncObject;
         private readonly Tuple<string, int>[] _hosts;
-        private IDictionary<Tuple<string, int>, TcpClient> _connectionPool;
+        private IDictionary<Tuple<string, int>, TcpClient> _connectionStateStore;
         
-        public TcpConnectionStateStore(Tuple<string, int>[] hosts)
+        public TcpConnectionManager(Tuple<string, int>[] hosts)
         {
-            _syncObject     = new object();
-            _connectionPool = new Dictionary<Tuple<string, int>, TcpClient>();
-            _hosts          = hosts;
+            _syncObject           = new object();
+            _hosts                = hosts;
+            _connectionStateStore = new Dictionary<Tuple<string, int>, TcpClient>();
         }
 
-        public bool HasConnection { get { return _connectionPool.Count > 0; } }
+        public bool HasConnection { get { return _connectionStateStore.Count > 0; } }
 
         public bool Connect()
         {
             lock (_syncObject)
             {
-                _connectionPool = _hosts.Select(host =>
+                _connectionStateStore = _hosts.Select(host =>
                 {
                     var tcp = new TcpClient();
 
@@ -47,7 +48,7 @@ namespace Flooder.Core.Transfer
                 .Where(x => x.Value != null && x.Value.Connected)
                 .ToDictionary(x => x.Key, x => x.Value);
 
-                return _connectionPool.Count > 0;
+                return _connectionStateStore.Count > 0;
             }
         }
 
@@ -55,7 +56,7 @@ namespace Flooder.Core.Transfer
         {
             lock (_syncObject)
             {
-                var source = _connectionPool.ShuffleSlim().ToArray();
+                var source = _connectionStateStore.ShuffleSlim().ToArray();
                 if (source.Any())
                 {
                     var client = source.First().Value;
@@ -74,7 +75,7 @@ namespace Flooder.Core.Transfer
         {
             lock (_syncObject)
             {
-                var tcpClients = _connectionPool.ToArray();
+                var tcpClients = _connectionStateStore.ToArray();
 
                 for (var i = 0; i < tcpClients.Length; i++)
                 {
@@ -86,16 +87,16 @@ namespace Flooder.Core.Transfer
                         tcp.Value.Close();
                     }
 
-                    _connectionPool.Remove(tcp.Key);
+                    _connectionStateStore.Remove(tcp.Key);
                 }
             }
         }
 
-        public IDisposable HealthCheck()
+        public IDisposable[] HealthCheck()
         {
             var breaker = new DefaultCircuitBreaker(new CircuitBreakerStateStore());
 
-            return Observable.Start(() =>
+            var subscribe = Observable.Start(() =>
             {
                 while (true)
                 {
@@ -111,13 +112,13 @@ namespace Flooder.Core.Transfer
                                 lock (_syncObject)
                                 {
                                     TcpClient pooledClient;
-                                    if (_connectionPool.TryGetValue(host, out pooledClient) && pooledClient.Connected)
+                                    if (_connectionStateStore.TryGetValue(host, out pooledClient) && pooledClient.Connected)
                                     {
                                         trial.Close();
                                     }
                                     else
                                     {
-                                        _connectionPool[host] = trial;
+                                        _connectionStateStore[host] = trial;
                                     }
                                 }
                             }
@@ -126,19 +127,19 @@ namespace Flooder.Core.Transfer
                                 lock (_syncObject)
                                 {
                                     TcpClient pooledClient;
-                                    if (!_connectionPool.TryGetValue(host, out pooledClient))
+                                    if (!_connectionStateStore.TryGetValue(host, out pooledClient))
                                     {
                                         continue;
                                     }
 
                                     pooledClient.GetStream().Close();
                                     pooledClient.Close();
-                                    _connectionPool.Remove(host);
+                                    _connectionStateStore.Remove(host);
                                 }
                             }
                         }
 
-                        if (!_connectionPool.Any())
+                        if (!_connectionStateStore.Any())
                         {
                             throw new Exception("Problem has occurred. to help CircuitBreaker");
                         }
@@ -152,6 +153,8 @@ namespace Flooder.Core.Transfer
                 ex => Logger.FatalException("Inability to continue.", ex),
                 () => Logger.Fatal("HealthCheck stoped.")
             );
+
+            return new[] { subscribe };
         }
     }
 }

@@ -8,14 +8,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
+using Flooder.Core.Settings;
 
 namespace Flooder.Service
 {
     public partial class FlooderService : ServiceBase
     {
         private readonly Logger _logger;
-        private readonly List<IDisposable> _instances;
-        private TcpConnectionStateStore _tcp;
+        private List<IDisposable> _instances;
+        private TcpConnectionManager _tcp;
 
         public FlooderService()
         {
@@ -26,20 +27,26 @@ namespace Flooder.Service
 
         protected override void OnStart(string[] args)
         {
-            var config = Section.GetSectionFromAppConfig();
-            var hosts = config.Out.Wokers.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
+            var settings = SettingsFactory.Create<Section>();
+            var hosts = settings.Out.Worker.Details.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
 
             try
             {
-                _tcp = new TcpConnectionStateStore(hosts);
+                _tcp = new TcpConnectionManager(hosts);
 
-                if (config.Out.Wokers.Type == "fluentd" && _tcp.Connect())
+                if (settings.Out.Worker.Type == "fluentd" && _tcp.Connect())
                 {
-                    var client = new FluentEmitter(_tcp);
-                    _instances.AddRange(SendFileSystemToServer.Start(config.In.FileSystems, client));
-                    _instances.AddRange(SendEventLogToServer.Start(config.In.EventLogs, client));
-                    _instances.Add(SendPerformanceCounterToServer.Start(config.In.PerformanceCounters, client));
-                    _instances.Add(_tcp.HealthCheck());
+                    var fluent = new FluentEmitter(_tcp);
+
+                    _instances = new[]
+                    {
+                        SendFileSystemToServer.Start(settings, fluent),
+                        SendEventLogToServer.Start(settings, fluent),
+                        SendPerformanceCounterToServer.Start(settings, fluent),
+                        _tcp.HealthCheck(),
+                    }
+                    .SelectMany(x => x)
+                    .ToList();
                 }
 
                 if (!_instances.Any())

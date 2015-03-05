@@ -17,12 +17,13 @@ namespace Flooder.Core.Transfer
         private static readonly SerializationContext MsgPackDefaultContext = new SerializationContext();
         private static readonly JavaScriptSerializer JsonSerializer = new JavaScriptSerializer();
 
-        private readonly IRetryPolicy _retryPolicy = new FixedInterval(TimeSpan.FromSeconds(1), 3);
-        private readonly TcpConnectionStateStore _tcp;
+        private readonly IRetryPolicy _retryPolicy;
+        private readonly TcpConnectionManager _tcp;
 
-        public FluentEmitter(TcpConnectionStateStore tcp)
+        public FluentEmitter(TcpConnectionManager tcp)
         {
-            _tcp = tcp;
+            _retryPolicy = new FixedInterval(TimeSpan.FromSeconds(1), 3);
+            _tcp         = tcp;
         }
 
         public void Emit(string tag, IDictionary<string, object> payload)
@@ -80,7 +81,7 @@ namespace Flooder.Core.Transfer
                 {
                     if (_retryPolicy.TryGetNext(out interval))
                     {
-                        Logger.WarnException(string.Format("Emit failed. wait for {0} second.", interval.TotalSeconds), ex);
+                        Logger.WarnException(string.Format("The failed because the Emit rerun it waits {0} seconds.", interval.TotalSeconds), ex);
                         Thread.Sleep(interval);
                         continue;
                     }

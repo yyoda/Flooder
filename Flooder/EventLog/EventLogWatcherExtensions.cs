@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reactive.Linq;
-using Flooder.Core.Logging;
 using NLog;
 
 namespace Flooder.EventLog

@@ -22,7 +22,7 @@ namespace Flooder.Core.Configuration.In
         [ConfigurationProperty("tag", IsRequired = true)]
         public string Tag { get { return (string)base["tag"]; } }
 
-        [ConfigurationProperty("interval", IsRequired = false, DefaultValue = 60000)]
+        [ConfigurationProperty("interval", IsRequired = false, DefaultValue = 60)]
         public int Interval { get { return (int)base["interval"]; } }
 
         protected override ConfigurationElement CreateNewElement()
