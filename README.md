@@ -2,9 +2,9 @@
 fluent-pligin for windows.
 
 ##Supports the following
-text file  
-iis access log  
-eventlog  
+text file in to fluentd  
+iis access log to fluentd  
+eventlog to fluentd  
 
 ##fluentd settings sample
 ```
