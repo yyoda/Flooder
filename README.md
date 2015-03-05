@@ -6,7 +6,7 @@ fluent-pligin for windows.
 * iis access log  
 * eventlog  
 
-send to fluentd  
+send to fluentd.  
 
 ##fluentd settings sample
 ```
