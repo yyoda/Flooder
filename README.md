@@ -15,8 +15,8 @@ eventlog.
 ```
 
 ##Dependency
-MsgPack
-NLog
-System.Reactive.Core
-System.Reactive.Linq
-System.Reactive.Interfaces
+MsgPack  
+NLog  
+System.Reactive.Core  
+System.Reactive.Linq  
+System.Reactive.Interfaces  
