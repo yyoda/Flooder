@@ -38,7 +38,7 @@ namespace Flooder.PerformanceCounter
                 .Interval(TimeSpan.FromSeconds(_settings.Interval))
                 .Subscribe(new PerformanceCounterListener(_settings.Tag, details, _emitter));
 
-            Logger.Info("PerformanceCounterListener start. tag:{0}", _settings.Tag);
+            Logger.Info("PerformanceCounterListener start. tag:{0}, interval:{1}", _settings.Tag, _settings.Interval);
             Logger.Trace("PerformanceCounterListener settings:[{0}]", string.Join(",", details.Select(x => x.ToString())));
 
             return new []{ subscribe };

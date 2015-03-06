@@ -51,7 +51,7 @@ namespace Flooder.PerformanceCounter
                         }
                         catch (Exception e)
                         {
-                            Logger.WarnException(string.Format("Skip because an error has occurred. path:{0}", path), e);
+                            Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), e);
                             return null;
                         }
                     })
