@@ -18,17 +18,17 @@ namespace Flooder.Core.Transfer
         private static readonly JavaScriptSerializer JsonSerializer = new JavaScriptSerializer();
 
         private readonly IRetryPolicy _retryPolicy;
-        private readonly TcpConnectionManager _tcp;
+        public TcpConnectionManager Tcp { get; private set; }
 
         public FluentEmitter(TcpConnectionManager tcp)
         {
             _retryPolicy = new FixedInterval(TimeSpan.FromSeconds(1), 3);
-            _tcp         = tcp;
+            Tcp = tcp;
         }
 
         public void Emit(string tag, IDictionary<string, object> payload)
         {
-            if (!_tcp.HasConnection) return; //skip.
+            if (!Tcp.HasConnection) return; //skip.
 
             var timestamp = DateTime.Now.ToUnixTime();
 
@@ -65,7 +65,7 @@ namespace Flooder.Core.Transfer
 
         public void Emit(byte[] bytes)
         {
-            if (!_tcp.HasConnection) return; //skip.
+            if (!Tcp.HasConnection) return; //skip.
 
             while (true)
             {
@@ -73,7 +73,7 @@ namespace Flooder.Core.Transfer
 
                 try
                 {
-                    _tcp.Transfer(bytes);
+                    Tcp.Transfer(bytes);
                     _retryPolicy.Reset(out interval);
                     break;
                 }

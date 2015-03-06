@@ -44,7 +44,10 @@ namespace Flooder.IIS
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (!line.StartsWith("#Fields")) continue;
-                        _fields = line.Split(' ').Skip(1).ToArray();
+                        _fields = line.Split(' ').Skip(1)
+                            .Select(x => x == "date" ? "w-date" : x)
+                            .Select(x => x == "time" ? "w-time" : x)
+                            .ToArray();
                         break;
                     }
                 }
@@ -77,7 +80,10 @@ namespace Flooder.IIS
                         {
                             if (line.StartsWith("#Fields"))
                             {
-                                _fields = line.Split(' ').Skip(1).ToArray();
+                                _fields = line.Split(' ').Skip(1)
+                                    .Select(x => x == "date" ? "w-date" : x)
+                                    .Select(x => x == "time" ? "w-time" : x)
+                                    .ToArray();
                             }
 
                             continue;

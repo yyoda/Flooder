@@ -74,6 +74,7 @@
     <Compile Include="Core\Configuration\OutputElement.cs" />
     <Compile Include="Core\Configuration\Out\Woker.cs" />
     <Compile Include="Core\Configuration\Section.cs" />
+    <Compile Include="Core\IFlooderEvent.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="Core\RetryPolicy\Incremental.cs" />
     <Compile Include="Core\RetryPolicy\FixedInterval.cs" />

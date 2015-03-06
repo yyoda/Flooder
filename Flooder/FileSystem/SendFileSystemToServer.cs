@@ -1,37 +1,67 @@
-﻿using Flooder.Core.Transfer;
+﻿using Flooder.Core;
+using Flooder.Core.Settings;
+using Flooder.Core.Settings.In;
+using Flooder.Core.Transfer;
 using NLog;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using Flooder.Core.Settings;
 
 namespace Flooder.FileSystem
 {
-    public class SendFileSystemToServer : IObservable<FileSystemEventArgs>
+    public class SendFileSystemToServer : IFlooderEvent
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly string _filePath;
-        private readonly string _fileName;
+        private readonly FileSystemSettings _settings;
+        private readonly IEmitter _emitter;
+
         
-        public SendFileSystemToServer(string filePath, string fileName)
+        public SendFileSystemToServer(Settings settings)
         {
-            _filePath = filePath;
-            _fileName = fileName;
+            _settings = settings.In.FileSystems;
+            _emitter  = settings.Out.Worker.Emitter;
         }
 
-        public IDisposable Subscribe(IObserver<FileSystemEventArgs> observer)
+        public IDisposable[] Subscribe()
         {
-            if (!Directory.Exists(_filePath))
+            if (_settings.Details.Any())
             {
-                Logger.Warn("[{0}] will be skipped because it does not exist.", _filePath);
-                return Observable.Never<FileSystemEventArgs>().Subscribe(observer);
+                return _settings.Details.Select(s =>
+                {
+                    IDisposable subscribe;
+                    var subject = CreateSubject(s);
+
+                    switch (s.Format)
+                    {
+                        //additional.
+                        default:
+                            subscribe = subject.Subscribe(TxtEventListener.Create(s.Tag, s.Path, _emitter));
+                            break;
+                    }
+
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", s.Tag, s.Path);
+                    return subscribe;
+                })
+                .ToArray();
             }
 
-            ((FileSystemEventListener) observer).OnInitAction(_filePath);
+            return new IDisposable[0];
+        }
 
-            var fsw = new FileSystemWatcher(_filePath, _fileName) { EnableRaisingEvents = true };
+        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemSettings.FileSystemSettingsDetail settingsDetail)
+        {
+            if (!Directory.Exists(settingsDetail.Path))
+            {
+                Logger.Warn("[{0}] will be skipped because it does not exist.", settingsDetail.Path);
+                return Observable.Never<FileSystemEventArgs>();
+            }
+
+            var fsw = new FileSystemWatcher(settingsDetail.Path, settingsDetail.File)
+            {
+                EnableRaisingEvents = true
+            };
 
             var sources = new[]
             {
@@ -41,35 +71,7 @@ namespace Flooder.FileSystem
                 fsw.RenamedAsObservable()
             };
 
-            return Observable.Merge(sources).Subscribe(observer);
-        }
-
-        public static IDisposable[] Start(Settings settings, IEmitter emitter)
-        {
-            var fileSystem = settings.In.FileSystems.Details.ToArray();
-
-            if (fileSystem.Any())
-            {
-                return fileSystem.Select(x =>
-                {
-                    var subject = new SendFileSystemToServer(x.Path, x.File);
-                    IDisposable subscribe;
-
-                    switch (x.Format)
-                    {
-                        //additional.
-                        default:
-                            subscribe = subject.Subscribe(new TxtEventListener(x.Tag, emitter));
-                            break;
-                    }
-
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", x.Tag, x.Path);
-                    return subscribe;
-                })
-                .ToArray();
-            }
-
-            return new IDisposable[0];
+            return Observable.Merge(sources);
         }
     }
 }

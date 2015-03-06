@@ -1,5 +1,4 @@
-﻿using Flooder.Core.Configuration;
-using Flooder.Core.Transfer;
+﻿using Flooder.Core.Transfer;
 using Flooder.EventLog;
 using Flooder.FileSystem;
 using Flooder.PerformanceCounter;
@@ -8,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
+using Flooder.Core;
 using Flooder.Core.Settings;
+using Flooder.IIS;
 
 namespace Flooder.Service
 {
@@ -27,26 +28,24 @@ namespace Flooder.Service
 
         protected override void OnStart(string[] args)
         {
-            var settings = SettingsFactory.Create<Section>();
-            var hosts = settings.Out.Worker.Details.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
+            var settings = SettingsFactory.Create<Flooder.Core.Configuration.Section>();
+            _tcp = settings.Out.Worker.Connection;
 
             try
             {
-                _tcp = new TcpConnectionManager(hosts);
-
                 if (settings.Out.Worker.Type == "fluentd" && _tcp.Connect())
                 {
-                    var fluent = new FluentEmitter(_tcp);
-
-                    _instances = new[]
+                    _instances = new IFlooderEvent[]
                     {
-                        SendFileSystemToServer.Start(settings, fluent),
-                        SendEventLogToServer.Start(settings, fluent),
-                        SendPerformanceCounterToServer.Start(settings, fluent),
-                        _tcp.HealthCheck(),
+                        new SendIISLogToServer(settings),
+                        new SendFileSystemToServer(settings),
+                        new SendEventLogToServer(settings),
+                        new SendPerformanceCounterToServer(settings),
                     }
-                    .SelectMany(x => x)
+                    .SelectMany(x => x.Subscribe())
                     .ToList();
+
+                    _instances.Add(_tcp.HealthCheck());
                 }
 
                 if (!_instances.Any())

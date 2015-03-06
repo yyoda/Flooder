@@ -50,7 +50,7 @@ namespace Flooder.FileSystem
 
                 var payload = new Dictionary<string, object>
                 {
-                    {"message", buffer}
+                    {"messages", buffer}
                 };
 
                 base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
@@ -79,5 +79,13 @@ namespace Flooder.FileSystem
             long _; //unused.
             base.FileSeekPositionStateStore.TryRemove(e.FullPath, out _);
         }
+
+        public static FileSystemEventListener Create(string tag, string filePath, IEmitter emitter)
+        {
+            var listener = new TxtEventListener(tag, emitter);
+            listener.OnInitAction(filePath);
+            return listener;
+        }
+
     }
 }

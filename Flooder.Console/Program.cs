@@ -1,14 +1,13 @@
-﻿using Flooder.Core.Configuration;
-using Flooder.Core.Transfer;
+﻿using Flooder.Core;
+using Flooder.Core.Settings;
 using Flooder.EventLog;
 using Flooder.FileSystem;
+using Flooder.IIS;
 using Flooder.PerformanceCounter;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Flooder.Core.Settings;
-using Flooder.IIS;
 
 namespace Flooder.Console
 {
@@ -21,26 +20,27 @@ namespace Flooder.Console
 
             logger.Info("Flooder start.");
 
-            var settings = SettingsFactory.Create<Section>();
-            var hosts = settings.Out.Worker.Details.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
-            var tcp = new TcpConnectionManager(hosts);
+            var settings = SettingsFactory.Create<Flooder.Core.Configuration.Section>();
+            var tcp = settings.Out.Worker.Connection;
 
             try
             {
                 if (settings.Out.Worker.Type == "fluentd" && tcp.Connect())
                 {
-                    var fluent = new FluentEmitter(tcp);
-
-                    instances = new[]
+                    instances = new IFlooderEvent[]
                     {
-                        SendIISLogToServer.Start(settings, fluent),
-                        SendFileSystemToServer.Start(settings, fluent),
-                        SendEventLogToServer.Start(settings, fluent),
-                        SendPerformanceCounterToServer.Start(settings, fluent),
-                        tcp.HealthCheck(),
+                        new SendFileSystemToServer(settings),
+                        new SendIISLogToServer(settings),
+                        new SendEventLogToServer(settings),
+                        new SendPerformanceCounterToServer(settings),
                     }
-                    .SelectMany(x => x)
+                    .SelectMany(x =>
+                    {
+                        return x.Subscribe();
+                    })
                     .ToList();
+
+                    instances.Add(tcp.HealthCheck());
                 }
 
                 if (!instances.Any())

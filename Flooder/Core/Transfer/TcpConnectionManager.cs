@@ -92,12 +92,12 @@ namespace Flooder.Core.Transfer
             }
         }
 
-        public IDisposable[] HealthCheck()
+        public IDisposable HealthCheck()
         {
-            var breaker = new DefaultCircuitBreaker(new CircuitBreakerStateStore());
-
-            var subscribe = Observable.Start(() =>
+            return Observable.Start(() =>
             {
+                var breaker = new DefaultCircuitBreaker(new CircuitBreakerStateStore());
+
                 while (true)
                 {
                     breaker.ExecuteAction(() =>
@@ -153,8 +153,6 @@ namespace Flooder.Core.Transfer
                 ex => Logger.FatalException("Inability to continue.", ex),
                 () => Logger.Fatal("HealthCheck stoped.")
             );
-
-            return new[] { subscribe };
         }
     }
 }

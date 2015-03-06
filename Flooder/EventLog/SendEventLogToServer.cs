@@ -1,56 +1,41 @@
-﻿using Flooder.Core.Configuration.In;
+﻿using Flooder.Core;
+using Flooder.Core.Settings;
+using Flooder.Core.Settings.In;
 using Flooder.Core.Transfer;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Flooder.Core.Settings;
-using Flooder.Core.Settings.In;
 
 namespace Flooder.EventLog
 {
-    public class SendEventLogToServer : IObservable<EntryWrittenEventArgs>
+    public class SendEventLogToServer : IFlooderEvent
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly string _logName;
+        private readonly EventLogSettings _settings;
+        private readonly IEmitter _emitter;
 
-        public SendEventLogToServer(string logName)
+        public SendEventLogToServer(Settings settings)
         {
-            _logName = logName;
+            _settings = settings.In.EventLogs;
+            _emitter  = settings.Out.Worker.Emitter;
         }
 
-        public IDisposable Subscribe(IObserver<EntryWrittenEventArgs> observer)
+        public IDisposable[] Subscribe()
         {
-            return new System.Diagnostics.EventLog
+            if (_settings.Scopes.Any())
             {
-                Log                 = _logName,
-                EnableRaisingEvents = true
-            }
-            .EntryWrittenAsObservable()
-            .Subscribe(observer);
-        }
- 
-        public static IDisposable[] Start(Settings settings, IEmitter emitter)
-        {
-            var eventLog = settings.In.EventLogs;
-
-            if (eventLog.Scopes.Any())
-            {
-                return eventLog.Scopes.Select(scope =>
+                return _settings.Scopes.Select(scope =>
                 {
-                    var tag = eventLog.Tag;
-                    var subject = new SendEventLogToServer(scope);
+                    var includeInfo  = _settings.GetIncludeInfo().ToArray();
+                    var includeWarn  = _settings.GetIncludeWarn().ToArray();
+                    var includeError = _settings.GetIncludeError().ToArray();
+                    var excludeInfo  = _settings.GetExcludeInfo().ToArray();
+                    var excludeWarn  = _settings.GetExcludeWarn().ToArray();
+                    var excludeError = _settings.GetExcludeError().ToArray();
 
-                    var includeInfo  = eventLog.GetIncludeInfo().ToArray();
-                    var includeWarn  = eventLog.GetIncludeWarn().ToArray();
-                    var includeError = eventLog.GetIncludeError().ToArray();
-                    var excludeInfo  = eventLog.GetExcludeInfo().ToArray();
-                    var excludeWarn  = eventLog.GetExcludeWarn().ToArray();
-                    var excludeError = eventLog.GetExcludeError().ToArray();
-
-                    var subscribe = subject.Subscribe(new EventLogListener(tag, emitter)
+                    var observer = new EventLogListener(_settings.Tag, _emitter)
                     {
                         IncludeInfo  = new HashSet<Tuple<string, string>>(includeInfo.Select(x => Tuple.Create(x.Source, x.Id))),
                         IncludeWarn  = new HashSet<Tuple<string, string>>(includeWarn.Select(x => Tuple.Create(x.Source, x.Id))),
@@ -58,9 +43,17 @@ namespace Flooder.EventLog
                         ExcludeInfo  = new HashSet<Tuple<string, string>>(excludeInfo.Select(x => Tuple.Create(x.Source, x.Id))),
                         ExcludeWarn  = new HashSet<Tuple<string, string>>(excludeWarn.Select(x => Tuple.Create(x.Source, x.Id))),
                         ExcludeError = new HashSet<Tuple<string, string>>(excludeError.Select(x => Tuple.Create(x.Source, x.Id))),
-                    });
+                    };
 
-                    Logger.Info("EventLogListener start. tag:{0}", tag);
+                    var subscribe = new System.Diagnostics.EventLog
+                    {
+                        Log = scope,
+                        EnableRaisingEvents = true
+                    }
+                    .EntryWrittenAsObservable()
+                    .Subscribe(observer);
+
+                    Logger.Info("EventLogListener start. tag:{0}", _settings.Tag);
                     Logger.Trace("EventLogListener IncludeInfo:[{0}], IncludeWarn:[{1}], IncludeError:[{2}], ExcludeInfo:[{3}], ExcludeWarn:[{4}], ExcludeError:[{5}]",
                         string.Join(",", includeInfo.Select(x => x.ToString())),
                         string.Join(",", includeWarn.Select(x => x.ToString())),

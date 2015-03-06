@@ -12,7 +12,7 @@ namespace Flooder.Core.Configuration.In
         [ConfigurationProperty("path", IsRequired = true)]
         public string Path { get { return (string)base["path"]; } }
 
-        [ConfigurationProperty("interval", IsRequired = true)]
+        [ConfigurationProperty("interval", IsRequired = false, DefaultValue = 1)]
         public int Interval { get { return (int)base["interval"]; } }
     }
 

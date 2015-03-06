@@ -1,50 +1,47 @@
-﻿using Flooder.Core.Settings;
+﻿using Flooder.Core;
+using Flooder.Core.Settings;
+using Flooder.Core.Settings.In;
 using Flooder.Core.Transfer;
 using NLog;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using NLog.Config;
 
 namespace Flooder.IIS
 {
-    public class SendIISLogToServer : IObservable<long>
+    public class SendIISLogToServer : IFlooderEvent
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly double _interval;
+        private readonly IISSettings _settings;
+        private readonly IEmitter _emitter;
 
-        public SendIISLogToServer(double interval = 5)
+        public SendIISLogToServer(Settings settings)
         {
-            _interval = interval;
+            _settings = settings.In.IIS;
+            _emitter  = settings.Out.Worker.Emitter;
         }
 
-        public IDisposable Subscribe(IObserver<long> observer)
+        public IDisposable[] Subscribe()
         {
-            return Observable
-                .Interval(TimeSpan.FromSeconds(_interval))
-                .Subscribe(observer);
-        }
-
-        public static IDisposable[] Start(Settings settings, IEmitter emitter)
-        {
-            var iis = settings.In.IIS.Details.ToArray();
-
-            var enable = iis.Where(x =>
+            var enable = _settings.Details.Where(x =>
             {
                 if (Directory.Exists(x.Path)) return true;
-                Logger.Warn("[{0}] will be skipped because it does not exist.", x.ToString());
+                Logger.Debug("[{0}] will be skipped because it does not exist.", x.ToString());
                 return false;
-            }).Any();
+            })
+            .Any();
 
             if (!enable) return new IDisposable[0];
 
-            return iis.Select(x =>
+            return _settings.Details.Select(x =>
             {
-                var subject = new SendIISLogToServer(x.Interval);
-                var observer = new IISLogListener(x.Tag, x.Path, emitter);
+                var observer = new IISLogListener(x.Tag, x.Path, _emitter);
                 observer.OnInitAction();
-                var subscribe = subject.Subscribe(observer);
+
+                var subscribe = Observable
+                    .Interval(TimeSpan.FromSeconds(x.Interval))
+                    .Subscribe(observer);
 
                 Logger.Info("IISLogListener start. tag:{0}, path:{1}, interval:{2}", x.Tag, x.Path, x.Interval);
 

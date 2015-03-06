@@ -4,38 +4,41 @@ using NLog;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
+using Flooder.Core;
+using Flooder.Core.Settings.In;
 
 namespace Flooder.PerformanceCounter
 {
-    public class SendPerformanceCounterToServer : IObservable<long>
+    public class SendPerformanceCounterToServer : IFlooderEvent
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly double _interval;
+        private readonly PerformanceCounterSettings _settings;
+        private readonly IEmitter _emitter;
 
-        public SendPerformanceCounterToServer(double interval = 60)
+        public SendPerformanceCounterToServer(Settings settings)
         {
-            _interval = interval;
+            _settings = settings.In.PerformanceCounters;
+            _emitter  = settings.Out.Worker.Emitter;
         }
 
         public IDisposable Subscribe(IObserver<long> observer)
         {
             return Observable
-                .Interval(TimeSpan.FromSeconds(_interval))
+                .Interval(TimeSpan.FromSeconds(_settings.Interval))
                 .Subscribe(observer);
         }
 
-        public static IDisposable[] Start(Settings settings, IEmitter emitter)
+        public IDisposable[] Subscribe()
         {
-            var performanceCounter = settings.In.PerformanceCounters;
-
-            var details = performanceCounter.Details
+            var details = _settings.Details
                 .Select(x => new PerformanceCounterListener.Setting(x.CategoryName, x.CounterName, x.InstanceName))
                 .ToArray();
 
-            var subject = new SendPerformanceCounterToServer(performanceCounter.Interval);
-            var subscribe = subject.Subscribe(new PerformanceCounterListener(performanceCounter.Tag, details, emitter));
+            var subscribe = Observable
+                .Interval(TimeSpan.FromSeconds(_settings.Interval))
+                .Subscribe(new PerformanceCounterListener(_settings.Tag, details, _emitter));
 
-            Logger.Info("PerformanceCounterListener start. tag:{0}", performanceCounter.Tag);
+            Logger.Info("PerformanceCounterListener start. tag:{0}", _settings.Tag);
             Logger.Trace("PerformanceCounterListener settings:[{0}]", string.Join(",", details.Select(x => x.ToString())));
 
             return new []{ subscribe };
