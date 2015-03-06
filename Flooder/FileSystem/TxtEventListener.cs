@@ -14,7 +14,7 @@ namespace Flooder.FileSystem
 
         /// <summary>inject option.</summary>
         public static Func<string, string, string> TagGen =
-            (tag, fileName) => string.Format("{0}-{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
+            (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
         public TxtEventListener(string tag, IEmitter emitter) : base(tag, emitter)
         {
