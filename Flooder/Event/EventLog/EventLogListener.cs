@@ -66,7 +66,7 @@ namespace Flooder.Event.EventLog
                     {"MachineName", e.Entry.MachineName},
                     {"Message", e.Entry.Message},
                     {"ReplacementStrings", e.Entry.ReplacementStrings},
-                    {"Site", e.Entry.Site.Name},
+                    //{"Site", e.Entry.Site.Name},
                     {"Source", e.Entry.Source},
                     {"TimeGenerated", e.Entry.TimeGenerated},
                     {"TimeWritten", e.Entry.TimeWritten},

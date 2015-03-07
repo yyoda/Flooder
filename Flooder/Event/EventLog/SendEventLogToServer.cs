@@ -52,7 +52,7 @@ namespace Flooder.Event.EventLog
                     .EntryWrittenAsObservable()
                     .Subscribe(observer);
 
-                    Logger.Info("EventLogListener start. tag:{0}", _model.Tag);
+                    Logger.Info("EventLogListener start. tag:{0}, scope:{1}", _model.Tag, scope);
                     Logger.Trace("EventLogListener IncludeInfo:[{0}], IncludeWarn:[{1}], IncludeError:[{2}], ExcludeInfo:[{3}], ExcludeWarn:[{4}], ExcludeError:[{5}]",
                         string.Join(",", includeInfo.Select(x => x.ToString())),
                         string.Join(",", includeWarn.Select(x => x.ToString())),
