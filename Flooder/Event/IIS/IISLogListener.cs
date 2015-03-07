@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Flooder.Core.Transfer;
 using NLog;
 
-namespace Flooder.IIS
+namespace Flooder.Event.IIS
 {
     internal class IISLogListener : IObserver<long>
     {

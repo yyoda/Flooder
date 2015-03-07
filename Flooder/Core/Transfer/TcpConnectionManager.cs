@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 
 namespace Flooder.Core.Transfer
 {
-    public class TcpConnectionManager
+    public class TcpConnectionManager : IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -153,6 +153,11 @@ namespace Flooder.Core.Transfer
                 ex => Logger.FatalException("Inability to continue.", ex),
                 () => Logger.Fatal("HealthCheck stoped.")
             );
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Flooder.Core.Settings.In
+namespace Flooder.Model.Input
 {
-    public class PerformanceCounterSettings
+    public class PerformanceCounterLogs
     {
-        public PerformanceCounterSettings(string tag, int interval, IEnumerable<PerformanceCounterSettingsDetail> details)
+        public PerformanceCounterLogs(string tag, int interval, IEnumerable<PerformanceCounterLog> details)
         {
             Tag      = tag;
             Interval = interval;
@@ -14,11 +14,11 @@ namespace Flooder.Core.Settings.In
 
         public string Tag { get; private set; }
         public int Interval { get; private set; }
-        public IEnumerable<PerformanceCounterSettingsDetail> Details { get; private set; }
+        public IEnumerable<PerformanceCounterLog> Details { get; private set; }
 
-        public class PerformanceCounterSettingsDetail
+        public class PerformanceCounterLog
         {
-            public PerformanceCounterSettingsDetail(string categoryName, string counterName, string instanceName)
+            public PerformanceCounterLog(string categoryName, string counterName, string instanceName)
             {
                 CategoryName = categoryName;
                 CounterName  = counterName;

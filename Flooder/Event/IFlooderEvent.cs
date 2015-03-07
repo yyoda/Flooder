@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Flooder.Core
+namespace Flooder.Event
 {
     public interface IFlooderEvent
     {

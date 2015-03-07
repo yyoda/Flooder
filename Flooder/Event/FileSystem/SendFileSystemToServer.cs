@@ -1,34 +1,33 @@
-﻿using Flooder.Core;
-using Flooder.Core.Settings;
-using Flooder.Core.Settings.In;
-using Flooder.Core.Transfer;
-using NLog;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using Flooder.Core.Transfer;
+using Flooder.Model;
+using Flooder.Model.Input;
+using NLog;
 
-namespace Flooder.FileSystem
+namespace Flooder.Event.FileSystem
 {
     public class SendFileSystemToServer : IFlooderEvent
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly FileSystemSettings _settings;
+        private readonly FileSystemLogs _model;
         private readonly IEmitter _emitter;
 
         
-        public SendFileSystemToServer(Settings settings)
+        public SendFileSystemToServer(FlooderModel flooderModel)
         {
-            _settings = settings.In.FileSystems;
-            _emitter  = settings.Out.Worker.Emitter;
+            _model = flooderModel.Input.FileSystem;
+            _emitter  = flooderModel.Output.Workers.Emitter;
         }
 
         public IDisposable[] Subscribe()
         {
-            if (_settings.Details.Any())
+            if (_model.Details.Any())
             {
-                return _settings.Details.Select(s =>
+                return _model.Details.Select(s =>
                 {
                     IDisposable subscribe;
                     var subject = CreateSubject(s);
@@ -50,7 +49,7 @@ namespace Flooder.FileSystem
             return new IDisposable[0];
         }
 
-        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemSettings.FileSystemSettingsDetail settingsDetail)
+        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemLogs.FileSystemLog settingsDetail)
         {
             if (!Directory.Exists(settingsDetail.Path))
             {

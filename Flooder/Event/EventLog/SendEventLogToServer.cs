@@ -1,41 +1,40 @@
-﻿using Flooder.Core;
-using Flooder.Core.Settings;
-using Flooder.Core.Settings.In;
-using Flooder.Core.Transfer;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flooder.Core.Transfer;
+using Flooder.Model;
+using Flooder.Model.Input;
+using NLog;
 
-namespace Flooder.EventLog
+namespace Flooder.Event.EventLog
 {
     public class SendEventLogToServer : IFlooderEvent
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly EventLogSettings _settings;
+        private readonly EventLogs _model;
         private readonly IEmitter _emitter;
 
-        public SendEventLogToServer(Settings settings)
+        public SendEventLogToServer(FlooderModel flooderModel)
         {
-            _settings = settings.In.EventLogs;
-            _emitter  = settings.Out.Worker.Emitter;
+            _model = flooderModel.Input.EventLog;
+            _emitter  = flooderModel.Output.Workers.Emitter;
         }
 
         public IDisposable[] Subscribe()
         {
-            if (_settings.Scopes.Any())
+            if (_model.Scopes.Any())
             {
-                return _settings.Scopes.Select(scope =>
+                return _model.Scopes.Select(scope =>
                 {
-                    var includeInfo  = _settings.GetIncludeInfo().ToArray();
-                    var includeWarn  = _settings.GetIncludeWarn().ToArray();
-                    var includeError = _settings.GetIncludeError().ToArray();
-                    var excludeInfo  = _settings.GetExcludeInfo().ToArray();
-                    var excludeWarn  = _settings.GetExcludeWarn().ToArray();
-                    var excludeError = _settings.GetExcludeError().ToArray();
+                    var includeInfo  = _model.GetIncludeInfo().ToArray();
+                    var includeWarn  = _model.GetIncludeWarn().ToArray();
+                    var includeError = _model.GetIncludeError().ToArray();
+                    var excludeInfo  = _model.GetExcludeInfo().ToArray();
+                    var excludeWarn  = _model.GetExcludeWarn().ToArray();
+                    var excludeError = _model.GetExcludeError().ToArray();
 
-                    var observer = new EventLogListener(_settings.Tag, _emitter)
+                    var observer = new EventLogListener(_model.Tag, _emitter)
                     {
                         IncludeInfo  = new HashSet<Tuple<string, string>>(includeInfo.Select(x => Tuple.Create(x.Source, x.Id))),
                         IncludeWarn  = new HashSet<Tuple<string, string>>(includeWarn.Select(x => Tuple.Create(x.Source, x.Id))),
@@ -53,7 +52,7 @@ namespace Flooder.EventLog
                     .EntryWrittenAsObservable()
                     .Subscribe(observer);
 
-                    Logger.Info("EventLogListener start. tag:{0}", _settings.Tag);
+                    Logger.Info("EventLogListener start. tag:{0}", _model.Tag);
                     Logger.Trace("EventLogListener IncludeInfo:[{0}], IncludeWarn:[{1}], IncludeError:[{2}], ExcludeInfo:[{3}], ExcludeWarn:[{4}], ExcludeError:[{5}]",
                         string.Join(",", includeInfo.Select(x => x.ToString())),
                         string.Join(",", includeWarn.Select(x => x.ToString())),

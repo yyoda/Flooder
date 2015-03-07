@@ -4,7 +4,7 @@ using System.IO;
 using Flooder.Core.Transfer;
 using NLog;
 
-namespace Flooder.FileSystem
+namespace Flooder.Event.FileSystem
 {
     public abstract class FileSystemEventListener : IObserver<FileSystemEventArgs>
     {

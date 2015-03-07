@@ -3,7 +3,7 @@ using System.IO;
 using System.Reactive.Linq;
 using NLog;
 
-namespace Flooder.FileSystem
+namespace Flooder.Event.FileSystem
 {
     internal static class FileSystemWatcherExtensions
     {

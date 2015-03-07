@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Flooder.Core.Transfer;
 
-namespace Flooder.FileSystem
+namespace Flooder.Event.FileSystem
 {
     public class TxtEventListener : FileSystemEventListener
     {

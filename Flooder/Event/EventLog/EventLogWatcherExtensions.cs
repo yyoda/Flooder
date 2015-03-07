@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reactive.Linq;
 using NLog;
 
-namespace Flooder.EventLog
+namespace Flooder.Event.EventLog
 {
     internal static class EventLogWatcherExtensions
     {

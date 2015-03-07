@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Flooder.Core.Transfer;
 using NLog;
 
-namespace Flooder.EventLog
+namespace Flooder.Event.EventLog
 {
     internal class EventLogListener : IObserver<EntryWrittenEventArgs>
     {
@@ -51,32 +51,39 @@ namespace Flooder.EventLog
                     break;
             }
 
-            var payload = new Dictionary<string, object>
+            try
             {
-                {"Category", e.Entry.Category},
-                {"CategoryNumber", e.Entry.CategoryNumber},
-                {"Data", e.Entry.Data},
-                {"EntryType", e.Entry.EntryType},
-                //{"EventID", e.Entry.EventID},
-                {"EventID", e.Entry.InstanceId},
-                {"Index", e.Entry.Index},
-                {"InstanceId", e.Entry.InstanceId},
-                {"MachineName", e.Entry.MachineName},
-                {"Message", e.Entry.Message},
-                {"ReplacementStrings", e.Entry.ReplacementStrings},
-                {"Site", e.Entry.Site.Name},
-                {"Source", e.Entry.Source},
-                {"TimeGenerated", e.Entry.TimeGenerated},
-                {"TimeWritten", e.Entry.TimeWritten},
-                {"UserName", e.Entry.UserName},
-            };
+                var payload = new Dictionary<string, object>
+                {
+                    {"Category", e.Entry.Category},
+                    {"CategoryNumber", e.Entry.CategoryNumber},
+                    {"Data", e.Entry.Data},
+                    {"EntryType", e.Entry.EntryType},
+                    //{"EventID", e.Entry.EventID},
+                    {"EventID", e.Entry.InstanceId},
+                    {"Index", e.Entry.Index},
+                    {"InstanceId", e.Entry.InstanceId},
+                    {"MachineName", e.Entry.MachineName},
+                    {"Message", e.Entry.Message},
+                    {"ReplacementStrings", e.Entry.ReplacementStrings},
+                    {"Site", e.Entry.Site.Name},
+                    {"Source", e.Entry.Source},
+                    {"TimeGenerated", e.Entry.TimeGenerated},
+                    {"TimeWritten", e.Entry.TimeWritten},
+                    {"UserName", e.Entry.UserName},
+                };
 
-            Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
+                Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
+            }
+            catch (Exception ex)
+            {
+                Logger.WarnException("Skip because an error has occurred.", ex);
+            }
         }
 
         public void OnError(Exception error)
         {
-            Logger.FatalException("EventLogListener", error);
+            Logger.FatalException("EventLogListener#OnError", error);
         }
 
         public void OnCompleted()

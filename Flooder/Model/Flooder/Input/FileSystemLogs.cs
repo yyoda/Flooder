@@ -1,20 +1,20 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Flooder.Core.Settings.In
+namespace Flooder.Model.Input
 {
-    public class FileSystemSettings
+    public class FileSystemLogs
     {
-        public FileSystemSettings(IEnumerable<FileSystemSettingsDetail> details)
+        public FileSystemLogs(IEnumerable<FileSystemLog> details)
         {
             Details = details;
         }
 
-        public IEnumerable<FileSystemSettingsDetail> Details { get; set; }
+        public IEnumerable<FileSystemLog> Details { get; set; }
 
-        public class FileSystemSettingsDetail
+        public class FileSystemLog
         {
-            public FileSystemSettingsDetail(string tag, string path, string file, string format)
+            public FileSystemLog(string tag, string path, string file, string format)
             {
                 Tag    = tag;
                 Path   = path;

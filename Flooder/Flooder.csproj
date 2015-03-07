@@ -61,7 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\CircuitBreaker\CircuitBreakerStateStoreFactory.cs" />
     <Compile Include="Core\CircuitBreaker\CircuitBreakerOpenException.cs" />
     <Compile Include="Core\CircuitBreaker\CircuitBreakerState.cs" />
     <Compile Include="Core\CircuitBreaker\CircuitBreakerStateStore.cs" />
@@ -74,37 +73,38 @@
     <Compile Include="Core\Configuration\OutputElement.cs" />
     <Compile Include="Core\Configuration\Out\Woker.cs" />
     <Compile Include="Core\Configuration\Section.cs" />
-    <Compile Include="Core\IFlooderEvent.cs" />
+    <Compile Include="Event\IFlooderEvent.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="Core\RetryPolicy\Incremental.cs" />
     <Compile Include="Core\RetryPolicy\FixedInterval.cs" />
     <Compile Include="Core\RetryPolicy\IRetryPolicy.cs" />
     <Compile Include="Core\CircuitBreaker\DefaultCircuitBreaker.cs" />
-    <Compile Include="Core\Settings\InputSettings.cs" />
-    <Compile Include="Core\Settings\In\EventLogSettings.cs" />
-    <Compile Include="Core\Settings\In\IISSettings.cs" />
-    <Compile Include="Core\Settings\In\FileSystemSettings.cs" />
-    <Compile Include="Core\Settings\In\PerformanceCounterSettings.cs" />
-    <Compile Include="Core\Settings\OutputSettings.cs" />
-    <Compile Include="Core\Settings\Out\WorkerSettings.cs" />
-    <Compile Include="Core\Settings\Settings.cs" />
-    <Compile Include="Core\Settings\SettingsFactory.cs" />
+    <Compile Include="FlooderService.cs" />
+    <Compile Include="Model\Flooder\InputModel.cs" />
+    <Compile Include="Model\Flooder\Input\EventLogs.cs" />
+    <Compile Include="Model\Flooder\Input\IISLogs.cs" />
+    <Compile Include="Model\Flooder\Input\FileSystemLogs.cs" />
+    <Compile Include="Model\Flooder\Input\PerformanceCounterLogs.cs" />
+    <Compile Include="Model\Flooder\OutputModel.cs" />
+    <Compile Include="Model\Flooder\Output\Workers.cs" />
+    <Compile Include="Model\FlooderModel.cs" />
+    <Compile Include="FlooderFactory.cs" />
     <Compile Include="Core\Transfer\FluentEmitter.cs" />
     <Compile Include="Core\Transfer\IEmitter.cs" />
     <Compile Include="Core\Transfer\TcpConnectionManager.cs" />
     <Compile Include="Core\Utility\DateTimeExtensions.cs" />
     <Compile Include="Core\Utility\EnumerableExtensions.cs" />
-    <Compile Include="EventLog\EventLogListener.cs" />
-    <Compile Include="EventLog\EventLogWatcherExtensions.cs" />
-    <Compile Include="EventLog\SendEventLogToServer.cs" />
-    <Compile Include="FileSystem\FileSystemWatcherExtensions.cs" />
-    <Compile Include="FileSystem\SendFileSystemToServer.cs" />
-    <Compile Include="FileSystem\TxtEventListener.cs" />
-    <Compile Include="FileSystem\FileSystemEventListener.cs" />
-    <Compile Include="IIS\IISLogListener.cs" />
-    <Compile Include="IIS\SendIISLogToServer.cs" />
-    <Compile Include="PerformanceCounter\PerformanceCounterListener.cs" />
-    <Compile Include="PerformanceCounter\SendPerformanceCounterToServer.cs" />
+    <Compile Include="Event\EventLog\EventLogListener.cs" />
+    <Compile Include="Event\EventLog\EventLogWatcherExtensions.cs" />
+    <Compile Include="Event\EventLog\SendEventLogToServer.cs" />
+    <Compile Include="Event\FileSystem\FileSystemWatcherExtensions.cs" />
+    <Compile Include="Event\FileSystem\SendFileSystemToServer.cs" />
+    <Compile Include="Event\FileSystem\TxtEventListener.cs" />
+    <Compile Include="Event\FileSystem\FileSystemEventListener.cs" />
+    <Compile Include="Event\IIS\IISLogListener.cs" />
+    <Compile Include="Event\IIS\SendIISLogToServer.cs" />
+    <Compile Include="Event\PerformanceCounter\PerformanceCounterListener.cs" />
+    <Compile Include="Event\PerformanceCounter\SendPerformanceCounterToServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

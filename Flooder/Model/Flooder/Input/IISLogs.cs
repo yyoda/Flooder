@@ -1,20 +1,20 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Flooder.Core.Settings.In
+namespace Flooder.Model.Input
 {
-    public class IISSettings
+    public class IISLogs
     {
-        public IISSettings(IEnumerable<IISSettingsDetail> details)
+        public IISLogs(IEnumerable<IISLog> details)
         {
             Details = details;
         }
 
-        public IEnumerable<IISSettingsDetail> Details { get; set; }
+        public IEnumerable<IISLog> Details { get; set; }
 
-        public class IISSettingsDetail
+        public class IISLog
         {
-            public IISSettingsDetail(string tag, string path, int interval)
+            public IISLog(string tag, string path, int interval)
             {
                 Tag  = tag;
                 Path = path;

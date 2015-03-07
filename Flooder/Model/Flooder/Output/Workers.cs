@@ -1,28 +1,28 @@
-﻿using Flooder.Core.Transfer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flooder.Core.Transfer;
 
-namespace Flooder.Core.Settings.Out
+namespace Flooder.Model.Output
 {
-    public class WorkerSettings
+    public class Workers
     {
-        public WorkerSettings(string type, IEnumerable<WorkerSettingsDetail> details)
+        public Workers(string type, IEnumerable<Worker> details)
         {
-            Type       = type;
-            Details    = details;
+            Type    = type;
+            Details = details;
 
             var hosts = Details.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
             Connection = new TcpConnectionManager(hosts);
-            Emitter = GetEmitter();
+            Emitter = CreateEmitter();
         }
 
         public string Type { get; private set; }
-        public IEnumerable<WorkerSettingsDetail> Details { get; private set; }
+        public IEnumerable<Worker> Details { get; private set; }
         public IEmitter Emitter { get; private set; }
         public TcpConnectionManager Connection { get; private set; }
 
-        private IEmitter GetEmitter()
+        private IEmitter CreateEmitter()
         {
             switch (Type)
             {
@@ -33,9 +33,9 @@ namespace Flooder.Core.Settings.Out
             }
         }
 
-        public class WorkerSettingsDetail
+        public class Worker
         {
-            public WorkerSettingsDetail(string host, int port)
+            public Worker(string host, int port)
             {
                 Host = host;
                 Port = port;
