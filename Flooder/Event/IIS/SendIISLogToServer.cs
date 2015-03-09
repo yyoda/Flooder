@@ -17,8 +17,8 @@ namespace Flooder.Event.IIS
 
         public SendIISLogToServer(FlooderModel flooderModel)
         {
-            _model = flooderModel.Input.IIS;
-            _emitter  = flooderModel.Output.Workers.Emitter;
+            _model   = flooderModel.Input.IIS;
+            _emitter = flooderModel.Output.Workers.Emitter;
         }
 
         public IDisposable[] Subscribe()

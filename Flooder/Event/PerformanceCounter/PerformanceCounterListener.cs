@@ -12,47 +12,48 @@ namespace Flooder.Event.PerformanceCounter
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly string _tag;
-        private readonly Setting[] _settings;
+        private readonly InternalValueObject[] _internalValueObjects;
         private readonly IEmitter _emitter;
 
-        public PerformanceCounterListener(string tag, Setting[] settings, IEmitter emitter)
+        public PerformanceCounterListener(string tag, InternalValueObject[] internalValueObjects, IEmitter emitter)
         {
-            _tag      = tag;
-            _settings = settings;
-            _emitter  = emitter;
+            _tag                  = tag;
+            _internalValueObjects = internalValueObjects;
+            _emitter              = emitter;
         }
 
         public void OnNext(long value)
         {
-            var payload = _settings.SelectMany(setting =>
+            var payload = _internalValueObjects.SelectMany(o =>
             {
-                return new PerformanceCounterCategory(setting.CategoryName)
+                return new PerformanceCounterCategory(o.CategoryName)
                     .GetInstanceNames()
                     .Where(instanceName =>
                     {
-                        if (string.IsNullOrEmpty(setting.InstanceName))
+                        if (string.IsNullOrEmpty(o.InstanceName))
                         {
                             return true;
                         }
 
-                        return setting.InstanceName == instanceName;
+                        return o.InstanceName == instanceName;
                     })
                     .Select(instanceName =>
                     {
-                        var perf = new System.Diagnostics.PerformanceCounter(setting.CategoryName, setting.CounterName, instanceName);
-
-                        var path = string.IsNullOrEmpty(perf.InstanceName)
-                            ? string.Format("{0}\\{1}", perf.CategoryName, perf.CounterName)
-                            : string.Format("{0}({1})\\{2}", perf.CategoryName, perf.InstanceName, perf.CounterName);
-
-                        try
+                        using (var perf = new System.Diagnostics.PerformanceCounter(o.CategoryName, o.CounterName, instanceName))
                         {
-                            return new { Path = path, CookedValue = perf.NextValue() };
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), e);
-                            return null;
+                            var path = string.IsNullOrEmpty(perf.InstanceName)
+                                ? string.Format("{0}\\{1}", perf.CategoryName, perf.CounterName)
+                                : string.Format("{0}({1})\\{2}", perf.CategoryName, perf.InstanceName, perf.CounterName);
+
+                            try
+                            {
+                                return new { Path = path, CookedValue = perf.RawValue };
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), e);
+                                return null;
+                            }
                         }
                     })
                     .Where(x => x != null);
@@ -72,13 +73,13 @@ namespace Flooder.Event.PerformanceCounter
             Logger.Fatal("PerformanceCounterListener#OnCompleted");
         }
 
-        public class Setting
+        internal class InternalValueObject
         {
             public string CategoryName { get; private set; }
             public string CounterName { get; private set; }
             public string InstanceName { get; private set; }
 
-            public Setting(string categoryName, string counterName, string instanceName = null)
+            public InternalValueObject(string categoryName, string counterName, string instanceName = null)
             {
                 CategoryName = categoryName;
                 CounterName  = counterName;

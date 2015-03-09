@@ -36,20 +36,21 @@ namespace Flooder.Core.Transfer
             {
                 var packer = MsgPack.Packer.Create(ms);
 
-                packer.PackArrayHeader(3); // ["tag", timestamp, obj]
+                //["tag", timestamp, payload]
+                packer.PackArrayHeader(3);
                 packer.PackString(tag);
                 packer.Pack(timestamp);
                 packer.PackMapHeader(payload);
 
-                foreach (var row in payload)
+                foreach (var column in payload)
                 {
-                    packer.PackString(row.Key);
+                    packer.PackString(column.Key);
 
-                    var type = row.Value != null ? row.Value.GetType() : typeof (string);
+                    var type = column.Value != null ? column.Value.GetType() : typeof (string);
 
                     new SerializationContext()
                         .GetSerializer(type, MsgPackDefaultContext)
-                        .PackTo(packer, row.Value);
+                        .PackTo(packer, column.Value);
                 }
 
                 var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);

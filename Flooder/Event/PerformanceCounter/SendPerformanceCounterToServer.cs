@@ -30,7 +30,7 @@ namespace Flooder.Event.PerformanceCounter
         public IDisposable[] Subscribe()
         {
             var details = _model.Details
-                .Select(x => new PerformanceCounterListener.Setting(x.CategoryName, x.CounterName, x.InstanceName))
+                .Select(x => new PerformanceCounterListener.InternalValueObject(x.CategoryName, x.CounterName, x.InstanceName))
                 .ToArray();
 
             var subscribe = Observable

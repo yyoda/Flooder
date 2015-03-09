@@ -14,6 +14,13 @@ namespace Flooder.Event.IIS
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
 
+        //inject option.
+        public static readonly HashSet<string> IntValues = new HashSet<string>(new[]
+        {
+            "time-taken", "s-port", "sc-status",
+            "sc-substatus", "sc-win32-status"
+        });
+
         private readonly string _tag;
         private readonly string _filePath;
         private readonly IEmitter _emitter;
@@ -68,7 +75,7 @@ namespace Flooder.Event.IIS
                     var isFirst = stateStore.Item2 == 0;
                     fs.Position = stateStore.Item2;
 
-                    //Logger.Debug("[IISLog READ START] _filePath:{0}, fullPath:{1}, lastWriteTime:{2}, fs.Position:{3}", _filePath, fullPath, lastWriteTime, fs.Position);
+                    Logger.Debug("[IISLog READ START] _filePath:{0}, fullPath:{1}, lastWriteTime:{2}, fs.Position:{3}", _filePath, fullPath, lastWriteTime, fs.Position);
 
                     string line;
                     Dictionary<string, object> payload = null;
@@ -89,24 +96,36 @@ namespace Flooder.Event.IIS
                             continue;
                         }
 
-                        payload = line.Split(' ').Select((x, idx) => new
+                        payload = line.Split(' ').Select((x, idx) =>
                         {
-                            Key = _fields[idx],
-                            Value = x,
+                            string key = _fields[idx];
+                            object val = IntValues.Contains(key) ? (object)int.Parse(x) : x;
+                            
+                            return new
+                            {
+                                Key   = key,
+                                Value = val,
+                            };
                         })
-                        .ToDictionary(x => x.Key, x => (object)x.Value);
+                        .ToDictionary(x => x.Key, x => x.Value);
 
                         if (!isFirst)
                         {
                             string cache = line;
                             Task.Factory.StartNew(() =>
                             {
-                                _emitter.Emit(_tag, cache.Split(' ').Select((x, idx) => new
+                                _emitter.Emit(_tag, cache.Split(' ').Select((x, idx) =>
                                 {
-                                    Key   = _fields[idx],
-                                    Value = x,
+                                    string key = _fields[idx];
+                                    object val = IntValues.Contains(key) ? (object)int.Parse(x) : x;
+
+                                    return new
+                                    {
+                                        Key = key,
+                                        Value = val,
+                                    };
                                 })
-                                .ToDictionary(x => x.Key, x => (object) x.Value));
+                                .ToDictionary(x => x.Key, x => x.Value));
                             });
                         }
                     }
@@ -117,8 +136,6 @@ namespace Flooder.Event.IIS
                     }
 
                     _fileSeekPositionStateStore = Tuple.Create(fullPath, fs.Position);
-
-                    //Logger.Debug("[IISLog READ END] fs.Position:{0}", fs.Position);
                 }
             }
         }
