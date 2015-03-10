@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Flooder.Core.Transfer;
@@ -28,6 +29,8 @@ namespace Flooder.Event.IIS
         private string[] _fields;
         private Tuple<string, long> _fileSeekPositionStateStore;
 
+        public string HostName { get; private set; }
+
         public IISLogListener(string tag, string filePath, IEmitter emitter)
         {
             _tag                        = tag;
@@ -35,6 +38,7 @@ namespace Flooder.Event.IIS
             _emitter                    = emitter;
             _fields                     = new string[0];
             _fileSeekPositionStateStore = null;
+            HostName                    = Dns.GetHostName();
         }
 
         public void OnInitAction()
@@ -89,7 +93,7 @@ namespace Flooder.Event.IIS
                     var isFirst = stateStore.Item2 == 0;
                     fs.Position = stateStore.Item2;
 
-                    Logger.Debug("[IISLog READ START] _filePath:{0}, fullPath:{1}, lastWriteTime:{2}, fs.Position:{3}", _filePath, fullPath, lastWriteTime, fs.Position);
+                    //Logger.Debug("[IISLog READ START] _filePath:{0}, fullPath:{1}, lastWriteTime:{2}, fs.Position:{3}", _filePath, fullPath, lastWriteTime, fs.Position);
 
                     string line;
                     Dictionary<string, object> payload = null;
@@ -123,15 +127,18 @@ namespace Flooder.Event.IIS
                         })
                         .ToDictionary(x => x.Key, x => x.Value);
 
+                        payload["hostname"] = HostName;
+
                         if (!isFirst)
                         {
                             string cache = line;
+
                             Task.Factory.StartNew(() =>
                             {
-                                _emitter.Emit(_tag, cache.Split(' ').Select((x, idx) =>
+                                var pl = cache.Split(' ').Select((x, idx) =>
                                 {
                                     string key = _fields[idx];
-                                    object val = IntValues.Contains(key) ? (object)int.Parse(x) : x;
+                                    object val = IntValues.Contains(key) ? (object) int.Parse(x) : x;
 
                                     return new
                                     {
@@ -139,7 +146,11 @@ namespace Flooder.Event.IIS
                                         Value = val,
                                     };
                                 })
-                                .ToDictionary(x => x.Key, x => x.Value));
+                                .ToDictionary(x => x.Key, x => x.Value);
+
+                                pl["hostname"] = HostName;
+
+                                _emitter.Emit(_tag, pl);
                             });
                         }
                     }

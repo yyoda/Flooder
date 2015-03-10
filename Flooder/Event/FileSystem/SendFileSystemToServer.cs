@@ -19,7 +19,7 @@ namespace Flooder.Event.FileSystem
         
         public SendFileSystemToServer(FlooderModel flooderModel)
         {
-            _model = flooderModel.Input.FileSystem;
+            _model    = flooderModel.Input.FileSystem;
             _emitter  = flooderModel.Output.Workers.Emitter;
         }
 

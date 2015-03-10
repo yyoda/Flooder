@@ -50,7 +50,8 @@ namespace Flooder.Event.FileSystem
 
                 var payload = new Dictionary<string, object>
                 {
-                    {"messages", buffer}
+                    {"hostname", base.HostName},
+                    {"messages", buffer},
                 };
 
                 base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Flooder.Core.Transfer;
 using NLog;
@@ -15,11 +16,14 @@ namespace Flooder.Event.PerformanceCounter
         private readonly InternalValueObject[] _internalValueObjects;
         private readonly IEmitter _emitter;
 
+        public string HostName { get; private set; }
+
         public PerformanceCounterListener(string tag, InternalValueObject[] internalValueObjects, IEmitter emitter)
         {
             _tag                  = tag;
             _internalValueObjects = internalValueObjects;
             _emitter              = emitter;
+            HostName              = Dns.GetHostName();
         }
 
         public void OnNext(long value)
@@ -59,6 +63,8 @@ namespace Flooder.Event.PerformanceCounter
                     .Where(x => x != null);
             })
             .ToDictionary(x => x.Path, x => (object)x.CookedValue);
+
+            payload["hostname"] = HostName;
 
             Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
         }

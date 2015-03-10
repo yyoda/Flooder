@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
+using System.Net;
 using Flooder.Core.Transfer;
 using NLog;
 
@@ -13,12 +15,14 @@ namespace Flooder.Event.FileSystem
         protected string Tag { get; private set; }
         protected IEmitter Emitter { get; private set; }
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
+        public string HostName { get; private set; }
         
         protected FileSystemEventListener(string tag, IEmitter emitter)
         {
             Tag                        = tag;
             Emitter                    = emitter;
             FileSeekPositionStateStore = new ConcurrentDictionary<string, long>();
+            HostName                   = Dns.GetHostName();
         }
 
         public abstract void OnInitAction(string filePath);
