@@ -29,18 +29,19 @@ namespace Flooder.Event.FileSystem
             {
                 return _model.Details.Select(s =>
                 {
-                    IDisposable subscribe;
-                    var subject = CreateSubject(s);
+                    IObserver<FileSystemEventArgs> listener;
 
                     switch (s.Format)
                     {
                         //additional.
                         default:
-                            subscribe = subject.Subscribe(TxtEventListener.Create(s.Tag, s.Path, _emitter));
+                            listener = new TxtEventListener(s.Tag, _emitter).Create(s.Path);
                             break;
                     }
 
+                    var subscribe = CreateSubject(s).Subscribe(listener);
                     Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", s.Tag, s.Path);
+
                     return subscribe;
                 })
                 .ToArray();

@@ -81,9 +81,9 @@ namespace Flooder.Event.FileSystem
             base.FileSeekPositionStateStore.TryRemove(e.FullPath, out _);
         }
 
-        public static FileSystemEventListener Create(string tag, string filePath, IEmitter emitter)
+        public virtual FileSystemEventListener Create(string filePath)
         {
-            var listener = new TxtEventListener(tag, emitter);
+            var listener = new TxtEventListener(base.Tag, base.Emitter);
             listener.OnInitAction(filePath);
             return listener;
         }
