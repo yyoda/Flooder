@@ -17,7 +17,7 @@ namespace Flooder.Event.IIS
         //inject option.
         public static readonly HashSet<string> IntValues = new HashSet<string>(new[]
         {
-            "time-taken", "s-port", "sc-status",
+            "time-taken", "sc-status",
             "sc-substatus", "sc-win32-status"
         });
 
@@ -71,7 +71,21 @@ namespace Flooder.Event.IIS
                 using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var sr = new StreamReader(fs, Encoding))
                 {
-                    var stateStore = _fileSeekPositionStateStore ?? (_fileSeekPositionStateStore = new Tuple<string, long>(fullPath, 0));
+                    if (_fileSeekPositionStateStore == null)
+                    {
+                        //initial access.
+                        _fileSeekPositionStateStore = new Tuple<string, long>(fullPath, 0);
+                    }
+                    else
+                    {
+                        //arrival new file.
+                        if (_fileSeekPositionStateStore.Item1 != fullPath)
+                        {
+                            _fileSeekPositionStateStore = new Tuple<string, long>(fullPath, 0);
+                        }
+                    }
+
+                    var stateStore = _fileSeekPositionStateStore;
                     var isFirst = stateStore.Item2 == 0;
                     fs.Position = stateStore.Item2;
 

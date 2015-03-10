@@ -47,7 +47,7 @@ namespace Flooder.Event.PerformanceCounter
 
                             try
                             {
-                                return new { Path = path, CookedValue = perf.RawValue };
+                                return new { Path = path, CookedValue = perf.NextValue() };
                             }
                             catch (Exception e)
                             {
