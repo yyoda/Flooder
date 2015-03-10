@@ -16,8 +16,8 @@ namespace Flooder.Event.PerformanceCounter
 
         public SendPerformanceCounterToServer(FlooderModel flooderModel)
         {
-            _model = flooderModel.Input.PerformanceCounter;
-            _emitter  = flooderModel.Output.Workers.Emitter;
+            _model   = flooderModel.Input.PerformanceCounter;
+            _emitter = flooderModel.Output.Workers.Emitter;
         }
 
         public IDisposable Subscribe(IObserver<long> observer)

@@ -17,7 +17,7 @@ namespace Flooder.Event.EventLog
 
         public SendEventLogToServer(FlooderModel flooderModel)
         {
-            _model = flooderModel.Input.EventLog;
+            _model    = flooderModel.Input.EventLog;
             _emitter  = flooderModel.Output.Workers.Emitter;
         }
 
