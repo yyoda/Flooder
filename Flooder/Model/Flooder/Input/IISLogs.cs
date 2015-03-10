@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Flooder.Model.Input
+namespace Flooder.Model.Flooder.Input
 {
     public class IISLogs
     {

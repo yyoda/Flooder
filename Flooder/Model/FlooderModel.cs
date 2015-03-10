@@ -1,4 +1,6 @@
 ﻿
+using Flooder.Model.Flooder;
+
 namespace Flooder.Model
 {
     public class FlooderModel

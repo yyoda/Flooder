@@ -4,12 +4,12 @@ namespace Flooder.Service
 {
     public partial class FlooderService : ServiceBase
     {
-        private readonly Flooder.FlooderService _service;
+        private readonly IFlooderService _service;
 
         public FlooderService()
         {
             InitializeComponent();
-            _service = FlooderFactory.Create<Flooder.Core.Configuration.Section>();
+            _service = FlooderFactory.Create<DefaultService>();
         }
 
         protected override void OnStart(string[] args)

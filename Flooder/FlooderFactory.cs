@@ -1,16 +1,11 @@
 ﻿
 namespace Flooder
 {
-    public interface IFlooderServiceCreator
-    {
-        FlooderService CreateService();
-    }
-
     public class FlooderFactory
     {
-        public static FlooderService Create<T>() where T : IFlooderServiceCreator, new()
+        public static IFlooderService Create<T>() where T : IFlooderService, new()
         {
-            return new T().CreateService();
+            return new T().Create();
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Flooder.Model.Output;
+﻿using Flooder.Model.Flooder.Output;
 
-namespace Flooder.Model
+namespace Flooder.Model.Flooder
 {
     public class OutputModel
     {

@@ -1,6 +1,6 @@
-﻿using Flooder.Model.Input;
+﻿using Flooder.Model.Flooder.Input;
 
-namespace Flooder.Model
+namespace Flooder.Model.Flooder
 {
     public class InputModel
     {

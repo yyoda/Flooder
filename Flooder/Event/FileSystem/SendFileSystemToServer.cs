@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using Flooder.Core.Transfer;
 using Flooder.Model;
-using Flooder.Model.Input;
+using Flooder.Model.Flooder.Input;
 using NLog;
 
 namespace Flooder.Event.FileSystem

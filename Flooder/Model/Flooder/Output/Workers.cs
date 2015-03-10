@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Flooder.Core.Transfer;
 
-namespace Flooder.Model.Output
+namespace Flooder.Model.Flooder.Output
 {
     public class Workers
     {

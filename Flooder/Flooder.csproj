@@ -79,7 +79,8 @@
     <Compile Include="Core\RetryPolicy\FixedInterval.cs" />
     <Compile Include="Core\RetryPolicy\IRetryPolicy.cs" />
     <Compile Include="Core\CircuitBreaker\DefaultCircuitBreaker.cs" />
-    <Compile Include="FlooderService.cs" />
+    <Compile Include="DefaultService.cs" />
+    <Compile Include="IFlooderService.cs" />
     <Compile Include="Model\Flooder\InputModel.cs" />
     <Compile Include="Model\Flooder\Input\EventLogs.cs" />
     <Compile Include="Model\Flooder\Input\IISLogs.cs" />

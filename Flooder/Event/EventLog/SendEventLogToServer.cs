@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Flooder.Core.Transfer;
 using Flooder.Model;
-using Flooder.Model.Input;
+using Flooder.Model.Flooder.Input;
 using NLog;
 
 namespace Flooder.Event.EventLog
