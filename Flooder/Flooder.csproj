@@ -73,6 +73,7 @@
     <Compile Include="Core\Configuration\OutputElement.cs" />
     <Compile Include="Core\Configuration\Out\Woker.cs" />
     <Compile Include="Core\Configuration\Section.cs" />
+    <Compile Include="Event\FileSystem\Payloads\TastatsPayload.cs" />
     <Compile Include="Event\FileSystem\Payloads\DefaultPayload.cs" />
     <Compile Include="Event\FileSystem\Payloads\CustomApplogPayload.cs" />
     <Compile Include="Event\FileSystem\Payloads\IPayload.cs" />

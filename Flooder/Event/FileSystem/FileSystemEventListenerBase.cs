@@ -30,7 +30,7 @@ namespace Flooder.Event.FileSystem
         }
 
         public abstract FileSystemEventListenerBase Create();
-        public abstract void OnInitAction();
+        protected abstract void OnInitAction();
         protected abstract void OnCreateAction(FileSystemEventArgs e);
         protected abstract void OnChangeAction(FileSystemEventArgs e);
         protected abstract void OnRenameAction(FileSystemEventArgs e);

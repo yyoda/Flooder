@@ -23,12 +23,11 @@ namespace Flooder.Event.FileSystem
 
         public override FileSystemEventListenerBase Create()
         {
-            var listener = new DefaultEventListener(base.Tag, base.Path, base.Emitter);
-            listener.OnInitAction();
-            return listener;
+            this.OnInitAction();
+            return this;
         }
 
-        public override void OnInitAction()
+        protected override void OnInitAction()
         {
             foreach (var path in Directory.GetFiles(base.Path))
             {

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using Flooder.Core.Transfer;
 using Flooder.Event.FileSystem.Payloads;
 using Flooder.Model;
