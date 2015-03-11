@@ -38,7 +38,7 @@ namespace Flooder
 
             //in
             var fs = new FileSystemLogs(section.In.FileSystems
-                .Select(x => new FileSystemLogs.FileSystemLog(x.Tag, x.Path, x.File, x.Listener)));
+                .Select(x => new FileSystemLogs.FileSystemLog(x.Tag, x.Path, x.File, x.Payload)));
 
             var iis = new IISLogs(section.In.IIS
                 .Select(x => new IISLogs.IISLog(x.Tag, x.Path, x.Interval)));

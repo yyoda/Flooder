@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Flooder.Core.Transfer;
+using Flooder.Event.FileSystem.Payloads;
 using Flooder.Model;
 using Flooder.Model.Flooder.Input;
 using NLog;
@@ -31,12 +32,14 @@ namespace Flooder.Event.FileSystem
             {
                 return _model.Details.Select(model =>
                 {
-                    var instance = (FileSystemEventListenerBase) Activator.CreateInstance(
-                        model.Listener, BindingFlags.CreateInstance, null, new object[] { model.Tag, _emitter }, null);
+                    var payload = (IPayload) Activator.CreateInstance(
+                        model.Payload, BindingFlags.CreateInstance, null, new object[] { }, null);
 
-                    var subscribe = CreateSubject(model).Subscribe(instance.Create(model.Path));
+                    IObserver<FileSystemEventArgs> observer = new DefaultEventListener(model.Tag, model.Path, _emitter, payload).Create();
 
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, listener:{2}", model.Tag, model.Path, model.Listener.FullName);
+                    var subscribe = CreateSubject(model).Subscribe(observer);
+
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, payload:{2}", model.Tag, model.Path, model.Payload.FullName);
 
                     return subscribe;
                 })

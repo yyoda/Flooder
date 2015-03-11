@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Net;
 using Flooder.Core.Transfer;
+using Flooder.Event.FileSystem.Payloads;
 using NLog;
 
 namespace Flooder.Event.FileSystem
@@ -13,19 +13,24 @@ namespace Flooder.Event.FileSystem
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected string Tag { get; private set; }
+        protected string Path { get; private set; }
         protected IEmitter Emitter { get; private set; }
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
         public string HostName { get; private set; }
-        
-        protected FileSystemEventListenerBase(string tag, IEmitter emitter)
+        protected IPayload Payload { get; private set; }
+
+        protected FileSystemEventListenerBase(string tag, string path, IEmitter emitter, IPayload payload)
         {
             Tag                        = tag;
+            Path                       = path;
             Emitter                    = emitter;
             FileSeekPositionStateStore = new ConcurrentDictionary<string, long>();
             HostName                   = Dns.GetHostName();
+            Payload                    = payload;
         }
 
-        public abstract void OnInitAction(string filePath);
+        public abstract FileSystemEventListenerBase Create();
+        public abstract void OnInitAction();
         protected abstract void OnCreateAction(FileSystemEventArgs e);
         protected abstract void OnChangeAction(FileSystemEventArgs e);
         protected abstract void OnRenameAction(FileSystemEventArgs e);
@@ -61,7 +66,5 @@ namespace Flooder.Event.FileSystem
         {
             Logger.Info("FileSystemEventListener is completed.");
         }
-
-        public abstract FileSystemEventListenerBase Create(string filePath);
     }
 }

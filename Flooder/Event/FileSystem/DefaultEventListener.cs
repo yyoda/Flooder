@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Flooder.Core.Transfer;
+using Flooder.Event.FileSystem.Payloads;
 
 namespace Flooder.Event.FileSystem
 {
@@ -16,13 +16,21 @@ namespace Flooder.Event.FileSystem
         public static Func<string, string, string> TagGen =
             (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
-        public DefaultEventListener(string tag, IEmitter emitter) : base(tag, emitter)
+        public DefaultEventListener(string tag, string path, IEmitter emitter, IPayload payload = null)
+            : base(tag, path, emitter, payload ?? new DefaultPayload())
         {
         }
 
-        public override void OnInitAction(string filePath)
+        public override FileSystemEventListenerBase Create()
         {
-            foreach (var path in Directory.GetFiles(filePath))
+            var listener = new DefaultEventListener(base.Tag, base.Path, base.Emitter);
+            listener.OnInitAction();
+            return listener;
+        }
+
+        public override void OnInitAction()
+        {
+            foreach (var path in Directory.GetFiles(base.Path))
             {
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
@@ -48,20 +56,11 @@ namespace Flooder.Event.FileSystem
 
                 var tag = TagGen(base.Tag, e.Name);
 
-                var payload = CreatePayload(buffer);
+                var payload = base.Payload.Parse(base.HostName, buffer);
 
                 base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
                 Task.Factory.StartNew(() => base.Emitter.Emit(tag, payload));
             }
-        }
-
-        protected virtual IDictionary<string, object> CreatePayload(string source)
-        {
-            return new Dictionary<string, object>
-            {
-                {"hostname", base.HostName},
-                {"messages", source},
-            };
         }
 
         protected override void OnRenameAction(FileSystemEventArgs e)
@@ -85,13 +84,5 @@ namespace Flooder.Event.FileSystem
             long _; //unused.
             base.FileSeekPositionStateStore.TryRemove(e.FullPath, out _);
         }
-
-        public override FileSystemEventListenerBase Create(string filePath)
-        {
-            var listener = new DefaultEventListener(base.Tag, base.Emitter);
-            listener.OnInitAction(filePath);
-            return listener;
-        }
-
     }
 }

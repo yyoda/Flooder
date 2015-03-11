@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Flooder.Core.Transfer;
 
-namespace Flooder.Event.FileSystem
+namespace Flooder.Event.FileSystem.Payloads
 {
-    public class CustomApplogEventListener : DefaultEventListener
+    public class CustomApplogPayload : IPayload
     {
-        public CustomApplogEventListener(string tag, IEmitter emitter) : base(tag, emitter)
-        {
-        }
-
-        protected override IDictionary<string, object> CreatePayload(string source)
+        public IDictionary<string, object> Parse(string hostName, string source)
         {
             var lines = source.Split(new[] { @"\r\n" }, StringSplitOptions.None);
             var head = lines.First().Split(new[] { " [", "] [", "] " }, StringSplitOptions.None);
@@ -62,16 +57,9 @@ namespace Flooder.Event.FileSystem
                 {"user",       lines.Where(x => x.StartsWith(" User: ")).Select(x => x.Replace(" User: ", "")).FirstOrDefault()},
                 {"parameters", lines.Where(x => x.StartsWith(" Parameters: ")).Select(x => x.Replace(" Parameters: ", "")).FirstOrDefault()},
                 {"useragent",  lines.Where(x => x.StartsWith(" UserAgent : ")).Select(x => x.Replace(" UserAgent : ", "")).FirstOrDefault()},
-                {"hostname",   base.HostName},
+                {"hostname",   hostName},
                 {"messages",   source},
             };
-        }
-
-        public override FileSystemEventListenerBase Create(string filePath)
-        {
-            var listener = new CustomApplogEventListener(base.Tag, base.Emitter);
-            listener.OnInitAction(filePath);
-            return listener;
         }
     }
 }
