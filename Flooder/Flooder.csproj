@@ -73,10 +73,10 @@
     <Compile Include="Core\Configuration\OutputElement.cs" />
     <Compile Include="Core\Configuration\Out\Woker.cs" />
     <Compile Include="Core\Configuration\Section.cs" />
-    <Compile Include="Event\FileSystem\Payloads\TastatsPayload.cs" />
+    <Compile Include="Event\FileSystem\Payloads\StatsPayload.cs" />
     <Compile Include="Event\FileSystem\Payloads\DefaultPayload.cs" />
-    <Compile Include="Event\FileSystem\Payloads\CustomApplogPayload.cs" />
-    <Compile Include="Event\FileSystem\Payloads\IPayload.cs" />
+    <Compile Include="Event\FileSystem\Payloads\ApplogPayload.cs" />
+    <Compile Include="Event\FileSystem\IPayload.cs" />
     <Compile Include="Event\IFlooderEvent.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="Core\RetryPolicy\Incremental.cs" />

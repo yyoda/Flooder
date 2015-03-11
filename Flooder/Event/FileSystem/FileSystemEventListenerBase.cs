@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using Flooder.Core.Transfer;
-using Flooder.Event.FileSystem.Payloads;
 using NLog;
 
 namespace Flooder.Event.FileSystem

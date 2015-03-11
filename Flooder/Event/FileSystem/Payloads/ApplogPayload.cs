@@ -5,7 +5,7 @@ using NLog;
 
 namespace Flooder.Event.FileSystem.Payloads
 {
-    public class CustomApplogPayload : IPayload
+    public class ApplogPayload : IPayload
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

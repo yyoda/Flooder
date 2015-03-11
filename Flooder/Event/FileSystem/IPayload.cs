@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Flooder.Event.FileSystem.Payloads
+namespace Flooder.Event.FileSystem
 {
     public interface IPayload
     {
