@@ -73,6 +73,7 @@
     <Compile Include="Core\Configuration\OutputElement.cs" />
     <Compile Include="Core\Configuration\Out\Woker.cs" />
     <Compile Include="Core\Configuration\Section.cs" />
+    <Compile Include="Event\FileSystem\CustomApplogEventListener.cs" />
     <Compile Include="Event\IFlooderEvent.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="Core\RetryPolicy\Incremental.cs" />
@@ -100,8 +101,8 @@
     <Compile Include="Event\EventLog\SendEventLogToServer.cs" />
     <Compile Include="Event\FileSystem\FileSystemWatcherExtensions.cs" />
     <Compile Include="Event\FileSystem\SendFileSystemToServer.cs" />
-    <Compile Include="Event\FileSystem\TxtEventListener.cs" />
-    <Compile Include="Event\FileSystem\FileSystemEventListener.cs" />
+    <Compile Include="Event\FileSystem\DefaultEventListener.cs" />
+    <Compile Include="Event\FileSystem\FileSystemEventListenerBase.cs" />
     <Compile Include="Event\IIS\IISLogListener.cs" />
     <Compile Include="Event\IIS\SendIISLogToServer.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterListener.cs" />

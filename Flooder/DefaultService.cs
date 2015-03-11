@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using Flooder.Core.Configuration;
 using Flooder.Event;
 using Flooder.Event.EventLog;
@@ -40,7 +38,7 @@ namespace Flooder
 
             //in
             var fs = new FileSystemLogs(section.In.FileSystems
-                .Select(x => new FileSystemLogs.FileSystemLog(x.Tag, x.Path, x.File, x.Format)));
+                .Select(x => new FileSystemLogs.FileSystemLog(x.Tag, x.Path, x.File, x.Listener)));
 
             var iis = new IISLogs(section.In.IIS
                 .Select(x => new IISLogs.IISLog(x.Tag, x.Path, x.Interval)));
@@ -69,38 +67,6 @@ namespace Flooder
 
             if (this.Model.Output.Workers.Type == "fluentd" && this.Model.Output.Workers.Connection.Connect())
             {
-                #region old code.
-                //_events = typeof (IFlooderEvent).Assembly.GetTypes()
-                //    .Where(type =>
-                //    {
-                //        return type.FindInterfaces((x, y) => x == (Type) y, typeof (IFlooderEvent)).Any();
-                //    })
-                //    .Select(x =>
-                //    {
-                //        var argType = typeof (FlooderModel);
-
-                //        var ctor = x.GetConstructor(
-                //            BindingFlags.Instance | BindingFlags.Public,
-                //            null,
-                //            CallingConventions.HasThis,
-                //            new[] {argType},
-                //            new ParameterModifier[0]
-                //            );
-
-                //        var model = Expression.Parameter(argType, "model");
-
-                //        return Expression.Lambda<Func<FlooderModel, IFlooderEvent>>(
-                //            Expression.New(ctor, model), model
-                //            ).Compile();
-                //    })
-                //    .Select(x => x(this.Model))
-                //    .SelectMany(x =>
-                //    {
-                //        return x.Subscribe();
-                //    })
-                //    .ToList();
-                #endregion
-
                 _events = new IFlooderEvent[]
                 {
                     new SendFileSystemToServer(this.Model),

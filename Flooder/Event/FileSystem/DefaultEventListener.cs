@@ -8,7 +8,7 @@ using Flooder.Core.Transfer;
 
 namespace Flooder.Event.FileSystem
 {
-    public class TxtEventListener : FileSystemEventListener
+    public class DefaultEventListener : FileSystemEventListenerBase
     {
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
 
@@ -16,7 +16,7 @@ namespace Flooder.Event.FileSystem
         public static Func<string, string, string> TagGen =
             (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
-        public TxtEventListener(string tag, IEmitter emitter) : base(tag, emitter)
+        public DefaultEventListener(string tag, IEmitter emitter) : base(tag, emitter)
         {
         }
 
@@ -48,15 +48,20 @@ namespace Flooder.Event.FileSystem
 
                 var tag = TagGen(base.Tag, e.Name);
 
-                var payload = new Dictionary<string, object>
-                {
-                    {"hostname", base.HostName},
-                    {"messages", buffer},
-                };
+                var payload = CreatePayload(buffer);
 
                 base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
                 Task.Factory.StartNew(() => base.Emitter.Emit(tag, payload));
             }
+        }
+
+        protected virtual IDictionary<string, object> CreatePayload(string source)
+        {
+            return new Dictionary<string, object>
+            {
+                {"hostname", base.HostName},
+                {"messages", source},
+            };
         }
 
         protected override void OnRenameAction(FileSystemEventArgs e)
@@ -81,9 +86,9 @@ namespace Flooder.Event.FileSystem
             base.FileSeekPositionStateStore.TryRemove(e.FullPath, out _);
         }
 
-        public virtual FileSystemEventListener Create(string filePath)
+        public override FileSystemEventListenerBase Create(string filePath)
         {
-            var listener = new TxtEventListener(base.Tag, base.Emitter);
+            var listener = new DefaultEventListener(base.Tag, base.Emitter);
             listener.OnInitAction(filePath);
             return listener;
         }

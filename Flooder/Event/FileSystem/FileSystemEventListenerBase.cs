@@ -8,7 +8,7 @@ using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public abstract class FileSystemEventListener : IObserver<FileSystemEventArgs>
+    public abstract class FileSystemEventListenerBase : IObserver<FileSystemEventArgs>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -17,7 +17,7 @@ namespace Flooder.Event.FileSystem
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
         public string HostName { get; private set; }
         
-        protected FileSystemEventListener(string tag, IEmitter emitter)
+        protected FileSystemEventListenerBase(string tag, IEmitter emitter)
         {
             Tag                        = tag;
             Emitter                    = emitter;
@@ -61,5 +61,7 @@ namespace Flooder.Event.FileSystem
         {
             Logger.Info("FileSystemEventListener is completed.");
         }
+
+        public abstract FileSystemEventListenerBase Create(string filePath);
     }
 }

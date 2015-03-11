@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using Flooder.Core.Transfer;
 using Flooder.Model;
 using Flooder.Model.Flooder.Input;
@@ -27,20 +29,14 @@ namespace Flooder.Event.FileSystem
         {
             if (_model.Details.Any())
             {
-                return _model.Details.Select(s =>
+                return _model.Details.Select(model =>
                 {
-                    IObserver<FileSystemEventArgs> listener;
+                    var instance = (FileSystemEventListenerBase) Activator.CreateInstance(
+                        model.Listener, BindingFlags.CreateInstance, null, new object[] { model.Tag, _emitter }, null);
 
-                    switch (s.Format)
-                    {
-                        //additional.
-                        default:
-                            listener = new TxtEventListener(s.Tag, _emitter).Create(s.Path);
-                            break;
-                    }
+                    var subscribe = CreateSubject(model).Subscribe(instance.Create(model.Path));
 
-                    var subscribe = CreateSubject(s).Subscribe(listener);
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}", s.Tag, s.Path);
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, listener:{2}", model.Tag, model.Path, model.Listener.FullName);
 
                     return subscribe;
                 })
@@ -50,15 +46,15 @@ namespace Flooder.Event.FileSystem
             return new IDisposable[0];
         }
 
-        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemLogs.FileSystemLog settingsDetail)
+        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemLogs.FileSystemLog model)
         {
-            if (!Directory.Exists(settingsDetail.Path))
+            if (!Directory.Exists(model.Path))
             {
-                Logger.Warn("[{0}] will be skipped because it does not exist.", settingsDetail.Path);
+                Logger.Warn("[{0}] will be skipped because it does not exist.", model.Path);
                 return Observable.Never<FileSystemEventArgs>();
             }
 
-            var fsw = new FileSystemWatcher(settingsDetail.Path, settingsDetail.File)
+            var fsw = new FileSystemWatcher(model.Path, model.File)
             {
                 EnableRaisingEvents = true
             };

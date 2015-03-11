@@ -14,8 +14,8 @@ namespace Flooder.Core.Configuration.In
         [ConfigurationProperty("file", IsRequired = false, DefaultValue = "*")]
         public string File { get { return (string)base["file"]; } }
 
-        [ConfigurationProperty("format", IsRequired = false, DefaultValue = "default")]
-        public string Format { get { return (string) base["format"]; } }
+        [ConfigurationProperty("listener", IsRequired = false, DefaultValue = "")]
+        public string Listener { get { return (string)base["listener"]; } }
     }
 
     [ConfigurationCollection(typeof(FileSystemElement))]
