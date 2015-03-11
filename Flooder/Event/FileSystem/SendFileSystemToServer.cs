@@ -3,41 +3,34 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
-using Flooder.Core.Transfer;
-using Flooder.Model;
-using Flooder.Model.Flooder.Input;
 using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public class SendFileSystemToServer : IFlooderEvent
+    public class SendFileSystemToServer : SendEventSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private readonly FileSystemLogs _model;
-        private readonly IEmitter _emitter;
-
+        private readonly FileSystemEventSource _eventSource;
         
-        public SendFileSystemToServer(FlooderModel flooderModel)
+        public SendFileSystemToServer(FlooderObject obj) : base(obj)
         {
-            _model    = flooderModel.Input.FileSystem;
-            _emitter  = flooderModel.Output.Workers.Emitter;
+            _eventSource = obj.Events.OfType<FileSystemEventSource>().First();
         }
 
-        public IDisposable[] Subscribe()
+        public override IDisposable[] Subscribe()
         {
-            if (_model.Details.Any())
+            if (_eventSource.Details.Any())
             {
-                return _model.Details.Select(model =>
+                return _eventSource.Details.Select(e =>
                 {
                     var payload = (IPayload) Activator.CreateInstance(
-                        model.Payload, BindingFlags.CreateInstance, null, new object[] { }, null);
+                        e.Payload, BindingFlags.CreateInstance, null, new object[] { }, null);
 
-                    IObserver<FileSystemEventArgs> observer = new DefaultEventListener(model.Tag, model.Path, _emitter, payload).Create();
+                    IObserver<FileSystemEventArgs> observer = new DefaultEventListener(e.Tag, e.Path, base.FlooderObject, payload).Create();
 
-                    var subscribe = CreateSubject(model).Subscribe(observer);
+                    var subscribe = CreateSubject(e).Subscribe(observer);
 
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, payload:{2}", model.Tag, model.Path, model.Payload.FullName);
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, payload:{2}", e.Tag, e.Path, e.Payload.FullName);
 
                     return subscribe;
                 })
@@ -47,15 +40,15 @@ namespace Flooder.Event.FileSystem
             return new IDisposable[0];
         }
 
-        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemLogs.FileSystemLog model)
+        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemEventSourceDetail source)
         {
-            if (!Directory.Exists(model.Path))
+            if (!Directory.Exists(source.Path))
             {
-                Logger.Warn("[{0}] will be skipped because it does not exist.", model.Path);
+                Logger.Warn("[{0}] will be skipped because it does not exist.", source.Path);
                 return Observable.Never<FileSystemEventArgs>();
             }
 
-            var fsw = new FileSystemWatcher(model.Path, model.File)
+            var fsw = new FileSystemWatcher(source.Path, source.File)
             {
                 EnableRaisingEvents = true
             };

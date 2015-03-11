@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace Flooder.Core.Configuration.Out
+namespace Flooder.Configuration.Out
 {
     public class WorkerElement : ConfigurationElement
     {

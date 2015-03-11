@@ -1,5 +1,5 @@
 ﻿using System;
-using Flooder.Core.Transfer;
+using Flooder.Transfer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLog;
 

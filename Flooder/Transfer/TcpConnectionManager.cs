@@ -1,13 +1,13 @@
-﻿using Flooder.Core.CircuitBreaker;
-using Flooder.Core.Utility;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
+using Flooder.Core.CircuitBreaker;
+using Flooder.Core.Utility;
+using NLog;
 
-namespace Flooder.Core.Transfer
+namespace Flooder.Transfer
 {
     public class TcpConnectionManager : IDisposable
     {

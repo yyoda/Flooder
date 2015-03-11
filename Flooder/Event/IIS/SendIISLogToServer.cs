@@ -2,28 +2,24 @@
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using Flooder.Core.Transfer;
 using Flooder.Model;
-using Flooder.Model.Flooder.Input;
 using NLog;
 
 namespace Flooder.Event.IIS
 {
-    public class SendIISLogToServer : IFlooderEvent
+    public class SendIISLogToServer : SendEventSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly IISLogs _model;
-        private readonly IEmitter _emitter;
+        private readonly IISLogEventSource _eventSource;
 
-        public SendIISLogToServer(FlooderModel flooderModel)
+        public SendIISLogToServer(FlooderObject obj) : base(obj)
         {
-            _model   = flooderModel.Input.IIS;
-            _emitter = flooderModel.Output.Workers.Emitter;
+            _eventSource = obj.Events.OfType<IISLogEventSource>().First();
         }
 
-        public IDisposable[] Subscribe()
+        public override IDisposable[] Subscribe()
         {
-            var enable = _model.Details.Where(x =>
+            var enable = _eventSource.Details.Where(x =>
             {
                 if (Directory.Exists(x.Path)) return true;
                 Logger.Debug("[{0}] will be skipped because it does not exist.", x.ToString());
@@ -33,9 +29,9 @@ namespace Flooder.Event.IIS
 
             if (!enable) return new IDisposable[0];
 
-            return _model.Details.Select(x =>
+            return _eventSource.Details.Select(x =>
             {
-                var observer = new IISLogListener(x.Tag, x.Path, _emitter);
+                var observer = new IISLogListener(x.Tag, x.Path, base.FlooderObject);
                 observer.OnInitAction();
 
                 var subscribe = Observable

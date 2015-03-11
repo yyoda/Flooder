@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Flooder.Core.Transfer
+namespace Flooder.Transfer
 {
     public interface IEmitter
     {

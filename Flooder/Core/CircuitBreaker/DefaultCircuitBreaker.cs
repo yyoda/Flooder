@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Flooder.Core.RetryPolicy;
+using Flooder.Model.CircuitBreaker;
 using NLog;
 
 namespace Flooder.Core.CircuitBreaker

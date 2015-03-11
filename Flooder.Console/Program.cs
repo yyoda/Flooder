@@ -1,5 +1,6 @@
 ﻿using NLog;
 using System;
+using Flooder.Model;
 
 namespace Flooder.Console
 {

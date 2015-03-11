@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
-using Flooder.Core.Configuration.Out;
+using Flooder.Configuration.Out;
 
-namespace Flooder.Core.Configuration
+namespace Flooder.Configuration
 {
     public class OutputElement : ConfigurationElement
     {

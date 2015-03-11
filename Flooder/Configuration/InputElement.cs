@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
-using Flooder.Core.Configuration.In;
+using Flooder.Configuration.In;
 
-namespace Flooder.Core.Configuration
+namespace Flooder.Configuration
 {
     public class InputElement : ConfigurationElement
     {

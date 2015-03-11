@@ -2,9 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Flooder.Core.Transfer;
-using Flooder.Event.FileSystem.Payloads;
+using Flooder.Transfer;
 
 namespace Flooder.Event.FileSystem
 {
@@ -16,8 +14,8 @@ namespace Flooder.Event.FileSystem
         public static Func<string, string, string> TagGen =
             (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
-        public DefaultEventListener(string tag, string path, IEmitter emitter, IPayload payload = null)
-            : base(tag, path, emitter, payload ?? new DefaultPayload())
+        public DefaultEventListener(string tag, string path, FlooderObject obj, IPayload payload)
+            : base(tag, path, obj, payload)
         {
         }
 
@@ -55,10 +53,10 @@ namespace Flooder.Event.FileSystem
 
                 var tag = TagGen(base.Tag, e.Name);
 
-                var payload = base.Payload.Parse(base.HostName, buffer);
+                var payload = base.Payload.Parse(buffer);
 
                 base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
-                Task.Factory.StartNew(() => base.Emitter.Emit(tag, payload));
+                base.Emit(tag, payload);
             }
         }
 

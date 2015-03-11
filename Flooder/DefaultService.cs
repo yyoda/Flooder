@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using Flooder.Core.Configuration;
+using Flooder.Configuration;
 using Flooder.Event;
 using Flooder.Event.EventLog;
 using Flooder.Event.FileSystem;
 using Flooder.Event.IIS;
 using Flooder.Event.PerformanceCounter;
-using Flooder.Model;
-using Flooder.Model.Flooder;
-using Flooder.Model.Flooder.Input;
-using Flooder.Model.Flooder.Output;
+using Flooder.Transfer;
 using NLog;
 
 namespace Flooder
@@ -25,54 +22,53 @@ namespace Flooder
         {
         }
 
-        public DefaultService(FlooderModel model)
+        public DefaultService(FlooderObject obj)
         {
-            Model = model;
+            FlooderObject = obj;
         }
 
-        public FlooderModel Model { get; private set; }
+        public FlooderObject FlooderObject { get; private set; }
 
         public IFlooderService Create()
         {
             var section = ConfigurationManager.GetSection("flooder") as Section;
 
             //in
-            var fs = new FileSystemLogs(section.In.FileSystems
-                .Select(x => new FileSystemLogs.FileSystemLog(x.Tag, x.Path, x.File, x.Payload)));
+            var fs = new FileSystemEventSource(section.In.FileSystems
+                .Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Payload)));
 
-            var iis = new IISLogs(section.In.IIS
-                .Select(x => new IISLogs.IISLog(x.Tag, x.Path, x.Interval)));
+            var iis = new IISLogEventSource(section.In.IIS
+                .Select(x => new IISLogEventSourceDetail(x.Tag, x.Path, x.Interval)));
 
-            var ev = new EventLogs(section.In.EventLogs.Tag, section.In.EventLogs.Scopes, section.In.EventLogs
-                .Select(x => new EventLogs.EventLog(x.Type, x.Mode, x.Source, x.Id)));
+            var ev = new EventLogEventSource(section.In.EventLogs.Tag, section.In.EventLogs.Scopes, section.In.EventLogs
+                .Select(x => new EventLogEventSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
 
-            var pc = new PerformanceCounterLogs(section.In.PerformanceCounters.Tag, section.In.PerformanceCounters.Interval, section.In.PerformanceCounters
-                .Select(x => new PerformanceCounterLogs.PerformanceCounterLog(x.CategoryName, x.CounterName, x.InstanceName)));
+            var pc = new PerformanceCounterEventSource(section.In.PerformanceCounters.Tag, section.In.PerformanceCounters.Interval, section.In.PerformanceCounters
+                .Select(x => new PerformanceCounterEventSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
 
             //out
-            var wk = new Workers(section.Out.Workers.Type, section.Out.Workers
-                .Select(x => new Workers.Worker(x.Host, x.Port)));
+            var wk = new Worker(section.Out.Workers.Type, section.Out.Workers
+                .Select(x => new WorkerDetail(x.Host, x.Port)));
 
-            //model
-            var model = new FlooderModel(new InputModel(fs, iis, ev, pc), new OutputModel(wk));
+            var obj = new FlooderObject(new IEventSource[] { fs, iis, ev, pc }, wk);
 
-            return new DefaultService(model);
+            return new DefaultService(obj);
         }
 
         public void Start()
         {
-            if (Model == null) throw new NullReferenceException("Model");
+            if (FlooderObject == null) throw new NullReferenceException("FlooderObject");
 
             Logger.Info("Flooder start.");
 
-            if (this.Model.Output.Workers.Type == "fluentd" && this.Model.Output.Workers.Connection.Connect())
+            if (this.FlooderObject.Worker.Type == "fluentd" && this.FlooderObject.Worker.Connection.Connect())
             {
-                _events = new IFlooderEvent[]
+                _events = new SendEventSourceToServerBase[]
                 {
-                    new SendFileSystemToServer(this.Model),
-                    new SendIISLogToServer(this.Model),
-                    new SendEventLogToServer(this.Model),
-                    new SendPerformanceCounterToServer(this.Model),
+                    new SendFileSystemToServer(this.FlooderObject),
+                    new SendIISLogToServer(this.FlooderObject),
+                    new SendEventLogToServer(this.FlooderObject),
+                    new SendPerformanceCounterToServer(this.FlooderObject),
                 }
                 .SelectMany(x =>
                 {
@@ -80,7 +76,7 @@ namespace Flooder
                 })
                 .ToList();
 
-                _events.Add(this.Model.Output.Workers.Connection.HealthCheck());
+                _events.Add(this.FlooderObject.Worker.Connection.HealthCheck());
             }
 
             if (!_events.Any())
@@ -91,10 +87,10 @@ namespace Flooder
 
         public void Stop()
         {
-            if (Model == null) throw new NullReferenceException("Model");
+            if (FlooderObject == null) throw new NullReferenceException("FlooderObject");
 
             _events.ForEach(x => x.Dispose());
-            this.Model.Output.Workers.Connection.Close();
+            this.FlooderObject.Worker.Connection.Close();
             Logger.Info("Flooder stop.");
         }
     }

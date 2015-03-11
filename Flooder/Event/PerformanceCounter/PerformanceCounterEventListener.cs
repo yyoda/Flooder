@@ -1,29 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Flooder.Core.Transfer;
 using NLog;
 
 namespace Flooder.Event.PerformanceCounter
 {
-    internal class PerformanceCounterListener : IObserver<long>
+    public class PerformanceCounterEventListener : EventListenerBase, IObserver<long>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private readonly string _tag;
         private readonly InternalValueObject[] _internalValueObjects;
-        private readonly IEmitter _emitter;
 
-        public string HostName { get; private set; }
-
-        public PerformanceCounterListener(string tag, InternalValueObject[] internalValueObjects, IEmitter emitter)
+        public PerformanceCounterEventListener(string tag, InternalValueObject[] internalValueObjects, FlooderObject obj)
+            : base(tag, obj)
         {
-            _tag                  = tag;
             _internalValueObjects = internalValueObjects;
-            _emitter              = emitter;
-            HostName              = Dns.GetHostName();
         }
 
         public void OnNext(long value)
@@ -64,9 +54,7 @@ namespace Flooder.Event.PerformanceCounter
             })
             .ToDictionary(x => x.Path, x => (object)x.CookedValue);
 
-            payload["hostname"] = HostName;
-
-            Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
+            base.Emit(payload);
         }
 
         public void OnError(Exception error)
@@ -79,7 +67,7 @@ namespace Flooder.Event.PerformanceCounter
             Logger.Fatal("PerformanceCounterListener#OnCompleted");
         }
 
-        internal class InternalValueObject
+        public class InternalValueObject
         {
             public string CategoryName { get; private set; }
             public string CounterName { get; private set; }

@@ -1,30 +1,23 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Net;
-using Flooder.Core.Transfer;
 using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public abstract class FileSystemEventListenerBase : IObserver<FileSystemEventArgs>
+    public abstract class FileSystemEventListenerBase : EventListenerBase, IObserver<FileSystemEventArgs>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        protected string Tag { get; private set; }
         protected string Path { get; private set; }
-        protected IEmitter Emitter { get; private set; }
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
-        public string HostName { get; private set; }
         protected IPayload Payload { get; private set; }
 
-        protected FileSystemEventListenerBase(string tag, string path, IEmitter emitter, IPayload payload)
+        protected FileSystemEventListenerBase(string tag, string path, FlooderObject obj, IPayload payload)
+            : base(tag, obj)
         {
-            Tag                        = tag;
             Path                       = path;
-            Emitter                    = emitter;
             FileSeekPositionStateStore = new ConcurrentDictionary<string, long>();
-            HostName                   = Dns.GetHostName();
             Payload                    = payload;
         }
 

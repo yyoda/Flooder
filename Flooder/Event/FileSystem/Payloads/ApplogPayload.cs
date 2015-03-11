@@ -9,7 +9,7 @@ namespace Flooder.Event.FileSystem.Payloads
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IDictionary<string, object> Parse(string hostName, string source)
+        public IDictionary<string, object> Parse(string source)
         {
             try
             {
@@ -62,7 +62,6 @@ namespace Flooder.Event.FileSystem.Payloads
                     {"user",       lines.Where(x => x.StartsWith(" User: ")).Select(x => x.Replace(" User: ", "")).FirstOrDefault()},
                     {"parameters", lines.Where(x => x.StartsWith(" Parameters: ")).Select(x => x.Replace(" Parameters: ", "")).FirstOrDefault()},
                     {"useragent",  lines.Where(x => x.StartsWith(" UserAgent : ")).Select(x => x.Replace(" UserAgent : ", "")).FirstOrDefault()},
-                    {"hostname",   hostName},
                     {"messages",   source},
                 };
             }
@@ -72,7 +71,6 @@ namespace Flooder.Event.FileSystem.Payloads
 
                 return new Dictionary<string, object>
                 {
-                    {"hostname", hostName},
                     {"messages", source},
                 };
             }

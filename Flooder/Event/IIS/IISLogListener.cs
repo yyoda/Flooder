@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Flooder.Core.Transfer;
 using NLog;
 
 namespace Flooder.Event.IIS
 {
-    internal class IISLogListener : IObserver<long>
+    internal class IISLogListener : EventListenerBase, IObserver<long>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
@@ -22,23 +20,17 @@ namespace Flooder.Event.IIS
             "sc-substatus", "sc-win32-status"
         });
 
-        private readonly string _tag;
         private readonly string _filePath;
-        private readonly IEmitter _emitter;
 
         private string[] _fields;
         private Tuple<string, long> _fileSeekPositionStateStore;
 
-        public string HostName { get; private set; }
-
-        public IISLogListener(string tag, string filePath, IEmitter emitter)
+        public IISLogListener(string tag, string filePath, FlooderObject obj)
+            : base(tag, obj)
         {
-            _tag                        = tag;
             _filePath                   = filePath;
-            _emitter                    = emitter;
             _fields                     = new string[0];
             _fileSeekPositionStateStore = null;
-            HostName                    = Dns.GetHostName();
         }
 
         public void OnInitAction()
@@ -127,8 +119,6 @@ namespace Flooder.Event.IIS
                         })
                         .ToDictionary(x => x.Key, x => x.Value);
 
-                        payload["hostname"] = HostName;
-
                         if (!isFirst)
                         {
                             string cache = line;
@@ -148,16 +138,14 @@ namespace Flooder.Event.IIS
                                 })
                                 .ToDictionary(x => x.Key, x => x.Value);
 
-                                pl["hostname"] = HostName;
-
-                                _emitter.Emit(_tag, pl);
+                                base.Emit(pl);
                             });
                         }
                     }
 
                     if (isFirst && payload != null)
                     {
-                        Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
+                        base.Emit(payload);
                     }
 
                     _fileSeekPositionStateStore = Tuple.Create(fullPath, fs.Position);

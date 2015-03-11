@@ -2,23 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using Flooder.Core.Transfer;
 using NLog;
 
 namespace Flooder.Event.EventLog
 {
-    internal class EventLogListener : IObserver<EntryWrittenEventArgs>
+    internal class EventLogEventListener : EventListenerBase, IObserver<EntryWrittenEventArgs>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly string _tag;
-        private readonly IEmitter _emitter;
-
-        public EventLogListener(string tag, IEmitter emitter)
+        public EventLogEventListener(string tag, FlooderObject obj) : base(tag, obj)
         {
-            _tag        = tag;
-            _emitter    = emitter;
             IncludeInfo = IncludeWarn = IncludeError = ExcludeInfo = ExcludeWarn = ExcludeError = new HashSet<Tuple<string, string>>();
         }
 
@@ -73,7 +66,7 @@ namespace Flooder.Event.EventLog
                     {"UserName", e.Entry.UserName},
                 };
 
-                Task.Factory.StartNew(() => _emitter.Emit(_tag, payload));
+                base.Emit(payload);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using System.ServiceProcess;
+using Flooder.Model;
 
 namespace Flooder.Service
 {

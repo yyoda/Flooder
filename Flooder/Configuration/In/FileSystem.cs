@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
 
-namespace Flooder.Core.Configuration.In
+namespace Flooder.Configuration.In
 {
     public class FileSystemElement : ConfigurationElement
     {

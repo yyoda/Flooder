@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Flooder.Core.Configuration
+namespace Flooder.Configuration
 {
     public class Section : ConfigurationSection
     {

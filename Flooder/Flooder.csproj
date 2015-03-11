@@ -65,19 +65,20 @@
     <Compile Include="Core\CircuitBreaker\CircuitBreakerState.cs" />
     <Compile Include="Core\CircuitBreaker\CircuitBreakerStateStore.cs" />
     <Compile Include="Core\CircuitBreaker\ICircuitBreakerStateStore.cs" />
-    <Compile Include="Core\Configuration\InputElement.cs" />
-    <Compile Include="Core\Configuration\In\IIS.cs" />
-    <Compile Include="Core\Configuration\In\EventLog.cs" />
-    <Compile Include="Core\Configuration\In\FileSystem.cs" />
-    <Compile Include="Core\Configuration\In\PerformanceCounter.cs" />
-    <Compile Include="Core\Configuration\OutputElement.cs" />
-    <Compile Include="Core\Configuration\Out\Woker.cs" />
-    <Compile Include="Core\Configuration\Section.cs" />
+    <Compile Include="Configuration\InputElement.cs" />
+    <Compile Include="Configuration\In\IIS.cs" />
+    <Compile Include="Configuration\In\EventLog.cs" />
+    <Compile Include="Configuration\In\FileSystem.cs" />
+    <Compile Include="Configuration\In\PerformanceCounter.cs" />
+    <Compile Include="Configuration\OutputElement.cs" />
+    <Compile Include="Configuration\Out\Woker.cs" />
+    <Compile Include="Configuration\Section.cs" />
+    <Compile Include="Event\EventListenerBase.cs" />
     <Compile Include="Event\FileSystem\Payloads\StatsPayload.cs" />
     <Compile Include="Event\FileSystem\Payloads\DefaultPayload.cs" />
     <Compile Include="Event\FileSystem\Payloads\ApplogPayload.cs" />
     <Compile Include="Event\FileSystem\IPayload.cs" />
-    <Compile Include="Event\IFlooderEvent.cs" />
+    <Compile Include="Event\SendEventSourceToServerBase.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="Core\RetryPolicy\Incremental.cs" />
     <Compile Include="Core\RetryPolicy\FixedInterval.cs" />
@@ -85,21 +86,20 @@
     <Compile Include="Core\CircuitBreaker\DefaultCircuitBreaker.cs" />
     <Compile Include="DefaultService.cs" />
     <Compile Include="IFlooderService.cs" />
-    <Compile Include="Model\Flooder\InputModel.cs" />
-    <Compile Include="Model\Flooder\Input\EventLogs.cs" />
-    <Compile Include="Model\Flooder\Input\IISLogs.cs" />
-    <Compile Include="Model\Flooder\Input\FileSystemLogs.cs" />
-    <Compile Include="Model\Flooder\Input\PerformanceCounterLogs.cs" />
-    <Compile Include="Model\Flooder\OutputModel.cs" />
-    <Compile Include="Model\Flooder\Output\Workers.cs" />
-    <Compile Include="Model\FlooderModel.cs" />
+    <Compile Include="Event\IEventSource.cs" />
+    <Compile Include="Event\EventLog\EventLogEventSource.cs" />
+    <Compile Include="Event\IIS\IISLogEventSource.cs" />
+    <Compile Include="Event\FileSystem\FileSystemEventSource.cs" />
+    <Compile Include="Event\PerformanceCounter\PerformanceCounterEventSource.cs" />
+    <Compile Include="Transfer\Worker.cs" />
+    <Compile Include="Event\FlooderObject.cs" />
     <Compile Include="FlooderFactory.cs" />
-    <Compile Include="Core\Transfer\FluentEmitter.cs" />
-    <Compile Include="Core\Transfer\IEmitter.cs" />
-    <Compile Include="Core\Transfer\TcpConnectionManager.cs" />
+    <Compile Include="Transfer\FluentEmitter.cs" />
+    <Compile Include="Transfer\IEmitter.cs" />
+    <Compile Include="Transfer\TcpConnectionManager.cs" />
     <Compile Include="Core\Utility\DateTimeExtensions.cs" />
     <Compile Include="Core\Utility\EnumerableExtensions.cs" />
-    <Compile Include="Event\EventLog\EventLogListener.cs" />
+    <Compile Include="Event\EventLog\EventLogEventListener.cs" />
     <Compile Include="Event\EventLog\EventLogWatcherExtensions.cs" />
     <Compile Include="Event\EventLog\SendEventLogToServer.cs" />
     <Compile Include="Event\FileSystem\FileSystemWatcherExtensions.cs" />
@@ -108,13 +108,14 @@
     <Compile Include="Event\FileSystem\FileSystemEventListenerBase.cs" />
     <Compile Include="Event\IIS\IISLogListener.cs" />
     <Compile Include="Event\IIS\SendIISLogToServer.cs" />
-    <Compile Include="Event\PerformanceCounter\PerformanceCounterListener.cs" />
+    <Compile Include="Event\PerformanceCounter\PerformanceCounterEventListener.cs" />
     <Compile Include="Event\PerformanceCounter\SendPerformanceCounterToServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

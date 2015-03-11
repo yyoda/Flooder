@@ -9,7 +9,7 @@ using Flooder.Core.Utility;
 using MsgPack.Serialization;
 using NLog;
 
-namespace Flooder.Core.Transfer
+namespace Flooder.Transfer
 {
     public class FluentEmitter : IEmitter
     {

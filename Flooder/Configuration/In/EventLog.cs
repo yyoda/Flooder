@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 
-namespace Flooder.Core.Configuration.In
+namespace Flooder.Configuration.In
 {
     public class EventLogElement : ConfigurationElement
     {
