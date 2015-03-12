@@ -43,9 +43,9 @@ namespace Flooder.Event.PerformanceCounter
                             {
                                 return new { Path = path, CookedValue = perf.NextValue() };
                             }
-                            catch (Exception e)
+                            catch (Exception ex)
                             {
-                                Logger.WarnException(string.Format("Skip because an error has occurred. path:{0}", path), e);
+                                Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), ex);
                                 return null;
                             }
                         }
