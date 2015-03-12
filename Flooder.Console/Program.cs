@@ -15,9 +15,9 @@ namespace Flooder.Console
                 flooder.Start();
                 System.Console.ReadLine();  //listening...
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                logger.ErrorException("Problem occurs.", e);
+                logger.ErrorException("Problem occurs.", ex);
             }
             finally
             {
