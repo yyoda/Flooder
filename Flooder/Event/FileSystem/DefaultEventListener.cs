@@ -14,7 +14,7 @@ namespace Flooder.Event.FileSystem
         public static Func<string, string, string> TagGen =
             (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
-        public DefaultEventListener(string tag, string path, FlooderObject obj, IPayload payload)
+        public DefaultEventListener(string tag, string path, FlooderObject obj, IPayloadParser payload)
             : base(tag, path, obj, payload)
         {
         }

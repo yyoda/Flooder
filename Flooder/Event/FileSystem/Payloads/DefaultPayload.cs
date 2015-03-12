@@ -2,7 +2,7 @@
 
 namespace Flooder.Event.FileSystem.Payloads
 {
-    public class DefaultPayload : IPayload
+    public class DefaultPayload : IPayloadParser
     {
         public IDictionary<string, object> Parse(string source)
         {

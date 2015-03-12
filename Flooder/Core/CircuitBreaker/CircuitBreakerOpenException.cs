@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Flooder.Model.CircuitBreaker
+namespace Flooder.Core.CircuitBreaker
 {
     public class CircuitBreakerOpenException : Exception
     {

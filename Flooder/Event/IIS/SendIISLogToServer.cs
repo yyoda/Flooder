@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using Flooder.Model;
 using NLog;
 
 namespace Flooder.Event.IIS

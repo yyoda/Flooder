@@ -123,23 +123,20 @@ namespace Flooder.Event.IIS
                         {
                             string cache = line;
 
-                            Task.Factory.StartNew(() =>
+                            var pl = cache.Split(' ').Select((x, idx) =>
                             {
-                                var pl = cache.Split(' ').Select((x, idx) =>
+                                string key = _fields[idx];
+                                object val = IntValues.Contains(key) ? (object) int.Parse(x) : x;
+
+                                return new
                                 {
-                                    string key = _fields[idx];
-                                    object val = IntValues.Contains(key) ? (object) int.Parse(x) : x;
+                                    Key   = key,
+                                    Value = val,
+                                };
+                            })
+                            .ToDictionary(x => x.Key, x => x.Value);
 
-                                    return new
-                                    {
-                                        Key = key,
-                                        Value = val,
-                                    };
-                                })
-                                .ToDictionary(x => x.Key, x => x.Value);
-
-                                base.Emit(pl);
-                            });
+                            base.Emit(pl);
                         }
                     }
 

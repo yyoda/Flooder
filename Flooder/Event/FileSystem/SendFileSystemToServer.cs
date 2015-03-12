@@ -23,7 +23,7 @@ namespace Flooder.Event.FileSystem
             {
                 return _eventSource.Details.Select(e =>
                 {
-                    var payload = (IPayload) Activator.CreateInstance(
+                    var payload = (IPayloadParser) Activator.CreateInstance(
                         e.Payload, BindingFlags.CreateInstance, null, new object[] { }, null);
 
                     IObserver<FileSystemEventArgs> observer = new DefaultEventListener(e.Tag, e.Path, base.FlooderObject, payload).Create();
