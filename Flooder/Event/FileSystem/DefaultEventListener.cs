@@ -14,8 +14,8 @@ namespace Flooder.Event.FileSystem
         public static Func<string, string, string> TagGen =
             (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
 
-        public DefaultEventListener(string tag, string path, FlooderObject obj, IPayloadParser payload)
-            : base(tag, path, obj, payload)
+        public DefaultEventListener(string tag, string path, FlooderObject obj, IPayloadParser parser)
+            : base(tag, path, obj, parser)
         {
         }
 
@@ -53,7 +53,7 @@ namespace Flooder.Event.FileSystem
 
                 var tag = TagGen(base.Tag, e.Name);
 
-                var payload = base.Payload.Parse(buffer);
+                var payload = base.Parser.Parse(buffer);
 
                 base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
                 base.Emit(tag, payload);

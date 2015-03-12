@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Flooder.Event.FileSystem.Payloads;
+using Flooder.Event.FileSystem.Parser;
 
 namespace Flooder.Event.FileSystem
 {
@@ -17,17 +17,17 @@ namespace Flooder.Event.FileSystem
 
     public class FileSystemEventSourceDetail
     {
-        public FileSystemEventSourceDetail(string tag, string path, string file, string payload)
+        public FileSystemEventSourceDetail(string tag, string path, string file, string parser)
         {
-            Tag     = tag;
-            Path    = path;
-            File    = file;
-            Payload = Type.GetType(payload) ?? typeof(DefaultPayload);
+            Tag    = tag;
+            Path   = path;
+            File   = file;
+            Parser = Type.GetType(parser) ?? typeof(DefaultParser);
         }
 
         public string Tag { get; private set; }
         public string Path { get; private set; }
         public string File { get; private set; }
-        public Type Payload { get; private set; }
+        public Type Parser { get; private set; }
     }
 }

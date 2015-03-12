@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 
-namespace Flooder.Event.FileSystem.Payloads
+namespace Flooder.Event.FileSystem.Parser
 {
-    public class StatsPayload : IPayloadParser
+    public class StatsParser : IPayloadParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -67,7 +67,7 @@ namespace Flooder.Event.FileSystem.Payloads
             }
             catch (Exception ex)
             {
-                Logger.WarnException("TastatsPayload failure parse.", ex);
+                Logger.WarnException("Failure parse.", ex);
 
                 return new Dictionary<string, object>
                 {

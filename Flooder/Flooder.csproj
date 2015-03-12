@@ -74,10 +74,10 @@
     <Compile Include="Configuration\Out\Woker.cs" />
     <Compile Include="Configuration\Section.cs" />
     <Compile Include="Event\EventListenerBase.cs" />
-    <Compile Include="Event\FileSystem\Payloads\StatsPayload.cs" />
-    <Compile Include="Event\FileSystem\Payloads\DefaultPayload.cs" />
-    <Compile Include="Event\FileSystem\Payloads\ApplogPayload.cs" />
-    <Compile Include="Event\FileSystem\IPayload.cs" />
+    <Compile Include="Event\FileSystem\Parser\StatsParser.cs" />
+    <Compile Include="Event\FileSystem\Parser\DefaultParser.cs" />
+    <Compile Include="Event\FileSystem\Parser\ApplogParser.cs" />
+    <Compile Include="Event\FileSystem\IPayloadParser.cs" />
     <Compile Include="Event\SendEventSourceToServerBase.cs" />
     <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="Core\RetryPolicy\Incremental.cs" />

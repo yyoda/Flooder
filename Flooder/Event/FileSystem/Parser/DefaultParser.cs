@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Flooder.Event.FileSystem.Payloads
+namespace Flooder.Event.FileSystem.Parser
 {
-    public class DefaultPayload : IPayloadParser
+    public class DefaultParser : IPayloadParser
     {
         public IDictionary<string, object> Parse(string source)
         {

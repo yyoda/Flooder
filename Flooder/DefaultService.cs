@@ -35,7 +35,7 @@ namespace Flooder
 
             //in
             var fs = new FileSystemEventSource(section.In.FileSystems
-                .Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Payload)));
+                .Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Parser)));
 
             var iis = new IISLogEventSource(section.In.IIS
                 .Select(x => new IISLogEventSourceDetail(x.Tag, x.Path, x.Interval)));

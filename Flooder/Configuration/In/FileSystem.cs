@@ -14,8 +14,8 @@ namespace Flooder.Configuration.In
         [ConfigurationProperty("file", IsRequired = false, DefaultValue = "*")]
         public string File { get { return (string)base["file"]; } }
 
-        [ConfigurationProperty("payload", IsRequired = false, DefaultValue = "")]
-        public string Payload { get { return (string)base["payload"]; } }
+        [ConfigurationProperty("parser", IsRequired = false, DefaultValue = "")]
+        public string Parser { get { return (string)base["parser"]; } }
     }
 
     [ConfigurationCollection(typeof(FileSystemElement))]

@@ -23,14 +23,14 @@ namespace Flooder.Event.FileSystem
             {
                 return _eventSource.Details.Select(e =>
                 {
-                    var payload = (IPayloadParser) Activator.CreateInstance(
-                        e.Payload, BindingFlags.CreateInstance, null, new object[] { }, null);
+                    var parser = (IPayloadParser) Activator.CreateInstance(
+                        e.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
 
-                    IObserver<FileSystemEventArgs> observer = new DefaultEventListener(e.Tag, e.Path, base.FlooderObject, payload).Create();
+                    IObserver<FileSystemEventArgs> observer = new DefaultEventListener(e.Tag, e.Path, base.FlooderObject, parser).Create();
 
                     var subscribe = CreateSubject(e).Subscribe(observer);
 
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, payload:{2}", e.Tag, e.Path, e.Payload.FullName);
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, parser:{2}", e.Tag, e.Path, e.Parser.FullName);
 
                     return subscribe;
                 })
