@@ -6,17 +6,25 @@ namespace Flooder.Event.FileSystem
 {
     public class FileSystemEventSource : IEventSource
     {
+        public FileSystemEventSource()
+        {
+            Details = new[] { new FileSystemEventSourceDetail() };
+        }
+
         public FileSystemEventSource(IEnumerable<FileSystemEventSourceDetail> details)
         {
             Details = details;
         }
 
         public IEnumerable<FileSystemEventSourceDetail> Details { get; set; }
-
     }
 
     public class FileSystemEventSourceDetail
     {
+        public FileSystemEventSourceDetail()
+        {
+        }
+
         public FileSystemEventSourceDetail(string tag, string path, string file, string parser)
         {
             Tag    = tag;

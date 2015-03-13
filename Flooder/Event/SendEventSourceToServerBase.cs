@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Flooder.Event
 {
@@ -14,5 +15,19 @@ namespace Flooder.Event
         }
 
         public abstract IDisposable[] Subscribe();
+
+        protected T GetEventSource<T>() where T : IEventSource, new()
+        {
+            var t = _obj.Events.OfType<T>().FirstOrDefault();
+
+            if (t == null)
+            {
+                return new T();
+            }
+
+            return t;
+        }
+
+
     }
 }

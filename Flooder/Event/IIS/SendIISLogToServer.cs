@@ -9,16 +9,16 @@ namespace Flooder.Event.IIS
     public class SendIISLogToServer : SendEventSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly IISLogEventSource _eventSource;
 
         public SendIISLogToServer(FlooderObject obj) : base(obj)
         {
-            _eventSource = obj.Events.OfType<IISLogEventSource>().First();
         }
 
         public override IDisposable[] Subscribe()
         {
-            var enable = _eventSource.Details.Where(x =>
+            var source = base.GetEventSource<IISLogEventSource>();
+
+            var enable = source.Details.Where(x =>
             {
                 if (Directory.Exists(x.Path)) return true;
                 Logger.Debug("[{0}] will be skipped because it does not exist.", x.ToString());
@@ -28,7 +28,7 @@ namespace Flooder.Event.IIS
 
             if (!enable) return new IDisposable[0];
 
-            return _eventSource.Details.Select(x =>
+            return source.Details.Select(x =>
             {
                 var observer = new IISLogListener(x.Tag, x.Path, base.FlooderObject);
                 observer.OnInitAction();

@@ -10,18 +10,17 @@ namespace Flooder.Event.FileSystem
     public class SendFileSystemToServer : SendEventSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly FileSystemEventSource _eventSource;
         
         public SendFileSystemToServer(FlooderObject obj) : base(obj)
         {
-            _eventSource = obj.Events.OfType<FileSystemEventSource>().First();
         }
 
         public override IDisposable[] Subscribe()
         {
-            if (_eventSource.Details.Any())
+            var source = base.GetEventSource<FileSystemEventSource>();
+            if (source.Details.Any())
             {
-                return _eventSource.Details.Select(e =>
+                return source.Details.Select(e =>
                 {
                     var parser = (IPayloadParser) Activator.CreateInstance(
                         e.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);

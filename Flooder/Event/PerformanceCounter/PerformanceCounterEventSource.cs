@@ -5,6 +5,11 @@ namespace Flooder.Event.PerformanceCounter
 {
     public class PerformanceCounterEventSource : IEventSource
     {
+        public PerformanceCounterEventSource()
+        {
+            Details = new[] {new PerformanceCounterEventSourceDetail(),};
+        }
+
         public PerformanceCounterEventSource(string tag, int interval, IEnumerable<PerformanceCounterEventSourceDetail> details)
         {
             Tag      = tag;
@@ -19,6 +24,10 @@ namespace Flooder.Event.PerformanceCounter
 
     public class PerformanceCounterEventSourceDetail
     {
+        public PerformanceCounterEventSourceDetail()
+        {
+        }
+
         public PerformanceCounterEventSourceDetail(string categoryName, string counterName, string instanceName)
         {
             CategoryName = categoryName;

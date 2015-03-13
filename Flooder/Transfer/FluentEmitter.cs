@@ -32,6 +32,8 @@ namespace Flooder.Transfer
 
             var timestamp = DateTime.Now.ToUnixTime();
 
+            var context = new SerializationContext();
+
             using (var ms = new MemoryStream())
             {
                 var packer = MsgPack.Packer.Create(ms);
@@ -48,8 +50,8 @@ namespace Flooder.Transfer
 
                     var type = column.Value != null ? column.Value.GetType() : typeof (string);
 
-                    new SerializationContext()
-                        .GetSerializer(type, MsgPackDefaultContext)
+                    MsgPackDefaultContext
+                        .GetSerializer(type)
                         .PackTo(packer, column.Value);
                 }
 
