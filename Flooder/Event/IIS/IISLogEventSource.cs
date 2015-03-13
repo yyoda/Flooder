@@ -7,7 +7,7 @@ namespace Flooder.Event.IIS
     {
         public IISLogEventSource()
         {
-            Details = new[] {new IISLogEventSourceDetail(),};
+            Details = new IISLogEventSourceDetail[0];
         }
 
         public IISLogEventSource(IEnumerable<IISLogEventSourceDetail> details)
@@ -20,10 +20,6 @@ namespace Flooder.Event.IIS
 
     public class IISLogEventSourceDetail
     {
-        public IISLogEventSourceDetail()
-        {
-        }
-
         public IISLogEventSourceDetail(string tag, string path, int interval)
         {
             Tag      = tag;

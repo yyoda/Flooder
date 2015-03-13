@@ -16,6 +16,7 @@ namespace Flooder.Event.PerformanceCounter
         public override IDisposable[] Subscribe()
         {
             var source = base.GetEventSource<PerformanceCounterEventSource>();
+
             if (source.Details.Any())
             {
                 var details = source.Details

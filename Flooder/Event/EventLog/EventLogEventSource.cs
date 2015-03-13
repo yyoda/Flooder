@@ -8,7 +8,7 @@ namespace Flooder.Event.EventLog
         public EventLogEventSource()
         {
             Scopes  = new string[0];
-            Details = new[] {new EventLogEventSourceDetail(),};
+            Details = new EventLogEventSourceDetail[0];
         }
 
         public EventLogEventSource(string tag, string[] scopes, IEnumerable<EventLogEventSourceDetail> details)
@@ -56,10 +56,6 @@ namespace Flooder.Event.EventLog
 
     public class EventLogEventSourceDetail
     {
-        public EventLogEventSourceDetail()
-        {
-        }
-
         public EventLogEventSourceDetail(string type, string mode, string source, string id)
         {
             Type = type;
