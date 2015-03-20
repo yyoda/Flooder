@@ -22,11 +22,11 @@ namespace Flooder.Event.FileSystem
         }
 
         public abstract FileSystemEventListenerBase Create();
-        protected abstract void OnInitAction();
-        protected abstract void OnCreateAction(FileSystemEventArgs e);
-        protected abstract void OnChangeAction(FileSystemEventArgs e);
-        protected abstract void OnRenameAction(FileSystemEventArgs e);
-        protected abstract void OnDeleteAction(FileSystemEventArgs e);
+        protected virtual void OnInitAction() { }
+        protected virtual void OnCreateAction(FileSystemEventArgs e) { }
+        protected virtual void OnChangeAction(FileSystemEventArgs e) { }
+        protected virtual void OnRenameAction(FileSystemEventArgs e) { }
+        protected virtual void OnDeleteAction(FileSystemEventArgs e) { }
 
         public void OnNext(FileSystemEventArgs e)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Web.Script.Serialization;
 using Flooder.Core.RetryPolicy;
@@ -31,8 +32,6 @@ namespace Flooder.Transfer
             if (!Tcp.HasConnection) return; //skip.
 
             var timestamp = DateTime.Now.ToUnixTime();
-
-            var context = new SerializationContext();
 
             using (var ms = new MemoryStream())
             {
@@ -64,6 +63,14 @@ namespace Flooder.Transfer
 
                 Emit(bytes);
             }
+        }
+
+        public void Emit(string tag, IDictionary<string, object>[] payload)
+        {
+            //TODO:MsgPack
+            var obj = JsonSerializer.Serialize(payload);
+            var bytes = Encoding.UTF8.GetBytes(obj);
+            this.Emit(bytes);
         }
 
         public void Emit(byte[] bytes)

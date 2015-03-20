@@ -20,16 +20,17 @@ namespace Flooder.Event.FileSystem
             var source = base.GetEventSource<FileSystemEventSource>();
             if (source.Details.Any())
             {
-                return source.Details.Select(e =>
+                return source.Details.Select(x =>
                 {
                     var parser = (IPayloadParser) Activator.CreateInstance(
-                        e.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
+                        x.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
 
-                    IObserver<FileSystemEventArgs> observer = new DefaultEventListener(e.Tag, e.Path, base.FlooderObject, parser).Create();
+                    var listener = (FileSystemEventListenerBase) Activator.CreateInstance(
+                        x.Listner, BindingFlags.CreateInstance, null, new object[] { x.Tag, x.Path, base.FlooderObject, parser }, null);
 
-                    var subscribe = CreateSubject(e).Subscribe(observer);
+                    var subscribe = CreateSubject(x).Subscribe(listener.Create());
 
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, parser:{2}", e.Tag, e.Path, e.Parser.FullName);
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, parser:{2}", x.Tag, x.Path, x.Parser.FullName);
 
                     return subscribe;
                 })

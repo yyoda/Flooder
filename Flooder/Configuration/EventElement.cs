@@ -1,9 +1,9 @@
 ﻿using System.Configuration;
-using Flooder.Configuration.In;
+using Flooder.Configuration.EventElements;
 
 namespace Flooder.Configuration
 {
-    public class InputElement : ConfigurationElement
+    public class EventElement : ConfigurationElement
     {
         [ConfigurationProperty("fileSystems", IsRequired = false)]
         [ConfigurationCollection(typeof(FileSystemElementCollection))]

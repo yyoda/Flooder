@@ -75,5 +75,10 @@ namespace Flooder.Event.FileSystem.Parser
                 };
             }
         }
+
+        public IDictionary<string, object>[] MultipleParse(string source)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

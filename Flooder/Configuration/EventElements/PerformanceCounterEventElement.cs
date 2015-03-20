@@ -2,20 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace Flooder.Configuration.In
+namespace Flooder.Configuration.EventElements
 {
-    public class PerformanceCounterElement : ConfigurationElement
-    {
-        [ConfigurationProperty("categoryName", IsRequired = true)]
-        public string CategoryName { get { return (string)base["categoryName"]; } }
-
-        [ConfigurationProperty("counterName", IsRequired = true)]
-        public string CounterName { get { return (string)base["counterName"]; } }
-
-        [ConfigurationProperty("instanceName", IsRequired = false, DefaultValue = "")]
-        public string InstanceName { get { return (string)base["instanceName"]; } }
-    }
-
     [ConfigurationCollection(typeof(PerformanceCounterElement))]
     public class PerformanceCounterElementCollection : ConfigurationElementCollection, IEnumerable<PerformanceCounterElement>
     {
@@ -44,5 +32,17 @@ namespace Flooder.Configuration.In
                 yield return (PerformanceCounterElement)e.Current;
             }
         }
+    }
+
+    public class PerformanceCounterElement : ConfigurationElement
+    {
+        [ConfigurationProperty("categoryName", IsRequired = true)]
+        public string CategoryName { get { return (string)base["categoryName"]; } }
+
+        [ConfigurationProperty("counterName", IsRequired = true)]
+        public string CounterName { get { return (string)base["counterName"]; } }
+
+        [ConfigurationProperty("instanceName", IsRequired = false, DefaultValue = "")]
+        public string InstanceName { get { return (string)base["instanceName"]; } }
     }
 }

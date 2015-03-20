@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Flooder.Event.FileSystem.Parser
 {
@@ -10,6 +11,11 @@ namespace Flooder.Event.FileSystem.Parser
             {
                 {"messages", source},
             };
+        }
+
+        public IDictionary<string, object>[] MultipleParse(string source)
+        {
+            throw new NotImplementedException();
         }
     }
 }

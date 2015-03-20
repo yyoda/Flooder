@@ -2,17 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace Flooder.Configuration.Out
+namespace Flooder.Configuration
 {
-    public class WorkerElement : ConfigurationElement
-    {
-        [ConfigurationProperty("host", IsRequired = true)]
-        public string Host { get { return (string)base["host"]; } }
-
-        [ConfigurationProperty("port", IsRequired = true)]
-        public int Port { get { return (int)base["port"]; } }
-    }
-
     [ConfigurationCollection(typeof(WorkerElement))]
     public class WokerElementCollection : ConfigurationElementCollection, IEnumerable<WorkerElement>
     {
@@ -38,5 +29,14 @@ namespace Flooder.Configuration.Out
                 yield return (WorkerElement)e.Current;
             }
         }
+    }
+
+    public class WorkerElement : ConfigurationElement
+    {
+        [ConfigurationProperty("host", IsRequired = true)]
+        public string Host { get { return (string)base["host"]; } }
+
+        [ConfigurationProperty("port", IsRequired = true)]
+        public int Port { get { return (int)base["port"]; } }
     }
 }

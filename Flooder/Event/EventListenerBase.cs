@@ -34,5 +34,15 @@ namespace Flooder.Event
 
             Task.Factory.StartNew(() => Emitter.Emit(tag, payload));
         }
+
+        protected void Emit(string tag, IDictionary<string, object>[] payloads)
+        {
+            foreach (var payload in payloads)
+            {
+                payload["hostname"] = HostName;
+            }
+
+            Task.Factory.StartNew(() => Emitter.Emit(tag, payloads));
+        }
     }
 }

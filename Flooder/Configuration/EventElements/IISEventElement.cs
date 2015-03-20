@@ -2,20 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace Flooder.Configuration.In
+namespace Flooder.Configuration.EventElements
 {
-    public class IISElement : ConfigurationElement
-    {
-        [ConfigurationProperty("tag", IsRequired = true)]
-        public string Tag { get { return (string)base["tag"]; } }
-
-        [ConfigurationProperty("path", IsRequired = true)]
-        public string Path { get { return (string)base["path"]; } }
-
-        [ConfigurationProperty("interval", IsRequired = false, DefaultValue = 1)]
-        public int Interval { get { return (int)base["interval"]; } }
-    }
-
     [ConfigurationCollection(typeof(EventLogElement))]
     public class IISElementCollection : ConfigurationElementCollection, IEnumerable<IISElement>
     {
@@ -38,5 +26,17 @@ namespace Flooder.Configuration.In
                 yield return (IISElement)e.Current;
             }
         }
+    }
+
+    public class IISElement : ConfigurationElement
+    {
+        [ConfigurationProperty("tag", IsRequired = true)]
+        public string Tag { get { return (string)base["tag"]; } }
+
+        [ConfigurationProperty("path", IsRequired = true)]
+        public string Path { get { return (string)base["path"]; } }
+
+        [ConfigurationProperty("interval", IsRequired = false, DefaultValue = 1)]
+        public int Interval { get { return (int)base["interval"]; } }
     }
 }

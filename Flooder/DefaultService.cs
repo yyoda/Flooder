@@ -35,37 +35,46 @@ namespace Flooder
             var events = new List<IEventSource>();
 
             //event
-            if (section.In.FileSystems.Any())
+            if (section.Event.FileSystems.Any())
             {
-                var fs = new FileSystemEventSource(section.In.FileSystems
-                    .Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Parser)));
+                var fs = new FileSystemEventSource(
+                    section.Event.FileSystems.Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
+
                 events.Add(fs);
             }
 
-            if (section.In.IIS.Any())
+            if (section.Event.IIS.Any())
             {
-                var iis = new IISLogEventSource(section.In.IIS
-                    .Select(x => new IISLogEventSourceDetail(x.Tag, x.Path, x.Interval)));
+                var iis = new IISLogEventSource(
+                    section.Event.IIS.Select(x => new IISLogEventSourceDetail(x.Tag, x.Path, x.Interval)));
+
                 events.Add(iis);
             }
 
-            if (section.In.EventLogs.Scopes.Any())
+            if (section.Event.EventLogs.Scopes.Any())
             {
-                var ev = new EventLogEventSource(section.In.EventLogs.Tag, section.In.EventLogs.Scopes, section.In.EventLogs
-                    .Select(x => new EventLogEventSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
+                var ev = new EventLogEventSource(
+                    section.Event.EventLogs.Tag,
+                    section.Event.EventLogs.Scopes,
+                    section.Event.EventLogs.Select(x => new EventLogEventSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
+
                 events.Add(ev);
             }
 
-            if (section.In.PerformanceCounters.Any())
+            if (section.Event.PerformanceCounters.Any())
             {
-                var pc = new PerformanceCounterEventSource(section.In.PerformanceCounters.Tag, section.In.PerformanceCounters.Interval, section.In.PerformanceCounters
-                    .Select(x => new PerformanceCounterEventSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
+                var pc = new PerformanceCounterEventSource(
+                    section.Event.PerformanceCounters.Tag,
+                    section.Event.PerformanceCounters.Interval,
+                    section.Event.PerformanceCounters.Select(x => new PerformanceCounterEventSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
+
                 events.Add(pc);
             }
 
             //worker
-            var wk = new Worker(section.Out.Workers.Type, section.Out.Workers
-                .Select(x => new WorkerDetail(x.Host, x.Port)));
+            var wk = new Worker(
+                section.Worker.Type,
+                section.Worker.Select(x => new WorkerDetail(x.Host, x.Port)));
 
             var obj = new FlooderObject(events, wk);
 
