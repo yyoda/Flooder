@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using Flooder.Core.RetryPolicy;
+using Flooder.RetryPolicy;
 using NLog;
 
-namespace Flooder.Core.CircuitBreaker
+namespace Flooder.CircuitBreaker
 {
     public class DefaultCircuitBreaker
     {

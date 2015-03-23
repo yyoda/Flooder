@@ -10,7 +10,7 @@ namespace Flooder.Event.EventLog
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public EventLogEventListener(string tag, FlooderObject obj) : base(tag, obj)
+        public EventLogEventListener(string tag, IMessageBroker messageBroker) : base(tag, messageBroker)
         {
             IncludeInfo = IncludeWarn = IncludeError = ExcludeInfo = ExcludeWarn = ExcludeError = new HashSet<Tuple<string, string>>();
         }
@@ -66,7 +66,7 @@ namespace Flooder.Event.EventLog
                     {"UserName", e.Entry.UserName},
                 };
 
-                base.Emit(payload);
+                base.Publish(payload);
             }
             catch (Exception ex)
             {

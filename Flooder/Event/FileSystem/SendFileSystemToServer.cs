@@ -11,13 +11,14 @@ namespace Flooder.Event.FileSystem
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         
-        public SendFileSystemToServer(FlooderObject obj) : base(obj)
+        public SendFileSystemToServer(IEventSource eventSource, IMessageBroker messageBroker)
+            : base(eventSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.GetEventSource<FileSystemEventSource>();
+            var source = base.EventSource as FileSystemEventSource ?? new FileSystemEventSource();
             if (source.Details.Any())
             {
                 return source.Details.Select(x =>
@@ -26,7 +27,7 @@ namespace Flooder.Event.FileSystem
                         x.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
 
                     var listener = (FileSystemEventListenerBase) Activator.CreateInstance(
-                        x.Listner, BindingFlags.CreateInstance, null, new object[] { x.Tag, x.Path, base.FlooderObject, parser }, null);
+                        x.Listner, BindingFlags.CreateInstance, null, new object[] { x.Tag, x.Path, base.MessageBroker, parser }, null);
 
                     var subscribe = CreateSubject(x).Subscribe(listener.Create());
 

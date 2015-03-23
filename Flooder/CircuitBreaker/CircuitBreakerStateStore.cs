@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Flooder.Core.CircuitBreaker
+namespace Flooder.CircuitBreaker
 {
     public class CircuitBreakerStateStore : ICircuitBreakerStateStore
     {
-        private readonly IList<Exception> _exceptions;
+        private IList<Exception> _exceptions;
         private Exception _exception;
         private DateTimeOffset _now;
 

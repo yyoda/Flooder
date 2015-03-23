@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Flooder.Core.RetryPolicy
+namespace Flooder.RetryPolicy
 {
     public class ExponentialBackoff : IRetryPolicy
     {

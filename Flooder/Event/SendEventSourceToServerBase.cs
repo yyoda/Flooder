@@ -1,33 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Flooder.Event
 {
     public abstract class SendEventSourceToServerBase
     {
-        private readonly FlooderObject _obj;
+        protected IEventSource EventSource { get; private set; }
+        protected IMessageBroker MessageBroker { get; private set; }
 
-        protected FlooderObject FlooderObject { get { return _obj; } }
-
-        protected SendEventSourceToServerBase(FlooderObject obj)
+        protected SendEventSourceToServerBase(IEventSource eventSource, IMessageBroker messageBroker)
         {
-            _obj = obj;
+            EventSource   = eventSource;
+            MessageBroker = messageBroker;
         }
 
         public abstract IDisposable[] Subscribe();
+    }
 
-        protected T GetEventSource<T>() where T : IEventSource, new()
+    public static class SendEventSourceToServerBaseExtensions
+    {
+        public static IEnumerable<IDisposable> Subscribe(this IEnumerable<SendEventSourceToServerBase> @this)
         {
-            var t = _obj.Events.OfType<T>().FirstOrDefault();
-
-            if (t == null)
-            {
-                return new T();
-            }
-
-            return t;
+            return @this.SelectMany(x => x.Subscribe());
         }
-
-
     }
 }

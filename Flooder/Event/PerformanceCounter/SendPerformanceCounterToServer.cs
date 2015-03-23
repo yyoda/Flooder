@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using Flooder.Transfer;
 using NLog;
 
 namespace Flooder.Event.PerformanceCounter
@@ -9,13 +10,14 @@ namespace Flooder.Event.PerformanceCounter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendPerformanceCounterToServer(FlooderObject obj) : base(obj)
+        public SendPerformanceCounterToServer(IEventSource eventSource, IMessageBroker messageBroker)
+            : base(eventSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.GetEventSource<PerformanceCounterEventSource>();
+            var source = base.EventSource as PerformanceCounterEventSource ?? new PerformanceCounterEventSource();
 
             if (source.Details.Any())
             {
@@ -25,7 +27,7 @@ namespace Flooder.Event.PerformanceCounter
 
                 var subscribe = Observable
                     .Interval(TimeSpan.FromSeconds(source.Interval))
-                    .Subscribe(new PerformanceCounterEventListener(source.Tag, details, base.FlooderObject));
+                    .Subscribe(new PerformanceCounterEventListener(source.Tag, base.MessageBroker, details));
 
                 Logger.Info("PerformanceCounterListener start. tag:{0}, interval:{1}", source.Tag, source.Interval);
                 Logger.Trace("PerformanceCounterListener settings:[{0}]", string.Join(",", details.Select(x => x.ToString())));

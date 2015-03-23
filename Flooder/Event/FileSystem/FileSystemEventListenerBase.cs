@@ -13,8 +13,8 @@ namespace Flooder.Event.FileSystem
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
         protected IPayloadParser Parser { get; private set; }
 
-        protected FileSystemEventListenerBase(string tag, string path, FlooderObject obj, IPayloadParser parser)
-            : base(tag, obj)
+        protected FileSystemEventListenerBase(string tag, string path, IMessageBroker messageBroker, IPayloadParser parser)
+            : base(tag, messageBroker)
         {
             Path                       = path;
             FileSeekPositionStateStore = new ConcurrentDictionary<string, long>();

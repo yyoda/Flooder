@@ -16,31 +16,38 @@ namespace Flooder
     public class DefaultService : IFlooderService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private List<IDisposable> _events = new List<IDisposable>();
+        private readonly List<IDisposable> instances = new List<IDisposable>();
+
+        private readonly IEnumerable<SendEventSourceToServerBase> _events;
+        private readonly Worker _worker;
 
         public DefaultService()
         {
         }
 
-        public DefaultService(FlooderObject obj)
+        public DefaultService(IEnumerable<SendEventSourceToServerBase> events, Worker worker)
         {
-            FlooderObject = obj;
+            _events = events;
+            _worker = worker;
         }
-
-        public FlooderObject FlooderObject { get; private set; }
 
         public IFlooderService Create()
         {
             var section = ConfigurationManager.GetSection("flooder") as Section;
-            var events = new List<IEventSource>();
+
+            //worker
+            var worker = new Worker(
+                section.Worker.Type,
+                section.Worker.Select(x => new WorkerDetail(x.Host, x.Port)));
 
             //event
+            var events = new List<SendEventSourceToServerBase>();
             if (section.Event.FileSystems.Any())
             {
                 var fs = new FileSystemEventSource(
                     section.Event.FileSystems.Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
 
-                events.Add(fs);
+                events.Add(new SendFileSystemToServer(fs, worker.MessageBroker));
             }
 
             if (section.Event.IIS.Any())
@@ -48,7 +55,7 @@ namespace Flooder
                 var iis = new IISLogEventSource(
                     section.Event.IIS.Select(x => new IISLogEventSourceDetail(x.Tag, x.Path, x.Interval)));
 
-                events.Add(iis);
+                events.Add(new SendIISLogToServer(iis, worker.MessageBroker));
             }
 
             if (section.Event.EventLogs.Scopes.Any())
@@ -58,7 +65,7 @@ namespace Flooder
                     section.Event.EventLogs.Scopes,
                     section.Event.EventLogs.Select(x => new EventLogEventSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
 
-                events.Add(ev);
+                events.Add(new SendEventLogToServer(ev, worker.MessageBroker));
             }
 
             if (section.Event.PerformanceCounters.Any())
@@ -68,55 +75,32 @@ namespace Flooder
                     section.Event.PerformanceCounters.Interval,
                     section.Event.PerformanceCounters.Select(x => new PerformanceCounterEventSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
 
-                events.Add(pc);
+                events.Add(new SendPerformanceCounterToServer(pc, worker.MessageBroker));
             }
 
-            //worker
-            var wk = new Worker(
-                section.Worker.Type,
-                section.Worker.Select(x => new WorkerDetail(x.Host, x.Port)));
-
-            var obj = new FlooderObject(events, wk);
-
-            return new DefaultService(obj);
+            return new DefaultService(events, worker);
         }
 
         public void Start()
         {
-            if (FlooderObject == null) throw new NullReferenceException("FlooderObject");
-
             Logger.Info("Flooder start.");
 
-            if (this.FlooderObject.Worker.Type == "fluentd" && this.FlooderObject.Worker.Connection.Connect())
-            {
-                _events = new SendEventSourceToServerBase[]
-                {
-                    new SendFileSystemToServer(this.FlooderObject),
-                    new SendIISLogToServer(this.FlooderObject),
-                    new SendEventLogToServer(this.FlooderObject),
-                    new SendPerformanceCounterToServer(this.FlooderObject),
-                }
-                .SelectMany(x =>
-                {
-                    return x.Subscribe();
-                })
-                .ToList();
+            if (_worker == null) throw new NullReferenceException("Worker");
+            if (_events == null) throw new NullReferenceException("Events");
 
-                _events.Add(this.FlooderObject.Worker.Connection.HealthCheck());
-            }
+            var worker = _worker.Subscribe();
+            var events = _events.SelectMany(x => x.Subscribe());
 
-            if (!_events.Any())
-            {
-                throw new InvalidOperationException("Instances is empty.");
-            }
+            instances.AddRange(worker);
+            instances.AddRange(events);
         }
 
         public void Stop()
         {
-            if (FlooderObject == null) throw new NullReferenceException("FlooderObject");
+            if (_worker == null) throw new NullReferenceException("Worker");
+            if (_events == null) throw new NullReferenceException("Events");
 
-            _events.ForEach(x => x.Dispose());
-            this.FlooderObject.Worker.Connection.Close();
+            instances.ForEach(x => x.Dispose());
             Logger.Info("Flooder stop.");
         }
     }

@@ -10,8 +10,8 @@ namespace Flooder.Event.PerformanceCounter
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly InternalValueObject[] _internalValueObjects;
 
-        public PerformanceCounterEventListener(string tag, InternalValueObject[] internalValueObjects, FlooderObject obj)
-            : base(tag, obj)
+        public PerformanceCounterEventListener(string tag, IMessageBroker messageBroker, InternalValueObject[] internalValueObjects)
+            : base(tag, messageBroker)
         {
             _internalValueObjects = internalValueObjects;
         }
@@ -54,7 +54,7 @@ namespace Flooder.Event.PerformanceCounter
             })
             .ToDictionary(x => x.Path, x => (object)x.CookedValue);
 
-            base.Emit(payload);
+            base.Publish(payload);
         }
 
         public void OnError(Exception error)

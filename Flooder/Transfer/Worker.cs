@@ -1,32 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flooder.Event;
 
 namespace Flooder.Transfer
 {
     public class Worker
     {
+        private readonly TcpManager _tcp;
+
+        public IMessageBroker MessageBroker { get; private set; }
+
         public Worker(string type, IEnumerable<WorkerDetail> details)
         {
-            Type    = type;
-            Details = details;
+            _tcp  = new TcpManager(details.Select(x => Tuple.Create(x.Host, x.Port)));
 
-            switch (Type)
+            switch (type)
             {
                 case "fluentd":
-                    var hosts = Details.Select(x => Tuple.Create(x.Host, x.Port)).ToArray();
-                    Connection = new TcpConnectionManager(hosts);
-                    Emitter = new FluentEmitter(Connection);
+                    MessageBroker = new FluentMessageBroker(_tcp, TimeSpan.FromSeconds(1), 3);
                     break;
                 default:
-                    throw new NullReferenceException(string.Format("Type[{0}] is not found.", Type));
+                    throw new NullReferenceException(string.Format("Type[{0}] is not found.", type));
             }
         }
 
-        public string Type { get; private set; }
-        public IEnumerable<WorkerDetail> Details { get; private set; }
-        public IEmitter Emitter { get; private set; }
-        public TcpConnectionManager Connection { get; private set; }
+        public IEnumerable<IDisposable> Subscribe()
+        {
+            var instances = new List<IDisposable>();
+
+            if (_tcp.Connect())
+            {
+                instances.Add(_tcp.HealthCheck());
+            }
+
+            instances.Add(MessageBroker.Subscribe());
+
+            return instances;
+        }
     }
 
     public class WorkerDetail

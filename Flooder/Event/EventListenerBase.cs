@@ -1,48 +1,43 @@
-﻿using Flooder.Transfer;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Flooder.Event
 {
     public abstract class EventListenerBase
     {
-        private readonly FlooderObject _obj;
         private readonly string _tag;
+        private readonly string _hostName;
+        private readonly IMessageBroker _messageBroker;
 
-        protected EventListenerBase(string tag, FlooderObject obj)
+        protected EventListenerBase(string tag, IMessageBroker messageBroker)
         {
-            _tag     = tag;
-            _obj     = obj;
-            HostName = Dns.GetHostName();
+            _tag           = tag;
+            _messageBroker = messageBroker;
+            _hostName      = Dns.GetHostName();
         }
 
         protected string Tag { get { return _tag; } }
-        protected IEmitter Emitter { get { return _obj.Worker.Emitter; } }
-        protected string HostName { get; private set; }
 
-        protected void Emit(IDictionary<string, object> payload)
+        protected void Publish(IDictionary<string, object> payload)
         {
-            payload["hostname"] = HostName;
-
-            Task.Factory.StartNew(() => Emitter.Emit(Tag, payload));
+            payload["hostname"] = _hostName;
+            _messageBroker.Publish(Tag, payload);
         }
 
-        protected void Emit(string tag, IDictionary<string, object> payload)
+        protected void Publish(string tag, IDictionary<string, object> payload)
         {
-            payload["hostname"] = HostName;
-
-            Task.Factory.StartNew(() => Emitter.Emit(tag, payload));
+            payload["hostname"] = _hostName;
+            _messageBroker.Publish(tag, payload);
         }
 
-        protected void Emit(string tag, IDictionary<string, object>[] payloads)
+        protected void Publish(string tag, IDictionary<string, object>[] payloads)
         {
             foreach (var payload in payloads)
             {
-                payload["hostname"] = HostName;
+                payload["hostname"] = _hostName;
             }
 
-            Task.Factory.StartNew(() => Emitter.Emit(tag, payloads));
+            _messageBroker.Publish(tag, payloads);
         }
     }
 }

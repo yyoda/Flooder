@@ -10,13 +10,14 @@ namespace Flooder.Event.IIS
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendIISLogToServer(FlooderObject obj) : base(obj)
+        public SendIISLogToServer(IEventSource eventSource, IMessageBroker messageBroker)
+            : base(eventSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.GetEventSource<IISLogEventSource>();
+            var source = base.EventSource as IISLogEventSource ?? new IISLogEventSource();
 
             var enable = source.Details.Where(x =>
             {
@@ -30,7 +31,7 @@ namespace Flooder.Event.IIS
 
             return source.Details.Select(x =>
             {
-                var observer = new IISLogListener(x.Tag, x.Path, base.FlooderObject);
+                var observer = new IISLogListener(x.Tag, x.Path, base.MessageBroker);
                 observer.OnInitAction();
 
                 var subscribe = Observable

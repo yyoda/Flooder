@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
-using Flooder.Core.CircuitBreaker;
-using Flooder.Core.Utility;
+using Flooder.CircuitBreaker;
+using Flooder.Utility;
 using NLog;
 
 namespace Flooder.Transfer
 {
-    public class TcpConnectionManager : IDisposable
+    public class TcpManager : IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly object _syncObject;
-        private readonly Tuple<string, int>[] _hosts;
+        private readonly IEnumerable<Tuple<string, int>> _hosts;
         private IDictionary<Tuple<string, int>, TcpClient> _connectionStateStore;
         
-        public TcpConnectionManager(Tuple<string, int>[] hosts)
+        public TcpManager(IEnumerable<Tuple<string, int>> hosts)
         {
             _syncObject           = new object();
             _hosts                = hosts;

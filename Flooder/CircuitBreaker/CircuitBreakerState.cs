@@ -1,5 +1,5 @@
 ﻿
-namespace Flooder.Core.CircuitBreaker
+namespace Flooder.CircuitBreaker
 {
     public enum CircuitBreakerState
     {

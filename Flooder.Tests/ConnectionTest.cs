@@ -23,7 +23,7 @@ namespace Flooder.Tests
 
             try
             {
-                var tcp = new TcpConnectionManager(hosts);
+                var tcp = new TcpManager(hosts);
                 tcp.Connect();
                 subscribe = tcp.HealthCheck();
 

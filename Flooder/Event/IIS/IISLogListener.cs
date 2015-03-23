@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using NLog;
 
 namespace Flooder.Event.IIS
@@ -21,12 +20,11 @@ namespace Flooder.Event.IIS
         });
 
         private readonly string _filePath;
-
         private string[] _fields;
         private Tuple<string, long> _fileSeekPositionStateStore;
 
-        public IISLogListener(string tag, string filePath, FlooderObject obj)
-            : base(tag, obj)
+        public IISLogListener(string tag, string filePath, IMessageBroker messageBroker)
+            : base(tag, messageBroker)
         {
             _filePath                   = filePath;
             _fields                     = new string[0];
@@ -136,13 +134,13 @@ namespace Flooder.Event.IIS
                             })
                             .ToDictionary(x => x.Key, x => x.Value);
 
-                            base.Emit(pl);
+                            base.Publish(pl);
                         }
                     }
 
                     if (isFirst && payload != null)
                     {
-                        base.Emit(payload);
+                        base.Publish(payload);
                     }
 
                     _fileSeekPositionStateStore = Tuple.Create(fullPath, fs.Position);

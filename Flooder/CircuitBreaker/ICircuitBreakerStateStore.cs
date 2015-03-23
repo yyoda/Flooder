@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Flooder.Core.CircuitBreaker
+namespace Flooder.CircuitBreaker
 {
     public interface ICircuitBreakerStateStore
     {

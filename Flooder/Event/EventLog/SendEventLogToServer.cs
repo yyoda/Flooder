@@ -9,13 +9,14 @@ namespace Flooder.Event.EventLog
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendEventLogToServer(FlooderObject obj) : base(obj)
+        public SendEventLogToServer(IEventSource eventSource, IMessageBroker messageBroker)
+            : base(eventSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.GetEventSource<EventLogEventSource>();
+            var source = base.EventSource as EventLogEventSource ?? new EventLogEventSource();
 
             return source.Scopes.Select(scope =>
             {
@@ -26,7 +27,7 @@ namespace Flooder.Event.EventLog
                 var excludeWarn  = source.GetExcludeWarn().ToArray();
                 var excludeError = source.GetExcludeError().ToArray();
 
-                var observer = new EventLogEventListener(source.Tag, base.FlooderObject)
+                var observer = new EventLogEventListener(source.Tag, base.MessageBroker)
                 {
                     IncludeInfo  = new HashSet<Tuple<string, string>>(includeInfo.Select(x => Tuple.Create(x.Source, x.Id))),
                     IncludeWarn  = new HashSet<Tuple<string, string>>(includeWarn.Select(x => Tuple.Create(x.Source, x.Id))),

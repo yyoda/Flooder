@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Flooder.Core.Utility
+namespace Flooder.Utility
 {
     public static class EnumerableExtensions
     {

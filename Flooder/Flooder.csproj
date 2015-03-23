@@ -61,10 +61,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\CircuitBreaker\CircuitBreakerOpenException.cs" />
-    <Compile Include="Core\CircuitBreaker\CircuitBreakerState.cs" />
-    <Compile Include="Core\CircuitBreaker\CircuitBreakerStateStore.cs" />
-    <Compile Include="Core\CircuitBreaker\ICircuitBreakerStateStore.cs" />
+    <Compile Include="CircuitBreaker\CircuitBreakerOpenException.cs" />
+    <Compile Include="CircuitBreaker\CircuitBreakerState.cs" />
+    <Compile Include="CircuitBreaker\CircuitBreakerStateStore.cs" />
+    <Compile Include="CircuitBreaker\ICircuitBreakerStateStore.cs" />
     <Compile Include="Configuration\EventElement.cs" />
     <Compile Include="Configuration\EventElements\IISEventElement.cs" />
     <Compile Include="Configuration\EventElements\EventLogEventElement.cs" />
@@ -80,11 +80,11 @@
     <Compile Include="Event\FileSystem\Parser\ApplogParser.cs" />
     <Compile Include="Event\FileSystem\IPayloadParser.cs" />
     <Compile Include="Event\SendEventSourceToServerBase.cs" />
-    <Compile Include="Core\RetryPolicy\ExponentialBackoff.cs" />
-    <Compile Include="Core\RetryPolicy\Incremental.cs" />
-    <Compile Include="Core\RetryPolicy\FixedInterval.cs" />
-    <Compile Include="Core\RetryPolicy\IRetryPolicy.cs" />
-    <Compile Include="Core\CircuitBreaker\DefaultCircuitBreaker.cs" />
+    <Compile Include="RetryPolicy\ExponentialBackoff.cs" />
+    <Compile Include="RetryPolicy\Incremental.cs" />
+    <Compile Include="RetryPolicy\FixedInterval.cs" />
+    <Compile Include="RetryPolicy\IRetryPolicy.cs" />
+    <Compile Include="CircuitBreaker\DefaultCircuitBreaker.cs" />
     <Compile Include="DefaultService.cs" />
     <Compile Include="IFlooderService.cs" />
     <Compile Include="Event\IEventSource.cs" />
@@ -93,13 +93,12 @@
     <Compile Include="Event\FileSystem\FileSystemEventSource.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterEventSource.cs" />
     <Compile Include="Transfer\Worker.cs" />
-    <Compile Include="Event\FlooderObject.cs" />
     <Compile Include="FlooderFactory.cs" />
-    <Compile Include="Transfer\FluentEmitter.cs" />
-    <Compile Include="Transfer\IEmitter.cs" />
-    <Compile Include="Transfer\TcpConnectionManager.cs" />
-    <Compile Include="Core\Utility\DateTimeExtensions.cs" />
-    <Compile Include="Core\Utility\EnumerableExtensions.cs" />
+    <Compile Include="Transfer\FluentMessageBroker.cs" />
+    <Compile Include="Event\IMessageBroker.cs" />
+    <Compile Include="Transfer\TcpManager.cs" />
+    <Compile Include="Utility\DateTimeExtensions.cs" />
+    <Compile Include="Utility\EnumerableExtensions.cs" />
     <Compile Include="Event\EventLog\EventLogEventListener.cs" />
     <Compile Include="Event\EventLog\EventLogWatcherExtensions.cs" />
     <Compile Include="Event\EventLog\SendEventLogToServer.cs" />

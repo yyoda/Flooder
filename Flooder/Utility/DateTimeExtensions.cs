@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Flooder.Core.Utility
+namespace Flooder.Utility
 {
     public static class DateTimeExtentions
     {
