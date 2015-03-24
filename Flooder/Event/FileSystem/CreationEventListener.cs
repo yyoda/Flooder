@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using NLog;
 
@@ -31,7 +30,7 @@ namespace Flooder.Event.FileSystem
                 {
                     var payloads = base.Parser.MultipleParse(buffer);
 
-                    base.Publish(base.Tag, payloads);
+                    base.Publish(payloads);
                 }
             }
 
