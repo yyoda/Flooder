@@ -18,10 +18,10 @@ namespace Flooder.Event.FileSystem.Parser
         {
             try
             {
-                var chank = source.Split('\n');
-                var head = chank.First().Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = source.Replace("\r\n", "\n").Split('\n');
+                var head  = lines.First().Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-                return chank.Skip(0).Select(row =>
+                return lines.Skip(1).Select(row =>
                 {
                     return row.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                         .Select((col, idx) =>

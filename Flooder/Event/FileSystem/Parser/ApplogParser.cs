@@ -13,8 +13,8 @@ namespace Flooder.Event.FileSystem.Parser
         {
             try
             {
-                var lines = source.Split(new[] { @"\r\n", @"\n" }, StringSplitOptions.RemoveEmptyEntries);
-                var head = lines.First().Split(new[] { " [", "] [", "] " }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = source.Replace("\r\n", "\n").Split('\n');
+                var head  = lines.First().Split(new[] { " [", "] [", "] " }, StringSplitOptions.RemoveEmptyEntries);
 
                 string datetime = "", uid = "", status = "", method = "", title = "";
 

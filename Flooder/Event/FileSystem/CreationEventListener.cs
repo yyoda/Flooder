@@ -13,7 +13,7 @@ namespace Flooder.Event.FileSystem
 
         /// <summary>inject option.</summary>
         public static Func<string, string, string> TagGen =
-            (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
+            (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.', '_').FirstOrDefault() ?? "unknown");
 
         public CreationEventListener(string tag, string path, IMessageBroker messageBroker, IPayloadParser parser)
             : base(tag, path, messageBroker, parser)
@@ -31,18 +31,16 @@ namespace Flooder.Event.FileSystem
             using (var sr = new StreamReader(fs, Encoding))
             {
                 var buffer = sr.ReadToEnd();
-                if (buffer.Length <= 0)
+                if (buffer.Length > 0)
                 {
-                    RemoveFile(e.FullPath);
-                    return;
+                    var tag = TagGen(base.Tag, e.Name);
+                    var payload = base.Parser.MultipleParse(buffer);
+
+                    base.Publish(tag, payload);
                 }
-
-                var tag = TagGen(base.Tag, e.Name);
-                var payload = base.Parser.MultipleParse(buffer);
-
-                base.Publish(tag, payload);
-                RemoveFile(e.FullPath);
             }
+
+            RemoveFile(e.FullPath);
         }
 
         private static void RemoveFile(string filePath)
