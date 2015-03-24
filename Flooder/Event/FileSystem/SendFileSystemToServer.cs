@@ -7,18 +7,18 @@ using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public class SendFileSystemToServer : SendEventSourceToServerBase
+    public class SendFileSystemToServer : SendDataSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         
-        public SendFileSystemToServer(IEventSource eventSource, IMessageBroker messageBroker)
-            : base(eventSource, messageBroker)
+        public SendFileSystemToServer(IDataSource dataSource, IMessageBroker messageBroker)
+            : base(dataSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.EventSource as FileSystemEventSource ?? new FileSystemEventSource();
+            var source = base.DataSource as FileSystemDataSource ?? new FileSystemDataSource();
             if (source.Details.Any())
             {
                 return source.Details.Select(x =>
@@ -41,7 +41,7 @@ namespace Flooder.Event.FileSystem
             return new IDisposable[0];
         }
 
-        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemEventSourceDetail source)
+        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemDataSourceDetail source)
         {
             if (!Directory.Exists(source.Path))
             {

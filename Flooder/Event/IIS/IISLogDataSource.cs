@@ -3,24 +3,24 @@ using System.Collections.Generic;
 
 namespace Flooder.Event.IIS
 {
-    public class IISLogEventSource : IEventSource
+    public class IISLogDataSource : IDataSource
     {
-        public IISLogEventSource()
+        public IISLogDataSource()
         {
-            Details = new IISLogEventSourceDetail[0];
+            Details = new IISLogDataSourceDetail[0];
         }
 
-        public IISLogEventSource(IEnumerable<IISLogEventSourceDetail> details)
+        public IISLogDataSource(IEnumerable<IISLogDataSourceDetail> details)
         {
             Details = details;
         }
 
-        public IEnumerable<IISLogEventSourceDetail> Details { get; set; }
+        public IEnumerable<IISLogDataSourceDetail> Details { get; set; }
     }
 
-    public class IISLogEventSourceDetail
+    public class IISLogDataSourceDetail
     {
-        public IISLogEventSourceDetail(string tag, string path, int interval)
+        public IISLogDataSourceDetail(string tag, string path, int interval)
         {
             Tag      = tag;
             Path     = path;

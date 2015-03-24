@@ -18,14 +18,14 @@ namespace Flooder
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly List<IDisposable> instances = new List<IDisposable>();
 
-        private readonly IEnumerable<SendEventSourceToServerBase> _events;
+        private readonly IEnumerable<SendDataSourceToServerBase> _events;
         private readonly Worker _worker;
 
         public DefaultService()
         {
         }
 
-        public DefaultService(IEnumerable<SendEventSourceToServerBase> events, Worker worker)
+        public DefaultService(IEnumerable<SendDataSourceToServerBase> events, Worker worker)
         {
             _events = events;
             _worker = worker;
@@ -41,39 +41,39 @@ namespace Flooder
                 section.Worker.Select(x => new WorkerDetail(x.Host, x.Port)));
 
             //event
-            var events = new List<SendEventSourceToServerBase>();
+            var events = new List<SendDataSourceToServerBase>();
             if (section.Event.FileSystems.Any())
             {
-                var fs = new FileSystemEventSource(
-                    section.Event.FileSystems.Select(x => new FileSystemEventSourceDetail(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
+                var fs = new FileSystemDataSource(
+                    section.Event.FileSystems.Select(x => new FileSystemDataSourceDetail(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
 
                 events.Add(new SendFileSystemToServer(fs, worker.MessageBroker));
             }
 
             if (section.Event.IIS.Any())
             {
-                var iis = new IISLogEventSource(
-                    section.Event.IIS.Select(x => new IISLogEventSourceDetail(x.Tag, x.Path, x.Interval)));
+                var iis = new IISLogDataSource(
+                    section.Event.IIS.Select(x => new IISLogDataSourceDetail(x.Tag, x.Path, x.Interval)));
 
                 events.Add(new SendIISLogToServer(iis, worker.MessageBroker));
             }
 
             if (section.Event.EventLogs.Scopes.Any())
             {
-                var ev = new EventLogEventSource(
+                var ev = new EventLogDataSource(
                     section.Event.EventLogs.Tag,
                     section.Event.EventLogs.Scopes,
-                    section.Event.EventLogs.Select(x => new EventLogEventSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
+                    section.Event.EventLogs.Select(x => new EventLogDataSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
 
                 events.Add(new SendEventLogToServer(ev, worker.MessageBroker));
             }
 
             if (section.Event.PerformanceCounters.Any())
             {
-                var pc = new PerformanceCounterEventSource(
+                var pc = new PerformanceCounterDataSource(
                     section.Event.PerformanceCounters.Tag,
                     section.Event.PerformanceCounters.Interval,
-                    section.Event.PerformanceCounters.Select(x => new PerformanceCounterEventSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
+                    section.Event.PerformanceCounters.Select(x => new PerformanceCounterDataSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
 
                 events.Add(new SendPerformanceCounterToServer(pc, worker.MessageBroker));
             }

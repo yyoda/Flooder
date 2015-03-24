@@ -5,8 +5,8 @@ namespace Flooder.Event
 {
     public interface IMessageBroker
     {
-        void Publish(string tag, IDictionary<string, object> payload);
-        void Publish(string tag, IDictionary<string, object>[] payload);
+        void Publish(string tag, Dictionary<string, object> payload);
+        void Publish(string tag, Dictionary<string, object>[] payload);
         IDisposable Subscribe();
     }
 }

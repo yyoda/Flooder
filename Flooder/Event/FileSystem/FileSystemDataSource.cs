@@ -4,24 +4,24 @@ using Flooder.Event.FileSystem.Parser;
 
 namespace Flooder.Event.FileSystem
 {
-    public class FileSystemEventSource : IEventSource
+    public class FileSystemDataSource : IDataSource
     {
-        public FileSystemEventSource()
+        public FileSystemDataSource()
         {
-            Details = new FileSystemEventSourceDetail[0];
+            Details = new FileSystemDataSourceDetail[0];
         }
 
-        public FileSystemEventSource(IEnumerable<FileSystemEventSourceDetail> details)
+        public FileSystemDataSource(IEnumerable<FileSystemDataSourceDetail> details)
         {
             Details = details;
         }
 
-        public IEnumerable<FileSystemEventSourceDetail> Details { get; set; }
+        public IEnumerable<FileSystemDataSourceDetail> Details { get; set; }
     }
 
-    public class FileSystemEventSourceDetail
+    public class FileSystemDataSourceDetail
     {
-        public FileSystemEventSourceDetail(string tag, string path, string file, string listner, string parser)
+        public FileSystemDataSourceDetail(string tag, string path, string file, string listner, string parser)
         {
             Tag     = tag;
             Path    = path;

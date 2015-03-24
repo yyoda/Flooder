@@ -6,18 +6,18 @@ using NLog;
 
 namespace Flooder.Event.IIS
 {
-    public class SendIISLogToServer : SendEventSourceToServerBase
+    public class SendIISLogToServer : SendDataSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendIISLogToServer(IEventSource eventSource, IMessageBroker messageBroker)
-            : base(eventSource, messageBroker)
+        public SendIISLogToServer(IDataSource dataSource, IMessageBroker messageBroker)
+            : base(dataSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.EventSource as IISLogEventSource ?? new IISLogEventSource();
+            var source = base.DataSource as IISLogDataSource ?? new IISLogDataSource();
 
             var enable = source.Details.Where(x =>
             {

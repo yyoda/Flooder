@@ -1,7 +1,7 @@
 ﻿
 namespace Flooder.Event
 {
-    public interface IEventSource
+    public interface IDataSource
     {
     }
 }

@@ -9,7 +9,7 @@ namespace Flooder.Event.FileSystem.Parser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IDictionary<string, object> Parse(string source)
+        public Dictionary<string, object> Parse(string source)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace Flooder.Event.FileSystem.Parser
             }
         }
 
-        public IDictionary<string, object>[] MultipleParse(string source)
+        public Dictionary<string, object>[] MultipleParse(string source)
         {
             throw new NotImplementedException();
         }

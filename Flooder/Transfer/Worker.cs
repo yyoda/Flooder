@@ -18,7 +18,7 @@ namespace Flooder.Transfer
             switch (type)
             {
                 case "fluentd":
-                    MessageBroker = new FluentMessageBroker(_tcp, TimeSpan.FromSeconds(1), 3);
+                    MessageBroker = new FluentMessageBroker(_tcp);
                     break;
                 default:
                     throw new NullReferenceException(string.Format("Type[{0}] is not found.", type));

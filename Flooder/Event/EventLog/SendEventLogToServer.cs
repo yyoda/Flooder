@@ -5,18 +5,18 @@ using NLog;
 
 namespace Flooder.Event.EventLog
 {
-    public class SendEventLogToServer : SendEventSourceToServerBase
+    public class SendEventLogToServer : SendDataSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendEventLogToServer(IEventSource eventSource, IMessageBroker messageBroker)
-            : base(eventSource, messageBroker)
+        public SendEventLogToServer(IDataSource dataSource, IMessageBroker messageBroker)
+            : base(dataSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.EventSource as EventLogEventSource ?? new EventLogEventSource();
+            var source = base.DataSource as EventLogDataSource ?? new EventLogDataSource();
 
             return source.Scopes.Select(scope =>
             {

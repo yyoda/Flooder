@@ -5,7 +5,7 @@ namespace Flooder.Event.FileSystem.Parser
 {
     public class DefaultParser : IPayloadParser
     {
-        public IDictionary<string, object> Parse(string source)
+        public Dictionary<string, object> Parse(string source)
         {
             return new Dictionary<string, object>
             {
@@ -13,7 +13,7 @@ namespace Flooder.Event.FileSystem.Parser
             };
         }
 
-        public IDictionary<string, object>[] MultipleParse(string source)
+        public Dictionary<string, object>[] MultipleParse(string source)
         {
             throw new NotImplementedException();
         }

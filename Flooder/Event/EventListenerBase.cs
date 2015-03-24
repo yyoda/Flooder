@@ -18,19 +18,19 @@ namespace Flooder.Event
 
         protected string Tag { get { return _tag; } }
 
-        protected void Publish(IDictionary<string, object> payload)
+        protected void Publish(Dictionary<string, object> payload)
         {
             payload["hostname"] = _hostName;
             _messageBroker.Publish(Tag, payload);
         }
 
-        protected void Publish(string tag, IDictionary<string, object> payload)
+        protected void Publish(string tag, Dictionary<string, object> payload)
         {
             payload["hostname"] = _hostName;
             _messageBroker.Publish(tag, payload);
         }
 
-        protected void Publish(string tag, IDictionary<string, object>[] payloads)
+        protected void Publish(string tag, Dictionary<string, object>[] payloads)
         {
             foreach (var payload in payloads)
             {

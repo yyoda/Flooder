@@ -5,14 +5,12 @@ using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace Flooder.Transfer
@@ -25,18 +23,26 @@ namespace Flooder.Transfer
 
         private readonly BlockingCollection<byte[]> _queue;
         private readonly TimeSpan _interval;
-        private readonly int _retryMaxCount;
+        private readonly int _retryMaxCount, _extraction;
         private readonly TcpManager _tcp;
 
-        public FluentMessageBroker(TcpManager tcp, TimeSpan interval, int retryCount)
+        public int Count { get { return _queue.Count; } }
+
+        public FluentMessageBroker(TcpManager tcp, TimeSpan? interval = null, int retryCount = 3, int capacity = 10000, int extraction = 10)
         {
-            _queue         = new BlockingCollection<byte[]>(1000);
+            _queue         = new BlockingCollection<byte[]>(capacity);
             _tcp           = tcp;
-            _interval      = interval;
+            _interval      = interval ?? TimeSpan.FromSeconds(1);
             _retryMaxCount = retryCount;
+            _extraction    = extraction;
         }
 
-        public void Publish(string tag, IDictionary<string, object> payload)
+        public void Publish(string tag, Dictionary<string, object> payload)
+        {
+            this.Publish(tag, new []{ payload });
+        }
+
+        public void Publish(string tag, Dictionary<string, object>[] payloads)
         {
             if (!_tcp.HasConnection) return; //skip.
 
@@ -46,110 +52,99 @@ namespace Flooder.Transfer
             {
                 var packer = MsgPack.Packer.Create(ms);
 
-                //["tag", timestamp, payload]
-                packer.PackArrayHeader(3);
-                packer.PackString(tag);
-                packer.Pack(timestamp);
-                packer.PackMapHeader(payload);
-
-                foreach (var column in payload)
+                foreach (var payload in payloads)
                 {
-                    packer.PackString(column.Key);
+                    //["tag", timestamp, payload]
+                    packer.PackArrayHeader(3);
+                    packer.PackString(tag);
+                    packer.Pack(timestamp);
+                    packer.PackMapHeader(payload);
 
-                    var type = column.Value != null ? column.Value.GetType() : typeof (string);
+                    foreach (var column in payload)
+                    {
+                        packer.PackString(column.Key);
 
-                    MsgPackDefaultContext
-                        .GetSerializer(type)
-                        .PackTo(packer, column.Value);
+                        var type = column.Value != null ? column.Value.GetType() : typeof(string);
+
+                        MsgPackDefaultContext
+                            .GetSerializer(type)
+                            .PackTo(packer, column.Value);
+                    }
+
                 }
 
-                var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);
+                var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int) ms.Length);
                 var bytes = arraySegment.ToArray();
 
 #if DEBUG
-                Logger.Trace("{0} {1} {2}", timestamp, tag, JsonSerializer.Serialize(payload));
+                Logger.Trace("{0} {1} {2}", timestamp, tag, JsonSerializer.Serialize(payloads));
 #endif
 
                 Publish(bytes);
             }
         }
 
-        public void Publish(string tag, IDictionary<string, object>[] payload)
-        {
-            //TODO:MsgPack
-            var obj = JsonSerializer.Serialize(payload);
-            var bytes = Encoding.UTF8.GetBytes(obj);
-            this.Publish(bytes);
-        }
-
         public void Publish(byte[] bytes)
         {
             var retryCount = 0;
 
-            Observable.Create<int>(x =>
+            Observable.Create<TimeSpan>(x =>
             {
-                try
+                if (_queue.TryAdd(bytes))
                 {
-                    if (_queue.TryAdd(bytes))
-                    {
-                        x.OnCompleted();
-                        return Disposable.Empty;
-                    }
-
-                    x.OnNext(retryCount++);
-                }
-                catch (Exception ex)
-                {
-                    x.OnError(ex);
                     x.OnCompleted();
+                    return Disposable.Empty;
                 }
 
+                x.OnError(new InvalidOperationException(string.Format("Queue overflow. retryCount:{0}, sleepTime:{1}", ++retryCount, _interval)));
+                x.OnNext(_interval);
                 return Disposable.Empty;
             })
             .Retry(_retryMaxCount)
             .Subscribe(
-                cnt =>
-                {
-                    Logger.Debug("[OnNext] FluentMessageBroker#Publish. retryCount:{0}, interval:{1}", cnt, _interval);
-                    Thread.Sleep(_interval);
-                },
-                ex => Logger.ErrorException("[OnError] FluentMessageBroker#Publish.", ex),
-                () => Logger.Debug("[OnComplete] FluentMessageBroker#Publish.")
+                Thread.Sleep,
+                ex => Logger.ErrorException("FluentMessageBroker#Publish.", ex),
+                () => Logger.Trace("FluentMessageBroker#Publish success.")
             );
         }
 
         public IDisposable Subscribe()
         {
-            return Observable.Create<Unit>(x =>
+            return Observable.Start(() =>
             {
-                try
+                while (true)
                 {
-                    byte[] item;
-                    if (_tcp.HasConnection && _queue.TryTake(out item))
+                    var takeCount = this._extraction; //initialize.
+
+                    if (_queue.Count > 0)
                     {
-                        _tcp.Transfer(item);
-                        return Disposable.Empty;
+                        if (_queue.Count < takeCount)
+                        {
+                            takeCount = _queue.Count;
+                        }
+
+                        var items = _queue.GetConsumingEnumerable()
+                            .Take(takeCount)
+                            .ToArray();
+
+                        if (_tcp.HasConnection && items.Length > 0)
+                        {
+                            Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = takeCount }, item =>
+                            {
+                                _tcp.Transfer(item);
+                            });
+
+                            continue;
+                        }
                     }
 
-                    x.OnNext(Unit.Default);
-                }
-                catch (Exception ex)
-                {
-                    x.OnError(ex);
-                    x.OnCompleted();
-                }
-
-                return Disposable.Empty;
-            })
-            .Retry()
-            .Subscribe(
-                _ =>
-                {
-                    Logger.Debug("[OnNext] FluentMessageBroker#Subscribe.");
                     Thread.Sleep(_interval);
-                },
-                ex => Logger.ErrorException("[OnError] FluentMessageBroker#Subscribe.", ex),
-                () => Logger.Fatal("[OnComplete] FluentMessageBroker#Subscribe.")
+                }
+            })
+            .Subscribe(
+                x => { },
+                ex => Logger.ErrorException("FluentMessageBroker#Subscribe", ex),
+                () => Logger.Fatal("FluentMessageBroker#Subscribe stoped.")
             );
         }
     }

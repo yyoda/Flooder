@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace Flooder.Event
 {
-    public abstract class SendEventSourceToServerBase
+    public abstract class SendDataSourceToServerBase
     {
-        protected IEventSource EventSource { get; private set; }
+        protected IDataSource DataSource { get; private set; }
         protected IMessageBroker MessageBroker { get; private set; }
 
-        protected SendEventSourceToServerBase(IEventSource eventSource, IMessageBroker messageBroker)
+        protected SendDataSourceToServerBase(IDataSource dataSource, IMessageBroker messageBroker)
         {
-            EventSource   = eventSource;
+            DataSource    = dataSource;
             MessageBroker = messageBroker;
         }
 
@@ -20,7 +20,7 @@ namespace Flooder.Event
 
     public static class SendEventSourceToServerBaseExtensions
     {
-        public static IEnumerable<IDisposable> Subscribe(this IEnumerable<SendEventSourceToServerBase> @this)
+        public static IEnumerable<IDisposable> Subscribe(this IEnumerable<SendDataSourceToServerBase> @this)
         {
             return @this.SelectMany(x => x.Subscribe());
         }

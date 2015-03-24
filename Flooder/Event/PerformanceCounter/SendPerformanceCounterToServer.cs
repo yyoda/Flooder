@@ -6,18 +6,18 @@ using NLog;
 
 namespace Flooder.Event.PerformanceCounter
 {
-    public class SendPerformanceCounterToServer : SendEventSourceToServerBase
+    public class SendPerformanceCounterToServer : SendDataSourceToServerBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendPerformanceCounterToServer(IEventSource eventSource, IMessageBroker messageBroker)
-            : base(eventSource, messageBroker)
+        public SendPerformanceCounterToServer(IDataSource dataSource, IMessageBroker messageBroker)
+            : base(dataSource, messageBroker)
         {
         }
 
         public override IDisposable[] Subscribe()
         {
-            var source = base.EventSource as PerformanceCounterEventSource ?? new PerformanceCounterEventSource();
+            var source = base.DataSource as PerformanceCounterDataSource ?? new PerformanceCounterDataSource();
 
             if (source.Details.Any())
             {

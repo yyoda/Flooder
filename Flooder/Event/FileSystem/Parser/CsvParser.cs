@@ -9,12 +9,12 @@ namespace Flooder.Event.FileSystem.Parser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IDictionary<string, object> Parse(string source)
+        public Dictionary<string, object> Parse(string source)
         {
             throw new NotImplementedException();
         }
 
-        public IDictionary<string, object>[] MultipleParse(string source)
+        public Dictionary<string, object>[] MultipleParse(string source)
         {
             try
             {
