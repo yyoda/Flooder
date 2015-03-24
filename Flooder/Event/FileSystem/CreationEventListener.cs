@@ -11,10 +11,6 @@ namespace Flooder.Event.FileSystem
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
 
-        /// <summary>inject option.</summary>
-        public static Func<string, string, string> TagGen =
-            (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.', '_').FirstOrDefault() ?? "unknown");
-
         public CreationEventListener(string tag, string path, IMessageBroker messageBroker, IPayloadParser parser)
             : base(tag, path, messageBroker, parser)
         {
@@ -33,10 +29,9 @@ namespace Flooder.Event.FileSystem
                 var buffer = sr.ReadToEnd();
                 if (buffer.Length > 0)
                 {
-                    var tag = TagGen(base.Tag, e.Name);
-                    var payload = base.Parser.MultipleParse(buffer);
+                    var payloads = base.Parser.MultipleParse(buffer);
 
-                    base.Publish(tag, payload);
+                    base.Publish(base.Tag, payloads);
                 }
             }
 

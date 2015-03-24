@@ -76,7 +76,7 @@ namespace Flooder.Transfer
                 var bytes = arraySegment.ToArray();
 
 #if DEBUG
-                Logger.Trace("{0} {1} {2}", timestamp, tag, JsonSerializer.Serialize(payloads));
+                Logger.Trace("{0}, {1} {2}", tag, timestamp, JsonSerializer.Serialize(payloads));
 #endif
 
                 Publish(bytes);
