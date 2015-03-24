@@ -128,10 +128,20 @@ namespace Flooder.Transfer
 
                         if (_tcp.HasConnection && items.Length > 0)
                         {
-                            Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = takeCount }, item =>
+                            if (items.Length == 1)
                             {
-                                _tcp.Transfer(item);
-                            });
+                                foreach (var item in items)
+                                {
+                                    _tcp.Transfer(item);
+                                }
+                            }
+                            else
+                            {
+                                Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = takeCount }, item =>
+                                {
+                                    _tcp.Transfer(item);
+                                });
+                            }
 
                             continue;
                         }

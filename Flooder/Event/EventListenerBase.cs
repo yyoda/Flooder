@@ -20,13 +20,17 @@ namespace Flooder.Event
 
         protected void Publish(Dictionary<string, object> payload)
         {
+            payload["tag"]      = this.Tag;
             payload["hostname"] = _hostName;
-            _messageBroker.Publish(Tag, payload);
+
+            _messageBroker.Publish(this.Tag, payload);
         }
 
         protected void Publish(string tag, Dictionary<string, object> payload)
         {
+            payload["tag"]      = tag;
             payload["hostname"] = _hostName;
+
             _messageBroker.Publish(tag, payload);
         }
 
@@ -34,6 +38,7 @@ namespace Flooder.Event
         {
             foreach (var payload in payloads)
             {
+                payload["tag"]      = tag;
                 payload["hostname"] = _hostName;
             }
 
