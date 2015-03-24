@@ -24,28 +24,28 @@ namespace Flooder.Event.EventLog
 
         public void OnNext(EntryWrittenEventArgs e)
         {
-            var checkValue = Tuple.Create(e.Entry.Source, e.Entry.InstanceId.ToString());
-
-            switch (e.Entry.EntryType)
-            {
-                case EventLogEntryType.Information:
-                    if (IncludeInfo.Any() && !IncludeInfo.Contains(checkValue)) return;
-                    if (ExcludeInfo.Contains(checkValue)) return;
-                    break;
-                case EventLogEntryType.Warning:
-                    if (IncludeWarn.Any() && !IncludeWarn.Contains(checkValue)) return;
-                    if (ExcludeWarn.Contains(checkValue)) return;
-                    return;
-                case EventLogEntryType.Error:
-                    if (IncludeError.Any() && !IncludeError.Contains(checkValue)) return;
-                    if (ExcludeError.Contains(checkValue)) return;
-                    break;
-                default:
-                    break;
-            }
-
             try
             {
+                var checkValue = Tuple.Create(e.Entry.Source, e.Entry.InstanceId.ToString());
+
+                switch (e.Entry.EntryType)
+                {
+                    case EventLogEntryType.Information:
+                        if (IncludeInfo.Any() && !IncludeInfo.Contains(checkValue)) return;
+                        if (ExcludeInfo.Contains(checkValue)) return;
+                        break;
+                    case EventLogEntryType.Warning:
+                        if (IncludeWarn.Any() && !IncludeWarn.Contains(checkValue)) return;
+                        if (ExcludeWarn.Contains(checkValue)) return;
+                        return;
+                    case EventLogEntryType.Error:
+                        if (IncludeError.Any() && !IncludeError.Contains(checkValue)) return;
+                        if (ExcludeError.Contains(checkValue)) return;
+                        break;
+                    default:
+                        break;
+                }
+
                 var payload = new Dictionary<string, object>
                 {
                     {"Category", e.Entry.Category},
@@ -70,7 +70,8 @@ namespace Flooder.Event.EventLog
             }
             catch (Exception ex)
             {
-                Logger.WarnException("Skip because an error has occurred.", ex);
+                Logger.WarnException("Skip because an error has occurred in EventLogEventListener.", ex);
+                throw ex;
             }
         }
 

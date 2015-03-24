@@ -70,7 +70,6 @@ namespace Flooder.Transfer
                             .GetSerializer(type)
                             .PackTo(packer, column.Value);
                     }
-
                 }
 
                 var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int) ms.Length);

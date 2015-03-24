@@ -30,22 +30,30 @@ namespace Flooder.Event.FileSystem
 
         public void OnNext(FileSystemEventArgs e)
         {
-            switch (e.ChangeType)
+            try
             {
-                case WatcherChangeTypes.Created:
-                    OnCreateAction(e);
-                    return;
-                case WatcherChangeTypes.Changed:
-                    OnChangeAction(e);
-                    return;
-                case WatcherChangeTypes.Renamed:
-                    OnRenameAction(e);
-                    return;
-                case WatcherChangeTypes.Deleted:
-                    OnDeleteAction(e);
-                    return;
-                default:
-                    throw new InvalidOperationException(string.Format("Unknown WatcherChangeTypes:{0}", e.ChangeType));
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Created:
+                        OnCreateAction(e);
+                        return;
+                    case WatcherChangeTypes.Changed:
+                        OnChangeAction(e);
+                        return;
+                    case WatcherChangeTypes.Renamed:
+                        OnRenameAction(e);
+                        return;
+                    case WatcherChangeTypes.Deleted:
+                        OnDeleteAction(e);
+                        return;
+                    default:
+                        throw new InvalidOperationException(string.Format("Unknown WatcherChangeTypes:{0}", e.ChangeType));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WarnException("Skip because an error has occurred in FileSystemEventListener.", ex);
+                throw ex;
             }
         }
 

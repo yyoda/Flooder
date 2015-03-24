@@ -18,43 +18,51 @@ namespace Flooder.Event.PerformanceCounter
 
         public void OnNext(long value)
         {
-            var payload = _internalValueObjects.SelectMany(o =>
+            try
             {
-                return new PerformanceCounterCategory(o.CategoryName)
-                    .GetInstanceNames()
-                    .Where(instanceName =>
-                    {
-                        if (string.IsNullOrEmpty(o.InstanceName))
+                var payload = _internalValueObjects.SelectMany(o =>
+                {
+                    return new PerformanceCounterCategory(o.CategoryName)
+                        .GetInstanceNames()
+                        .Where(instanceName =>
                         {
-                            return true;
-                        }
+                            if (string.IsNullOrEmpty(o.InstanceName))
+                            {
+                                return true;
+                            }
 
-                        return o.InstanceName == instanceName;
-                    })
-                    .Select(instanceName =>
-                    {
-                        using (var perf = new System.Diagnostics.PerformanceCounter(o.CategoryName, o.CounterName, instanceName))
+                            return o.InstanceName == instanceName;
+                        })
+                        .Select(instanceName =>
                         {
-                            var path = string.IsNullOrEmpty(perf.InstanceName)
-                                ? string.Format("{0}\\{1}", perf.CategoryName, perf.CounterName)
-                                : string.Format("{0}({1})\\{2}", perf.CategoryName, perf.InstanceName, perf.CounterName);
-
-                            try
+                            using (var perf = new System.Diagnostics.PerformanceCounter(o.CategoryName, o.CounterName, instanceName))
                             {
-                                return new { Path = path, CookedValue = perf.NextValue() };
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), ex);
-                                return null;
-                            }
-                        }
-                    })
-                    .Where(x => x != null);
-            })
-            .ToDictionary(x => x.Path, x => (object)x.CookedValue);
+                                var path = string.IsNullOrEmpty(perf.InstanceName)
+                                    ? string.Format("{0}\\{1}", perf.CategoryName, perf.CounterName)
+                                    : string.Format("{0}({1})\\{2}", perf.CategoryName, perf.InstanceName, perf.CounterName);
 
-            base.Publish(payload);
+                                try
+                                {
+                                    return new { Path = path, CookedValue = perf.NextValue() };
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.DebugException(string.Format("Skip because an error has occurred. path:{0}", path), ex);
+                                    return null;
+                                }
+                            }
+                        })
+                        .Where(x => x != null);
+                })
+                .ToDictionary(x => x.Path, x => (object)x.CookedValue);
+
+                base.Publish(payload);
+            }
+            catch (Exception ex)
+            {
+                Logger.WarnException("Skip because an error has occurred in PerformanceCounterEventListener.", ex);
+                throw ex;
+            }
         }
 
         public void OnError(Exception error)

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Flooder.Event
 {
@@ -16,13 +14,5 @@ namespace Flooder.Event
         }
 
         public abstract IDisposable[] Subscribe();
-    }
-
-    public static class SendEventSourceToServerBaseExtensions
-    {
-        public static IEnumerable<IDisposable> Subscribe(this IEnumerable<SendDataSourceToServerBase> @this)
-        {
-            return @this.SelectMany(x => x.Subscribe());
-        }
     }
 }
