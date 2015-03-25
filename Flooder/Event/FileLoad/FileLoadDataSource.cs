@@ -26,7 +26,7 @@ namespace Flooder.Event.FileLoad
             Tag      = tag;
             Path     = path;
             File     = file;
-            Parser   = Type.GetType(parser) ?? typeof (DefaultParser);
+            Parser   = Type.GetType(parser) ?? typeof (CsvParser);
             Interval = interval;
         }
 
