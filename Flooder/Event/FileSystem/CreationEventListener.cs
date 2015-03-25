@@ -34,7 +34,7 @@ namespace Flooder.Event.FileSystem
                         if (payloads.Any())
                         {
                             base.Publish(payloads);
-                            Logger.Debug("CreationEventListener#OnCreateAction publish payloads[{0}].", payloads.Count());
+                            Logger.Debug("CreationEventListener#OnCreateAction publish payloads[{0}].", payloads.Length);
                         }
                     }
                 }

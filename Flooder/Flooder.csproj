@@ -66,6 +66,7 @@
     <Compile Include="CircuitBreaker\CircuitBreakerStateStore.cs" />
     <Compile Include="CircuitBreaker\ICircuitBreakerStateStore.cs" />
     <Compile Include="Configuration\EventElement.cs" />
+    <Compile Include="Configuration\EventElements\FileLoadEventElement.cs" />
     <Compile Include="Configuration\EventElements\IISEventElement.cs" />
     <Compile Include="Configuration\EventElements\EventLogEventElement.cs" />
     <Compile Include="Configuration\EventElements\FileSystemEventElement.cs" />
@@ -73,6 +74,9 @@
     <Compile Include="Configuration\WorkerElement.cs" />
     <Compile Include="Configuration\Section.cs" />
     <Compile Include="Event\EventListenerBase.cs" />
+    <Compile Include="Event\FileLoad\FileLoadDataSource.cs" />
+    <Compile Include="Event\FileLoad\FileLoadListener.cs" />
+    <Compile Include="Event\FileLoad\SendFileLoadToServer.cs" />
     <Compile Include="Event\FileSystem\CreationEventListener.cs" />
     <Compile Include="Event\Parser\CsvParser.cs" />
     <Compile Include="Event\Parser\StatsParser.cs" />

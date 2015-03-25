@@ -9,6 +9,10 @@ namespace Flooder.Configuration
         [ConfigurationCollection(typeof(FileSystemElementCollection))]
         public FileSystemElementCollection FileSystems { get { return (FileSystemElementCollection)base["fileSystems"]; } }
 
+        [ConfigurationProperty("fileLoad", IsRequired = false)]
+        [ConfigurationCollection(typeof(FileLoadElementCollection))]
+        public FileLoadElementCollection FileLoad { get { return (FileLoadElementCollection)base["fileLoad"]; } }
+
         [ConfigurationProperty("iis", IsRequired = false)]
         [ConfigurationCollection(typeof(IISElementCollection))]
         public IISElementCollection IIS { get { return (IISElementCollection)base["iis"]; } }

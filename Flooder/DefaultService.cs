@@ -5,6 +5,7 @@ using System.Linq;
 using Flooder.Configuration;
 using Flooder.Event;
 using Flooder.Event.EventLog;
+using Flooder.Event.FileLoad;
 using Flooder.Event.FileSystem;
 using Flooder.Event.IIS;
 using Flooder.Event.PerformanceCounter;
@@ -50,6 +51,14 @@ namespace Flooder
                 events.Add(new SendFileSystemToServer(fs, worker));
             }
 
+            if (section.Event.FileLoad.Any())
+            {
+                var fs = new FileLoadDataSource(
+                    section.Event.FileLoad.Select(x => new FileLoadDataSourceOption(x.Tag, x.Path, x.File, x.Parser, x.Interval)));
+
+                events.Add(new SendFileLoadToServer(fs, worker));
+            }
+
             if (section.Event.IIS.Any())
             {
                 var iis = new IISLogDataSource(
@@ -89,7 +98,10 @@ namespace Flooder
             if (_events == null) throw new NullReferenceException("Events");
 
             var worker = _worker.Subscribe();
-            var events = _events.SelectMany(x => x.Subscribe());
+            var events = _events.SelectMany(x =>
+            {
+                return x.Subscribe();
+            });
 
             instances.AddRange(worker);
             instances.AddRange(events);
