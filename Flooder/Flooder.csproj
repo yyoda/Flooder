@@ -92,6 +92,7 @@
     <Compile Include="Event\IIS\IISLogDataSource.cs" />
     <Compile Include="Event\FileSystem\FileSystemDataSource.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterDataSource.cs" />
+    <Compile Include="Worker\StdOutMessageBroker.cs" />
     <Compile Include="Worker\WorkerFactory.cs" />
     <Compile Include="ServiceFactory.cs" />
     <Compile Include="Worker\FluentMessageBroker.cs" />

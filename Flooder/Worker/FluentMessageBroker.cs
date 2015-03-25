@@ -22,19 +22,16 @@ namespace Flooder.Worker
         private static readonly JavaScriptSerializer JsonSerializer = new JavaScriptSerializer();
 
         private readonly BlockingCollection<byte[]> _queue;
-        private readonly TimeSpan _interval;
-        private readonly int _retryMaxCount, _extraction;
         private readonly TcpManager _tcp;
+        private readonly WorkerOption _option;
 
         public int Count { get { return _queue.Count; } }
 
         public FluentMessageBroker(WorkerOption option)
         {
-            _queue         = new BlockingCollection<byte[]>(option.Capacity);
-            _tcp           = new TcpManager(option.Hosts);
-            _interval      = option.Interval;
-            _retryMaxCount = option.RetryMaxCount;
-            _extraction    = option.Extraction;
+            _queue  = new BlockingCollection<byte[]>(option.Capacity);
+            _tcp    = new TcpManager(option.Hosts);
+            _option = option;
         }
 
         public void Publish(string tag, Dictionary<string, object> payload)
@@ -75,9 +72,9 @@ namespace Flooder.Worker
                 var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int) ms.Length);
                 var bytes = arraySegment.ToArray();
 
-#if DEBUG
-                Logger.Trace("{0}, {1} {2}", tag, timestamp, JsonSerializer.Serialize(payloads));
-#endif
+//#if DEBUG
+//                Logger.Trace("{0}, {1} {2}", tag, timestamp, JsonSerializer.Serialize(payloads));
+//#endif
 
                 Publish(bytes);
             }
@@ -95,11 +92,13 @@ namespace Flooder.Worker
                     return Disposable.Empty;
                 }
 
-                x.OnError(new InvalidOperationException(string.Format("Queue overflow. retryCount:{0}, sleepTime:{1}", ++retryCount, _interval)));
-                x.OnNext(_interval);
+                x.OnError(new InvalidOperationException(string.Format(
+                    "Queue overflow. retryCount:{0}, sleepTime:{1}", ++retryCount, _option.Interval)));
+
+                x.OnNext(_option.Interval);
                 return Disposable.Empty;
             })
-            .Retry(_retryMaxCount)
+            .Retry(_option.RetryMaxCount)
             .Subscribe(
                 Thread.Sleep,
                 ex => Logger.ErrorException("FluentMessageBroker#Publish.", ex),
@@ -115,7 +114,7 @@ namespace Flooder.Worker
             {
                 while (true)
                 {
-                    var takeCount = this._extraction; //initialize.
+                    var takeCount = _option.Extraction; //initialize.
 
                     if (_queue.Count > 0)
                     {
@@ -149,7 +148,7 @@ namespace Flooder.Worker
                         }
                     }
 
-                    Thread.Sleep(_interval);
+                    Thread.Sleep(_option.Interval);
                 }
             })
             .Subscribe(

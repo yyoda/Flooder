@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using NLog;
 
 namespace Flooder.Event.FileSystem
@@ -24,6 +26,8 @@ namespace Flooder.Event.FileSystem
         {
             try
             {
+                Thread.Sleep(1000);
+
                 using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var sr = new StreamReader(fs, Encoding))
                 {
@@ -32,11 +36,19 @@ namespace Flooder.Event.FileSystem
                     {
                         var payloads = base.Parser.MultipleParse(buffer);
 
-                        base.Publish(payloads);
+                        if (payloads.Any())
+                        {
+                            base.Publish(payloads);
+                            Logger.Debug("CreationEventListener#OnCreateAction publish payloads[{0}].", payloads.Count());
+                        }
                     }
                 }
 
+                Thread.Sleep(1000);
+
                 File.Delete(e.FullPath);
+
+                Logger.Debug("CreationEventListener#OnCreateAction file deleted, at {0}", e.FullPath);
             }
             catch (Exception ex)
             {

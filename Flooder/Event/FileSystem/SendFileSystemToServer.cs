@@ -31,7 +31,7 @@ namespace Flooder.Event.FileSystem
 
                     var subscribe = CreateSubject(x).Subscribe(listener.Create());
 
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, parser:{2}", x.Tag, x.Path, x.Parser.FullName);
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, listner:{2}, parser:{3}", x.Tag, x.Path, x.Listner.FullName, x.Parser.FullName);
 
                     return subscribe;
                 })

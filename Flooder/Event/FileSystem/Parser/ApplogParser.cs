@@ -53,7 +53,7 @@ namespace Flooder.Event.FileSystem.Parser
 
                 return new Dictionary<string, object>
                 {
-                    {"datetime",   datetime},
+                    {"datetime",   datetime.Replace(",", ".").Replace(" ", "T")},
                     {"uid",        uid},
                     {"status",     status},
                     {"method",     method},

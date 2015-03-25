@@ -26,6 +26,8 @@ namespace Flooder.Worker
             {
                 case "fluentd":
                     return new FluentMessageBroker(option);
+                case "stdout":
+                    return new StdOutMessageBroker(option);
                 default:
                     throw new NullReferenceException(string.Format("Type[{0}] is not found.", type));
             }

@@ -35,6 +35,8 @@ namespace Flooder.Event.PerformanceCounter
                         })
                         .Select(instanceName =>
                         {
+                            //Logger.Trace("PerformanceCounter trace. CategoryName:{0}, CoungterName:{1}, InstanceName:{2}", o.CategoryName, o.CounterName, instanceName);
+
                             using (var perf = new System.Diagnostics.PerformanceCounter(o.CategoryName, o.CounterName, instanceName))
                             {
                                 var path = string.IsNullOrEmpty(perf.InstanceName)
@@ -56,7 +58,10 @@ namespace Flooder.Event.PerformanceCounter
                 })
                 .ToDictionary(x => x.Path, x => (object)x.CookedValue);
 
-                base.Publish(payload);
+                if (payload.Count > 0)
+                {
+                    base.Publish(payload);
+                }
             }
             catch (Exception ex)
             {

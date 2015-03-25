@@ -36,6 +36,7 @@ namespace Flooder.Event.FileSystem.Parser
                         })
                         .ToDictionary(x => x.Key, x => x.Value);
                 })
+                .Where(x => x.Keys.Count > 0)
                 .ToArray();
             }
             catch (Exception ex)

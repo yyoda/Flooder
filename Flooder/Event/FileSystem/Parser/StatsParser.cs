@@ -56,7 +56,7 @@ namespace Flooder.Event.FileSystem.Parser
 
                 return new Dictionary<string, object>
                 {
-                    {"datetime", head[0]},
+                    {"datetime", head[0].Replace(",", ".").Replace(" ", "T")},
                     {"status", head[1]},
                     {"category", head[2]},
                     {"path", head[3]},
