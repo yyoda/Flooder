@@ -109,9 +109,6 @@ namespace Flooder
 
         public void Stop()
         {
-            if (_worker == null) throw new NullReferenceException("Worker");
-            if (_events == null) throw new NullReferenceException("Events");
-
             instances.ForEach(x => x.Dispose());
             Logger.Info("Flooder stop.");
         }
