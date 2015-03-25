@@ -9,7 +9,7 @@ namespace Flooder.Service
         public FlooderService()
         {
             InitializeComponent();
-            _service = FlooderFactory.Create<DefaultService>();
+            _service = ServiceFactory.Create<DefaultService>();
         }
 
         protected override void OnStart(string[] args)

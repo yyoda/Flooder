@@ -7,7 +7,7 @@ using Flooder.CircuitBreaker;
 using Flooder.Utility;
 using NLog;
 
-namespace Flooder.Transfer
+namespace Flooder.Worker
 {
     public class TcpManager : IDisposable
     {

@@ -22,30 +22,25 @@ namespace Flooder.Event.FileSystem
 
         protected override void OnCreateAction(FileSystemEventArgs e)
         {
-            using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var sr = new StreamReader(fs, Encoding))
-            {
-                var buffer = sr.ReadToEnd();
-                if (buffer.Length > 0)
-                {
-                    var payloads = base.Parser.MultipleParse(buffer);
-
-                    base.Publish(payloads);
-                }
-            }
-
-            RemoveFile(e.FullPath);
-        }
-
-        private static void RemoveFile(string filePath)
-        {
             try
             {
-                File.Delete(filePath);
+                using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var sr = new StreamReader(fs, Encoding))
+                {
+                    var buffer = sr.ReadToEnd();
+                    if (buffer.Length > 0)
+                    {
+                        var payloads = base.Parser.MultipleParse(buffer);
+
+                        base.Publish(payloads);
+                    }
+                }
+
+                File.Delete(e.FullPath);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (Exception ex)
             {
-                Logger.WarnException(string.Format("Remove file error. filePath:{0}", filePath), ex);
+                Logger.WarnException(string.Format("File access error at {0}, skip of this action.", e.FullPath), ex);
             }
         }
     }

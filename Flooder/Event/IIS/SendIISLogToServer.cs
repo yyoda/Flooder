@@ -19,7 +19,7 @@ namespace Flooder.Event.IIS
         {
             var source = base.DataSource as IISLogDataSource ?? new IISLogDataSource();
 
-            var enable = source.Details.Where(x =>
+            var enable = source.Options.Where(x =>
             {
                 if (Directory.Exists(x.Path)) return true;
                 Logger.Debug("[{0}] will be skipped because it does not exist.", x.ToString());
@@ -29,7 +29,7 @@ namespace Flooder.Event.IIS
 
             if (!enable) return new IDisposable[0];
 
-            return source.Details.Select(x =>
+            return source.Options.Select(x =>
             {
                 var observer = new IISLogListener(x.Tag, x.Path, base.MessageBroker);
                 observer.OnInitAction();

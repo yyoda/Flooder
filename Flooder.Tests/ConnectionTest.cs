@@ -1,9 +1,10 @@
-﻿using Flooder.Transfer;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using Flooder.Worker;
 
 namespace Flooder.Tests
 {
@@ -12,11 +13,12 @@ namespace Flooder.Tests
     {
         readonly Logger _logger = LogManager.GetCurrentClassLogger();
         TcpManager _tcp;
+        readonly Tuple<string, int>[] _hosts = {Tuple.Create("localhost", 9999)};
 
         [TestInitialize]
         public void ConnectionTestInitialize()
         {
-            _tcp = new TcpManager(new[] { Tuple.Create("localhost", 9999) });
+            _tcp = new TcpManager(_hosts);
             _tcp.Connect();
         }
 
@@ -34,7 +36,7 @@ namespace Flooder.Tests
         public void IfOverflowBlockingCollection()
         {
             const int limit = 3;
-            var messageBroker = new FluentMessageBroker(_tcp, TimeSpan.FromSeconds(1), 3, limit);
+            var messageBroker = new FluentMessageBroker(new WorkerOption(_hosts));
 
             for (var i = 0; i < limit + 1; i++)
             {
@@ -51,7 +53,13 @@ namespace Flooder.Tests
         public void MultipleTakeBlockingCollection()
         {
             const int limit = 10;
-            var messageBroker = new FluentMessageBroker(_tcp, TimeSpan.FromSeconds(1), 3, limit, 3);
+            var messageBroker = new FluentMessageBroker(new WorkerOption(_hosts)
+            {
+                Interval      = TimeSpan.FromSeconds(1),
+                RetryMaxCount = 3,
+                Capacity      = limit,
+                Extraction    = 3,
+            });
 
             for (var i = 0; i < limit; i++)
             {
@@ -64,11 +72,17 @@ namespace Flooder.Tests
         [TestMethod]
         public void MultipleDataTransfer()
         {
-            IDisposable subscribe = null;
+            IEnumerable<IDisposable> subscribe = null;
 
             try
             {
-                var messageBroker = new FluentMessageBroker(_tcp, TimeSpan.FromSeconds(1), 3, 10);
+                var messageBroker = new FluentMessageBroker(new WorkerOption(_hosts)
+                {
+                    Interval      = TimeSpan.FromSeconds(1),
+                    RetryMaxCount = 3,
+                    Capacity      = 10,
+                });
+
                 subscribe = messageBroker.Subscribe();
 
                 for (var i = 0; i < 10; i++)
@@ -87,7 +101,7 @@ namespace Flooder.Tests
                 _logger.ErrorException("error.", ex);
             }
 
-            if (subscribe != null) subscribe.Dispose();
+            if (subscribe != null) subscribe.ToList().ForEach(x => x.Dispose());
         }
 
         [TestCleanup]

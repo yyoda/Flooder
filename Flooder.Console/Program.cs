@@ -8,7 +8,7 @@ namespace Flooder.Console
         static void Main(string[] args)
         {
             var logger = LogManager.GetCurrentClassLogger();
-            var flooder = FlooderFactory.Create<DefaultService>();
+            var flooder = ServiceFactory.Create<DefaultService>();
 
             try
             {

@@ -8,20 +8,20 @@ namespace Flooder.Event.FileSystem
     {
         public FileSystemDataSource()
         {
-            Details = new FileSystemDataSourceDetail[0];
+            Options = new FileSystemDataSourceOption[0];
         }
 
-        public FileSystemDataSource(IEnumerable<FileSystemDataSourceDetail> details)
+        public FileSystemDataSource(IEnumerable<FileSystemDataSourceOption> options)
         {
-            Details = details;
+            Options = options;
         }
 
-        public IEnumerable<FileSystemDataSourceDetail> Details { get; set; }
+        public IEnumerable<FileSystemDataSourceOption> Options { get; set; }
     }
 
-    public class FileSystemDataSourceDetail
+    public class FileSystemDataSourceOption
     {
-        public FileSystemDataSourceDetail(string tag, string path, string file, string listner, string parser)
+        public FileSystemDataSourceOption(string tag, string path, string file, string listner, string parser)
         {
             Tag     = tag;
             Path    = path;

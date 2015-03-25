@@ -8,7 +8,7 @@ using Flooder.Event.EventLog;
 using Flooder.Event.FileSystem;
 using Flooder.Event.IIS;
 using Flooder.Event.PerformanceCounter;
-using Flooder.Transfer;
+using Flooder.Worker;
 using NLog;
 
 namespace Flooder
@@ -19,13 +19,13 @@ namespace Flooder
         private readonly List<IDisposable> instances = new List<IDisposable>();
 
         private readonly IEnumerable<SendDataSourceToServerBase> _events;
-        private readonly Worker _worker;
+        private readonly IMessageBroker _worker;
 
         public DefaultService()
         {
         }
 
-        public DefaultService(IEnumerable<SendDataSourceToServerBase> events, Worker worker)
+        public DefaultService(IEnumerable<SendDataSourceToServerBase> events, IMessageBroker worker)
         {
             _events = events;
             _worker = worker;
@@ -36,26 +36,26 @@ namespace Flooder
             var section = ConfigurationManager.GetSection("flooder") as Section;
 
             //worker
-            var worker = new Worker(
+            var worker = WorkerFactory.Create(
                 section.Worker.Type,
-                section.Worker.Select(x => new WorkerDetail(x.Host, x.Port)));
+                new WorkerOption(section.Worker.Select(x => Tuple.Create(x.Host, x.Port))));
 
             //event
             var events = new List<SendDataSourceToServerBase>();
             if (section.Event.FileSystems.Any())
             {
                 var fs = new FileSystemDataSource(
-                    section.Event.FileSystems.Select(x => new FileSystemDataSourceDetail(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
+                    section.Event.FileSystems.Select(x => new FileSystemDataSourceOption(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
 
-                events.Add(new SendFileSystemToServer(fs, worker.MessageBroker));
+                events.Add(new SendFileSystemToServer(fs, worker));
             }
 
             if (section.Event.IIS.Any())
             {
                 var iis = new IISLogDataSource(
-                    section.Event.IIS.Select(x => new IISLogDataSourceDetail(x.Tag, x.Path, x.Interval)));
+                    section.Event.IIS.Select(x => new IISLogDataSourceOption(x.Tag, x.Path, x.Interval)));
 
-                events.Add(new SendIISLogToServer(iis, worker.MessageBroker));
+                events.Add(new SendIISLogToServer(iis, worker));
             }
 
             if (section.Event.EventLogs.Any() && section.Event.EventLogs.Scopes.Any())
@@ -63,9 +63,9 @@ namespace Flooder
                 var ev = new EventLogDataSource(
                     section.Event.EventLogs.Tag,
                     section.Event.EventLogs.Scopes,
-                    section.Event.EventLogs.Select(x => new EventLogDataSourceDetail(x.Type, x.Mode, x.Source, x.Id)));
+                    section.Event.EventLogs.Select(x => new EventLogDataSourceOption(x.Type, x.Mode, x.Source, x.Id)));
 
-                events.Add(new SendEventLogToServer(ev, worker.MessageBroker));
+                events.Add(new SendEventLogToServer(ev, worker));
             }
 
             if (section.Event.PerformanceCounters.Any())
@@ -73,9 +73,9 @@ namespace Flooder
                 var pc = new PerformanceCounterDataSource(
                     section.Event.PerformanceCounters.Tag,
                     section.Event.PerformanceCounters.Interval,
-                    section.Event.PerformanceCounters.Select(x => new PerformanceCounterDataSourceDetail(x.CategoryName, x.CounterName, x.InstanceName)));
+                    section.Event.PerformanceCounters.Select(x => new PerformanceCounterDataSourceOption(x.CategoryName, x.CounterName, x.InstanceName)));
 
-                events.Add(new SendPerformanceCounterToServer(pc, worker.MessageBroker));
+                events.Add(new SendPerformanceCounterToServer(pc, worker));
             }
 
             return new DefaultService(events, worker);

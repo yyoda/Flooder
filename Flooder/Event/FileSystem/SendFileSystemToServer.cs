@@ -19,9 +19,9 @@ namespace Flooder.Event.FileSystem
         public override IDisposable[] Subscribe()
         {
             var source = base.DataSource as FileSystemDataSource ?? new FileSystemDataSource();
-            if (source.Details.Any())
+            if (source.Options.Any())
             {
-                return source.Details.Select(x =>
+                return source.Options.Select(x =>
                 {
                     var parser = (IPayloadParser) Activator.CreateInstance(
                         x.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
@@ -41,7 +41,7 @@ namespace Flooder.Event.FileSystem
             return new IDisposable[0];
         }
 
-        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemDataSourceDetail source)
+        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemDataSourceOption source)
         {
             if (!Directory.Exists(source.Path))
             {

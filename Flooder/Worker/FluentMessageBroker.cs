@@ -1,8 +1,4 @@
-﻿using Flooder.Event;
-using Flooder.Utility;
-using MsgPack.Serialization;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +8,12 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Flooder.Event;
+using Flooder.Utility;
+using MsgPack.Serialization;
+using NLog;
 
-namespace Flooder.Transfer
+namespace Flooder.Worker
 {
     public class FluentMessageBroker : IMessageBroker
     {
@@ -28,13 +28,13 @@ namespace Flooder.Transfer
 
         public int Count { get { return _queue.Count; } }
 
-        public FluentMessageBroker(TcpManager tcp, TimeSpan? interval = null, int retryCount = 3, int capacity = 10000, int extraction = 10)
+        public FluentMessageBroker(WorkerOption option)
         {
-            _queue         = new BlockingCollection<byte[]>(capacity);
-            _tcp           = tcp;
-            _interval      = interval ?? TimeSpan.FromSeconds(1);
-            _retryMaxCount = retryCount;
-            _extraction    = extraction;
+            _queue         = new BlockingCollection<byte[]>(option.Capacity);
+            _tcp           = new TcpManager(option.Hosts);
+            _interval      = option.Interval;
+            _retryMaxCount = option.RetryMaxCount;
+            _extraction    = option.Extraction;
         }
 
         public void Publish(string tag, Dictionary<string, object> payload)
@@ -107,9 +107,11 @@ namespace Flooder.Transfer
             );
         }
 
-        public IDisposable Subscribe()
+        public IEnumerable<IDisposable> Subscribe()
         {
-            return Observable.Start(() =>
+            var healthCheck = _tcp.HealthCheck();
+
+            var messageBroker = Observable.Start(() =>
             {
                 while (true)
                 {
@@ -155,6 +157,8 @@ namespace Flooder.Transfer
                 ex => Logger.ErrorException("FluentMessageBroker#Subscribe", ex),
                 () => Logger.Fatal("FluentMessageBroker#Subscribe stoped.")
             );
+
+            return new[] { healthCheck, messageBroker };
         }
     }
 }

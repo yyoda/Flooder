@@ -92,11 +92,11 @@
     <Compile Include="Event\IIS\IISLogDataSource.cs" />
     <Compile Include="Event\FileSystem\FileSystemDataSource.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterDataSource.cs" />
-    <Compile Include="Transfer\Worker.cs" />
-    <Compile Include="FlooderFactory.cs" />
-    <Compile Include="Transfer\FluentMessageBroker.cs" />
+    <Compile Include="Worker\WorkerFactory.cs" />
+    <Compile Include="ServiceFactory.cs" />
+    <Compile Include="Worker\FluentMessageBroker.cs" />
     <Compile Include="Event\IMessageBroker.cs" />
-    <Compile Include="Transfer\TcpManager.cs" />
+    <Compile Include="Worker\TcpManager.cs" />
     <Compile Include="Utility\DateTimeExtensions.cs" />
     <Compile Include="Utility\EnumerableExtensions.cs" />
     <Compile Include="Event\EventLog\EventLogEventListener.cs" />

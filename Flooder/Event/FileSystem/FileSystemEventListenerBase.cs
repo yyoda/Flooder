@@ -53,7 +53,6 @@ namespace Flooder.Event.FileSystem
             catch (Exception ex)
             {
                 Logger.WarnException("Skip because an error has occurred in FileSystemEventListener.", ex);
-                throw ex;
             }
         }
 

@@ -7,6 +7,6 @@ namespace Flooder.Event
     {
         void Publish(string tag, Dictionary<string, object> payload);
         void Publish(string tag, Dictionary<string, object>[] payload);
-        IDisposable Subscribe();
+        IEnumerable<IDisposable> Subscribe();
     }
 }

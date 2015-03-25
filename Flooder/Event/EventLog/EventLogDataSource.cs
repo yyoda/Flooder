@@ -8,55 +8,55 @@ namespace Flooder.Event.EventLog
         public EventLogDataSource()
         {
             Scopes  = new string[0];
-            Details = new EventLogDataSourceDetail[0];
+            Options = new EventLogDataSourceOption[0];
         }
 
-        public EventLogDataSource(string tag, string[] scopes, IEnumerable<EventLogDataSourceDetail> details)
+        public EventLogDataSource(string tag, string[] scopes, IEnumerable<EventLogDataSourceOption> options)
         {
             Tag     = tag;
             Scopes  = scopes;
-            Details = details;
+            Options = options;
         }
 
         public string Tag { get; private set; }
         public string[] Scopes { get; private set; }
 
-        public IEnumerable<EventLogDataSourceDetail> Details { get; private set; }
+        public IEnumerable<EventLogDataSourceOption> Options { get; private set; }
 
-        public IEnumerable<EventLogDataSourceDetail> GetIncludeInfo()
+        public IEnumerable<EventLogDataSourceOption> GetIncludeInfo()
         {
-            return Details.Where(x => x.Mode == "include" && x.Type == "info");
+            return Options.Where(x => x.Mode == "include" && x.Type == "info");
         }
 
-        public IEnumerable<EventLogDataSourceDetail> GetIncludeWarn()
+        public IEnumerable<EventLogDataSourceOption> GetIncludeWarn()
         {
-            return Details.Where(x => x.Mode == "include" && x.Type == "warn");
+            return Options.Where(x => x.Mode == "include" && x.Type == "warn");
         }
 
-        public IEnumerable<EventLogDataSourceDetail> GetIncludeError()
+        public IEnumerable<EventLogDataSourceOption> GetIncludeError()
         {
-            return Details.Where(x => x.Mode == "include" && x.Type == "error");
+            return Options.Where(x => x.Mode == "include" && x.Type == "error");
         }
 
-        public IEnumerable<EventLogDataSourceDetail> GetExcludeInfo()
+        public IEnumerable<EventLogDataSourceOption> GetExcludeInfo()
         {
-            return Details.Where(x => x.Mode == "exclude" && x.Type == "info");
+            return Options.Where(x => x.Mode == "exclude" && x.Type == "info");
         }
 
-        public IEnumerable<EventLogDataSourceDetail> GetExcludeWarn()
+        public IEnumerable<EventLogDataSourceOption> GetExcludeWarn()
         {
-            return Details.Where(x => x.Mode == "exclude" && x.Type == "warn");
+            return Options.Where(x => x.Mode == "exclude" && x.Type == "warn");
         }
 
-        public IEnumerable<EventLogDataSourceDetail> GetExcludeError()
+        public IEnumerable<EventLogDataSourceOption> GetExcludeError()
         {
-            return Details.Where(x => x.Mode == "exclude" && x.Type == "error");
+            return Options.Where(x => x.Mode == "exclude" && x.Type == "error");
         }
     }
 
-    public class EventLogDataSourceDetail
+    public class EventLogDataSourceOption
     {
-        public EventLogDataSourceDetail(string type, string mode, string source, string id)
+        public EventLogDataSourceOption(string type, string mode, string source, string id)
         {
             Type = type;
             Mode = mode;

@@ -3,7 +3,7 @@ using NLog;
 
 namespace Flooder
 {
-    public class FlooderFactory
+    public class ServiceFactory
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

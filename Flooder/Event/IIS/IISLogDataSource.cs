@@ -7,20 +7,20 @@ namespace Flooder.Event.IIS
     {
         public IISLogDataSource()
         {
-            Details = new IISLogDataSourceDetail[0];
+            Options = new IISLogDataSourceOption[0];
         }
 
-        public IISLogDataSource(IEnumerable<IISLogDataSourceDetail> details)
+        public IISLogDataSource(IEnumerable<IISLogDataSourceOption> options)
         {
-            Details = details;
+            Options = options;
         }
 
-        public IEnumerable<IISLogDataSourceDetail> Details { get; set; }
+        public IEnumerable<IISLogDataSourceOption> Options { get; set; }
     }
 
-    public class IISLogDataSourceDetail
+    public class IISLogDataSourceOption
     {
-        public IISLogDataSourceDetail(string tag, string path, int interval)
+        public IISLogDataSourceOption(string tag, string path, int interval)
         {
             Tag      = tag;
             Path     = path;

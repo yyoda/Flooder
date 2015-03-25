@@ -7,24 +7,24 @@ namespace Flooder.Event.PerformanceCounter
     {
         public PerformanceCounterDataSource()
         {
-            Details = new PerformanceCounterDataSourceDetail[0];
+            Options = new PerformanceCounterDataSourceOption[0];
         }
 
-        public PerformanceCounterDataSource(string tag, int interval, IEnumerable<PerformanceCounterDataSourceDetail> details)
+        public PerformanceCounterDataSource(string tag, int interval, IEnumerable<PerformanceCounterDataSourceOption> options)
         {
             Tag      = tag;
             Interval = interval;
-            Details  = details;
+            Options  = options;
         }
 
         public string Tag { get; private set; }
         public int Interval { get; private set; }
-        public IEnumerable<PerformanceCounterDataSourceDetail> Details { get; private set; }
+        public IEnumerable<PerformanceCounterDataSourceOption> Options { get; private set; }
     }
 
-    public class PerformanceCounterDataSourceDetail
+    public class PerformanceCounterDataSourceOption
     {
-        public PerformanceCounterDataSourceDetail(string categoryName, string counterName, string instanceName)
+        public PerformanceCounterDataSourceOption(string categoryName, string counterName, string instanceName)
         {
             CategoryName = categoryName;
             CounterName  = counterName;
