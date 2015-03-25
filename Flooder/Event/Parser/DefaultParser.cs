@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Flooder.Event.FileSystem.Parser
+namespace Flooder.Event.Parser
 {
     public class DefaultParser : IPayloadParser
     {

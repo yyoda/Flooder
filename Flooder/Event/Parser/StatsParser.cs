@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 
-namespace Flooder.Event.FileSystem.Parser
+namespace Flooder.Event.Parser
 {
     public class StatsParser : IPayloadParser
     {

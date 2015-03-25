@@ -21,14 +21,19 @@ namespace Flooder.Event.FileSystem
             Parser                     = parser;
         }
 
-        public abstract FileSystemEventListenerBase Create();
+        public FileSystemEventListenerBase Create()
+        {
+            this.OnInitAction();
+            return this;
+        }
+
         protected virtual void OnInitAction() { }
         protected virtual void OnCreateAction(FileSystemEventArgs e) { }
         protected virtual void OnChangeAction(FileSystemEventArgs e) { }
         protected virtual void OnRenameAction(FileSystemEventArgs e) { }
         protected virtual void OnDeleteAction(FileSystemEventArgs e) { }
 
-        public void OnNext(FileSystemEventArgs e)
+        public virtual void OnNext(FileSystemEventArgs e)
         {
             try
             {

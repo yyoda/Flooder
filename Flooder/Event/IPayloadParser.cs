@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Flooder.Event.FileSystem
+namespace Flooder.Event
 {
     public interface IPayloadParser
     {

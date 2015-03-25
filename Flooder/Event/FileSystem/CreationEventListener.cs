@@ -17,11 +17,6 @@ namespace Flooder.Event.FileSystem
         {
         }
 
-        public override FileSystemEventListenerBase Create()
-        {
-            return this;
-        }
-
         protected override void OnCreateAction(FileSystemEventArgs e)
         {
             try

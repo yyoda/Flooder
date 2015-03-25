@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Flooder.Event.FileSystem.Parser;
+using Flooder.Event.Parser;
 
 namespace Flooder.Event.FileSystem
 {

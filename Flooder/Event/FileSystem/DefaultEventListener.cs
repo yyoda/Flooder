@@ -18,12 +18,6 @@ namespace Flooder.Event.FileSystem
         {
         }
 
-        public override FileSystemEventListenerBase Create()
-        {
-            this.OnInitAction();
-            return this;
-        }
-
         protected override void OnInitAction()
         {
             foreach (var path in Directory.GetFiles(base.Path))
