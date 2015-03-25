@@ -39,11 +39,7 @@ namespace Flooder.Event.FileLoad
 
                 var paths = Directory.GetFiles(_filePath)
                     .Select(x => new { Path = x, LastWriteTime = File.GetLastWriteTime(x) })
-                    .Where(x =>
-                    {
-                        var ret = Regex.IsMatch(x.Path, _fileName);
-                        return ret;
-                    })
+                    .Where(x => Regex.IsMatch(x.Path, _fileName))
                     .Where(x => x.LastWriteTime < now.AddSeconds(-1))   //書き込み直前のファイルに遭遇しないための対策
                     .OrderBy(x => x.LastWriteTime)
                     .Select(x => x.Path);
