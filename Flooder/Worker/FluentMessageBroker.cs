@@ -105,22 +105,21 @@ namespace Flooder.Worker
 
         public IEnumerable<IDisposable> Subscribe()
         {
-            var healthCheck = _tcp.HealthCheck();
+            var healthCheck = _tcp.ConnectionMonitoring();
 
-            var messageBroker = Observable.Start(() =>
-            {
-                while (true)
+            var messageBroker = Observable.Interval(TimeSpan.FromMilliseconds(1)).Subscribe(
+                x =>
                 {
                     if (_circuitBreaker.IsOpen)
                     {
                         Thread.Sleep(_option.Interval);
-                        continue;
+                        return;
                     }
 
                     if (_queue.Count <= 0)
                     {
                         Thread.Sleep(_option.Interval);
-                        continue;
+                        return;
                     }
 
                     var oneTimeEctratCount = _option.ExtractCount;
@@ -136,7 +135,7 @@ namespace Flooder.Worker
                     if (items.Length <= 0)
                     {
                         Thread.Sleep(_option.Interval);
-                        continue;
+                        return;
                     }
 
                     if (items.Length == 1)
@@ -153,10 +152,7 @@ namespace Flooder.Worker
                             _tcp.Transfer(item);
                         });
                     }
-                }
-            })
-            .Subscribe(
-                x => { },
+                },
                 ex => Logger.ErrorException("FluentMessageBroker#Subscribe", ex),
                 () => Logger.Fatal("FluentMessageBroker#Subscribe stoped.")
             );

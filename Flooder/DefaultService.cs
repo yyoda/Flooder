@@ -22,17 +22,14 @@ namespace Flooder
         private IEnumerable<SendDataSourceToServerBase> _events;
         private IMessageBroker _worker;
 
-        public bool IsStart { get; private set; }
+        public bool IsRunning { get; private set; }
 
         public DefaultService()
         {
-            IsStart = false;
         }
 
         public DefaultService(IEnumerable<SendDataSourceToServerBase> events, IMessageBroker worker)
         {
-            IsStart = false;
-
             _events = events;
             _worker = worker;
         }
@@ -110,56 +107,18 @@ namespace Flooder
             _instances.AddRange(worker);
             _instances.AddRange(events);
 
-            IsStart = true;
+            IsRunning = true;
         }
 
         public void Stop()
         {
             _instances.ForEach(x => x.Dispose());
-
             _events = null;
             _worker = null;
 
-            IsStart = false;
+            IsRunning = false;
 
             Logger.Info("Flooder stop.");
         }
-
-        public void Restart()
-        {
-            this.Stop();
-            this.Create().Start();
-        }
-
-        //TODO:
-        //public IDisposable HealthCheck()
-        //{
-        //    var locationPath  = Assembly.GetExecutingAssembly().Location;
-        //    var locationDir   = Path.GetDirectoryName(locationPath);
-        //    var circuitBraker = new DefaultCircuitBreaker();
-
-        //    return Observable.Interval(TimeSpan.FromSeconds(1)).Subscribe(
-        //        i =>
-        //        {
-        //            circuitBraker.ExecuteAction(() =>
-        //            {
-        //                var fullPath = locationDir + @"\detach.txt";
-        //                if (File.Exists(fullPath))
-        //                {
-        //                    this.Stop();
-        //                    Logger.Info("detach. path:{0}", fullPath);
-        //                    throw new InvalidOperationException("detach start.");
-        //                }
-
-        //                if (!IsStart)
-        //                {
-        //                    this.Restart();
-        //                }
-
-        //                Logger.Info("attach. path:{0}", fullPath);
-        //            });
-        //        }
-        //    );
-        //}
     }
 }

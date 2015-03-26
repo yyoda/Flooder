@@ -26,7 +26,7 @@ namespace Flooder.Tests
         [TestMethod]
         public void HealthCheck()
         {
-            using (_tcp.HealthCheck())
+            using (_tcp.ConnectionMonitoring())
             {
                 Thread.Sleep(10000);
                 //Console.ReadLine();

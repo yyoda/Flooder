@@ -51,22 +51,18 @@ namespace Flooder.Worker
 
         public IEnumerable<IDisposable> Subscribe()
         {
-            var messageBroker = Observable.Start(() =>
-            {
-                while (true)
+            var messageBroker = Observable.Interval(TimeSpan.FromMilliseconds(1)).Subscribe(
+                x =>
                 {
                     string message;
                     if (_queue.TryTake(out message))
                     {
                         Console.WriteLine(message);
-                        continue;
+                        return;
                     }
 
                     Thread.Sleep(_option.Interval);
-                }
-            })
-            .Subscribe(
-                x => { },
+                },
                 ex => Logger.ErrorException("StdOutMessageBroker#Subscribe", ex),
                 () => Logger.Fatal("StdOutMessageBroker#Subscribe stoped.")
             );

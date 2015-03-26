@@ -92,11 +92,10 @@ namespace Flooder.Worker
             }
         }
 
-        public IDisposable HealthCheck()
+        public IDisposable ConnectionMonitoring()
         {
-            return Observable.Start(() =>
-            {
-                while (true)
+            return Observable.Interval(TimeSpan.FromMilliseconds(1)).Subscribe(
+                e =>
                 {
                     _circuitBreaker.ExecuteAction(() =>
                     {
@@ -144,12 +143,9 @@ namespace Flooder.Worker
 
                         //Logger.Trace("Healthy now...");
                     });
-                }
-            })
-            .Subscribe(
-                e => { /* nothing. */ },
+                },
                 ex => Logger.FatalException("Inability to continue.", ex),
-                () => Logger.Fatal("HealthCheck stoped.")
+                () => Logger.Fatal("ConnectionMonitoring stoped.")
             );
         }
 
