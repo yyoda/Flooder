@@ -5,7 +5,7 @@ using NLog;
 
 namespace Flooder.Event.PerformanceCounter
 {
-    public class SendPerformanceCounterToServer : SendDataSourceToServerBase
+    public class SendPerformanceCounterToServer : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

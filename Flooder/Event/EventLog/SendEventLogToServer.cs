@@ -5,7 +5,7 @@ using NLog;
 
 namespace Flooder.Event.EventLog
 {
-    public class SendEventLogToServer : SendDataSourceToServerBase
+    public class SendEventLogToServer : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

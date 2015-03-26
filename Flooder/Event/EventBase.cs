@@ -2,12 +2,12 @@
 
 namespace Flooder.Event
 {
-    public abstract class SendDataSourceToServerBase
+    public abstract class EventBase
     {
         protected IDataSource DataSource { get; private set; }
         protected IMessageBroker MessageBroker { get; private set; }
 
-        protected SendDataSourceToServerBase(IDataSource dataSource, IMessageBroker messageBroker)
+        protected EventBase(IDataSource dataSource, IMessageBroker messageBroker)
         {
             DataSource    = dataSource;
             MessageBroker = messageBroker;

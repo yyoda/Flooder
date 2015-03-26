@@ -7,7 +7,7 @@ using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public class SendFileSystemToServer : SendDataSourceToServerBase
+    public class SendFileSystemToServer : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         

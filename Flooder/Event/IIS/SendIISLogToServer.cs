@@ -6,7 +6,7 @@ using NLog;
 
 namespace Flooder.Event.IIS
 {
-    public class SendIISLogToServer : SendDataSourceToServerBase
+    public class SendIISLogToServer : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

@@ -19,7 +19,7 @@ namespace Flooder
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly List<IDisposable> _instances = new List<IDisposable>();
-        private IEnumerable<SendDataSourceToServerBase> _events;
+        private IEnumerable<EventBase> _events;
         private IMessageBroker _worker;
 
         public bool IsRunning { get; private set; }
@@ -28,7 +28,7 @@ namespace Flooder
         {
         }
 
-        public DefaultService(IEnumerable<SendDataSourceToServerBase> events, IMessageBroker worker)
+        public DefaultService(IEnumerable<EventBase> events, IMessageBroker worker)
         {
             _events = events;
             _worker = worker;
@@ -43,7 +43,7 @@ namespace Flooder
                 section.Worker.Type,
                 new MessageBrokerOption(section.Worker.Select(x => Tuple.Create(x.Host, x.Port))));
 
-            var events = new List<SendDataSourceToServerBase>();
+            var events = new List<EventBase>();
             if (section.Event.FileSystems.Any())
             {
                 var fs = new FileSystemDataSource(

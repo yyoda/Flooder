@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Flooder.Event.FileLoad
 {
-    public class SendFileLoadToServer : SendDataSourceToServerBase
+    public class SendFileLoadToServer : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
