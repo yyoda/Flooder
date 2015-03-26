@@ -54,14 +54,14 @@ namespace Flooder.Event.Parser
                 return new Dictionary<string, object>
                 {
                     {"datetime",   datetime.Replace(",", ".").Replace(" ", "T")},
-                    {"uid",        uid},
-                    {"status",     status},
-                    {"method",     method},
-                    {"title",      title},
-                    {"url",        lines.Where(x => x.StartsWith(" Url: ")).Select(x => x.Replace(" Url: ", "")).FirstOrDefault()},
-                    {"user",       lines.Where(x => x.StartsWith(" User: ")).Select(x => x.Replace(" User: ", "")).FirstOrDefault()},
-                    {"parameters", lines.Where(x => x.StartsWith(" Parameters: ")).Select(x => x.Replace(" Parameters: ", "")).FirstOrDefault()},
-                    {"useragent",  lines.Where(x => x.StartsWith(" UserAgent : ")).Select(x => x.Replace(" UserAgent : ", "")).FirstOrDefault()},
+                    {"uid",        uid ?? ""},
+                    {"status",     status ?? ""},
+                    {"method",     method ?? ""},
+                    {"title",      title ?? ""},
+                    {"url",        lines.Where(x => x.StartsWith(" Url: ")).Select(x => x.Replace(" Url: ", "")).FirstOrDefault() ?? ""},
+                    {"user",       lines.Where(x => x.StartsWith(" User: ")).Select(x => x.Replace(" User: ", "")).FirstOrDefault() ?? ""},
+                    {"parameters", lines.Where(x => x.StartsWith(" Parameters: ")).Select(x => x.Replace(" Parameters: ", "")).FirstOrDefault() ?? ""},
+                    {"useragent",  lines.Where(x => x.StartsWith(" UserAgent : ")).Select(x => x.Replace(" UserAgent : ", "")).FirstOrDefault() ?? ""},
                     {"messages",   source},
                 };
             }

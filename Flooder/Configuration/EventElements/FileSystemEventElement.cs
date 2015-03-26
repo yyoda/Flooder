@@ -13,7 +13,7 @@ namespace Flooder.Configuration.EventElements
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((FileSystemElement)element).Path;
+            return ((FileSystemElement)element).Tag;
         }
 
         public new IEnumerator<FileSystemElement> GetEnumerator()

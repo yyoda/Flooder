@@ -10,8 +10,7 @@ namespace Flooder.Event.FileSystem
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
 
         /// <summary>inject option.</summary>
-        public static Func<string, string, string> TagGen =
-            (tag, fileName) => string.Format("{0}.{1}", tag, fileName.Split('.').FirstOrDefault() ?? "unknown");
+        public static Func<string, string, string> TagGen = (tag, fileName) => tag;
 
         public DefaultEventListener(string tag, string path, IMessageBroker messageBroker, IPayloadParser parser)
             : base(tag, path, messageBroker, parser)

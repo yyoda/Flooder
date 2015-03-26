@@ -78,12 +78,13 @@
     <Compile Include="Event\FileLoad\FileLoadListener.cs" />
     <Compile Include="Event\FileLoad\SendFileLoadToServer.cs" />
     <Compile Include="Event\FileSystem\CreationEventListener.cs" />
+    <Compile Include="Event\Parser\ApiParser.cs" />
     <Compile Include="Event\Parser\CsvParser.cs" />
     <Compile Include="Event\Parser\StatsParser.cs" />
     <Compile Include="Event\Parser\DefaultParser.cs" />
     <Compile Include="Event\Parser\ApplogParser.cs" />
     <Compile Include="Event\IPayloadParser.cs" />
-    <Compile Include="Event\SendDataSourceToServerBase.cs" />
+    <Compile Include="Event\EventBase.cs" />
     <Compile Include="HealthCheck.cs" />
     <Compile Include="RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="RetryPolicy\Incremental.cs" />

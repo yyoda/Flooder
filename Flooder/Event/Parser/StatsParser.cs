@@ -34,32 +34,40 @@ namespace Flooder.Event.Parser
                 }
 
                 var executeCounts = 0;
-                for (var i = executePosition; i < lines.Length - 1; i++)
-                {
-                    if (lines[i].IndexOf("-----", StringComparison.Ordinal) >= 0) break;
 
-                    if (lines[i].IndexOf("回 ", StringComparison.Ordinal) >= 0)
+                if (executePosition > 0)
+                {
+                    for (var i = executePosition; i < lines.Length - 1; i++)
                     {
-                        var val = lines[i].Split('回').Select(x => x.Trim()).FirstOrDefault() ?? "0";
-                        executeCounts += int.Parse(val);
+                        if (lines[i].IndexOf("-----", StringComparison.Ordinal) >= 0) break;
+
+                        if (lines[i].IndexOf("回 ", StringComparison.Ordinal) >= 0)
+                        {
+                            var val = lines[i].Split('回').Select(x => x.Trim()).FirstOrDefault() ?? "0";
+                            executeCounts += int.Parse(val);
+                        }
                     }
                 }
 
                 var duplicateCounts = new List<bool>();
-                for (var i = duplicatePosision; i < lines.Length - 1; i++)
+
+                if (duplicatePosision > 0)
                 {
-                    if (lines[i].IndexOf("回 ", StringComparison.Ordinal) >= 0)
+                    for (var i = duplicatePosision; i < lines.Length - 1; i++)
                     {
-                        duplicateCounts.Add(true);
+                        if (lines[i].IndexOf("回 ", StringComparison.Ordinal) >= 0)
+                        {
+                            duplicateCounts.Add(true);
+                        }
                     }
                 }
 
                 return new Dictionary<string, object>
                 {
                     {"datetime", head[0].Replace(",", ".").Replace(" ", "T")},
-                    {"status", head[1]},
-                    {"category", head[2]},
-                    {"path", head[3]},
+                    {"status", head[1] ?? ""},
+                    {"category", head[2] ?? ""},
+                    {"path", head[3] ?? ""},
                     {"execute", executeCounts},
                     {"duplicate", duplicateCounts.Count},
                     {"messages", source}
