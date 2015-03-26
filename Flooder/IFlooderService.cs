@@ -6,5 +6,6 @@ namespace Flooder
         IFlooderService Create();
         void Start();
         void Stop();
+        void Restart();
     }
 }

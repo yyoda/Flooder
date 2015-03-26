@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Flooder.CircuitBreaker;
 using Flooder.Worker;
 
 namespace Flooder.Tests
@@ -18,7 +19,7 @@ namespace Flooder.Tests
         [TestInitialize]
         public void ConnectionTestInitialize()
         {
-            _tcp = new TcpManager(_hosts);
+            _tcp = new TcpManager(_hosts, new DefaultCircuitBreaker());
             _tcp.Connect();
         }
 
@@ -36,7 +37,7 @@ namespace Flooder.Tests
         public void IfOverflowBlockingCollection()
         {
             const int limit = 3;
-            var messageBroker = new FluentMessageBroker(new WorkerOption(_hosts));
+            var messageBroker = new FluentMessageBroker(new MessageBrokerOption(_hosts));
 
             for (var i = 0; i < limit + 1; i++)
             {
@@ -53,12 +54,12 @@ namespace Flooder.Tests
         public void MultipleTakeBlockingCollection()
         {
             const int limit = 10;
-            var messageBroker = new FluentMessageBroker(new WorkerOption(_hosts)
+            var messageBroker = new FluentMessageBroker(new MessageBrokerOption(_hosts)
             {
                 Interval      = TimeSpan.FromSeconds(1),
                 RetryMaxCount = 3,
                 Capacity      = limit,
-                Extraction    = 3,
+                ExtractCount    = 3,
             });
 
             for (var i = 0; i < limit; i++)
@@ -76,7 +77,7 @@ namespace Flooder.Tests
 
             try
             {
-                var messageBroker = new FluentMessageBroker(new WorkerOption(_hosts)
+                var messageBroker = new FluentMessageBroker(new MessageBrokerOption(_hosts)
                 {
                     Interval      = TimeSpan.FromSeconds(1),
                     RetryMaxCount = 3,

@@ -16,15 +16,15 @@ namespace Flooder.Worker
         private readonly object _syncObject;
         private readonly IEnumerable<Tuple<string, int>> _hosts;
         private IDictionary<Tuple<string, int>, TcpClient> _connectionStateStore;
+        private readonly DefaultCircuitBreaker _circuitBreaker;
         
-        public TcpManager(IEnumerable<Tuple<string, int>> hosts)
+        public TcpManager(IEnumerable<Tuple<string, int>> hosts, DefaultCircuitBreaker circuitBreaker)
         {
             _syncObject           = new object();
             _hosts                = hosts;
             _connectionStateStore = new Dictionary<Tuple<string, int>, TcpClient>();
+            _circuitBreaker       = circuitBreaker;
         }
-
-        public bool HasConnection { get { return _connectionStateStore.Count > 0; } }
 
         public bool Connect()
         {
@@ -96,11 +96,9 @@ namespace Flooder.Worker
         {
             return Observable.Start(() =>
             {
-                var breaker = new DefaultCircuitBreaker(new CircuitBreakerStateStore());
-
                 while (true)
                 {
-                    breaker.ExecuteAction(() =>
+                    _circuitBreaker.ExecuteAction(() =>
                     {
                         foreach (var host in _hosts)
                         {

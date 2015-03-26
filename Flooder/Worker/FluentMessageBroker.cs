@@ -7,7 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
+using Flooder.CircuitBreaker;
 using Flooder.Event;
 using Flooder.Utility;
 using MsgPack.Serialization;
@@ -19,19 +19,20 @@ namespace Flooder.Worker
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly SerializationContext MsgPackDefaultContext = new SerializationContext();
-        private static readonly JavaScriptSerializer JsonSerializer = new JavaScriptSerializer();
 
         private readonly BlockingCollection<byte[]> _queue;
         private readonly TcpManager _tcp;
-        private readonly WorkerOption _option;
+        private readonly DefaultCircuitBreaker _circuitBreaker;
+        private readonly MessageBrokerOption _option;
 
         public int Count { get { return _queue.Count; } }
 
-        public FluentMessageBroker(WorkerOption option)
+        public FluentMessageBroker(MessageBrokerOption option)
         {
-            _queue  = new BlockingCollection<byte[]>(option.Capacity);
-            _tcp    = new TcpManager(option.Hosts);
-            _option = option;
+            _queue          = new BlockingCollection<byte[]>(option.Capacity);
+            _tcp            = new TcpManager(option.Hosts, option.CircuitBreaker);
+            _circuitBreaker = option.CircuitBreaker;
+            _option         = option;
         }
 
         public void Publish(string tag, Dictionary<string, object> payload)
@@ -41,7 +42,7 @@ namespace Flooder.Worker
 
         public void Publish(string tag, Dictionary<string, object>[] payloads)
         {
-            if (!_tcp.HasConnection) return; //skip.
+            if (_circuitBreaker.IsOpen) return;
 
             var timestamp = DateTime.Now.ToUnixTime();
 
@@ -51,7 +52,7 @@ namespace Flooder.Worker
 
                 foreach (var payload in payloads)
                 {
-                    //["tag", timestamp, payload]
+                    //[tag, timestamp, payload]
                     packer.PackArrayHeader(3);
                     packer.PackString(tag);
                     packer.Pack(timestamp);
@@ -70,13 +71,7 @@ namespace Flooder.Worker
                 }
 
                 var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int) ms.Length);
-                var bytes = arraySegment.ToArray();
-
-//#if DEBUG
-//                Logger.Trace("{0}, {1} {2}", tag, timestamp, JsonSerializer.Serialize(payloads));
-//#endif
-
-                Publish(bytes);
+                Publish(arraySegment.ToArray());
             }
         }
 
@@ -92,10 +87,12 @@ namespace Flooder.Worker
                     return Disposable.Empty;
                 }
 
-                x.OnError(new InvalidOperationException(string.Format(
-                    "Queue overflow. retryCount:{0}, sleepTime:{1}", ++retryCount, _option.Interval)));
+                ++retryCount;
+                Logger.Warn("Queue overflow. retryCount:{0}, sleepTime:{1}", retryCount, _option.Interval);
 
+                x.OnError(new InvalidOperationException());
                 x.OnNext(_option.Interval);
+
                 return Disposable.Empty;
             })
             .Retry(_option.RetryMaxCount)
@@ -114,41 +111,48 @@ namespace Flooder.Worker
             {
                 while (true)
                 {
-                    var takeCount = _option.Extraction; //initialize.
-
-                    if (_queue.Count > 0)
+                    if (_circuitBreaker.IsOpen)
                     {
-                        if (_queue.Count < takeCount)
-                        {
-                            takeCount = _queue.Count;
-                        }
-
-                        var items = _queue.GetConsumingEnumerable()
-                            .Take(takeCount)
-                            .ToArray();
-
-                        if (_tcp.HasConnection && items.Length > 0)
-                        {
-                            if (items.Length == 1)
-                            {
-                                foreach (var item in items)
-                                {
-                                    _tcp.Transfer(item);
-                                }
-                            }
-                            else
-                            {
-                                Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = takeCount }, item =>
-                                {
-                                    _tcp.Transfer(item);
-                                });
-                            }
-
-                            continue;
-                        }
+                        Thread.Sleep(_option.Interval);
+                        continue;
                     }
 
-                    Thread.Sleep(_option.Interval);
+                    if (_queue.Count <= 0)
+                    {
+                        Thread.Sleep(_option.Interval);
+                        continue;
+                    }
+
+                    var oneTimeEctratCount = _option.ExtractCount;
+                    if (_queue.Count < oneTimeEctratCount)
+                    {
+                        oneTimeEctratCount = _queue.Count;
+                    }
+
+                    var items = _queue.GetConsumingEnumerable()
+                        .Take(oneTimeEctratCount)
+                        .ToArray();
+
+                    if (items.Length <= 0)
+                    {
+                        Thread.Sleep(_option.Interval);
+                        continue;
+                    }
+
+                    if (items.Length == 1)
+                    {
+                        foreach (var item in items)
+                        {
+                            _tcp.Transfer(item);
+                        }
+                    }
+                    else
+                    {
+                        Parallel.ForEach(items, new ParallelOptions { MaxDegreeOfParallelism = oneTimeEctratCount }, item =>
+                        {
+                            _tcp.Transfer(item);
+                        });
+                    }
                 }
             })
             .Subscribe(

@@ -4,8 +4,6 @@ using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -18,13 +16,13 @@ namespace Flooder.Worker
         private static readonly JavaScriptSerializer JsonSerializer = new JavaScriptSerializer();
 
         private readonly BlockingCollection<string> _queue;
-        private readonly WorkerOption _option;
+        private readonly MessageBrokerOption _option;
 
         public int Count { get { return _queue.Count; } }
 
-        public StdOutMessageBroker(WorkerOption option)
+        public StdOutMessageBroker(MessageBrokerOption option)
         {
-            _queue  = new BlockingCollection<string>(option.Capacity);
+            _queue  = new BlockingCollection<string>();
             _option = option;
         }
 
@@ -45,28 +43,10 @@ namespace Flooder.Worker
 
         public void Publish(string message)
         {
-            var retryCount = 0;
-
-            Observable.Create<TimeSpan>(x =>
+            if (_queue.TryAdd(message))
             {
-                if (_queue.TryAdd(message))
-                {
-                    x.OnCompleted();
-                    return Disposable.Empty;
-                }
-
-                x.OnError(new InvalidOperationException(string.Format(
-                    "Queue overflow. retryCount:{0}, sleepTime:{1}", ++retryCount, _option.Interval)));
-
-                x.OnNext(_option.Interval);
-                return Disposable.Empty;
-            })
-            .Retry(_option.RetryMaxCount)
-            .Subscribe(
-                Thread.Sleep,
-                ex => Logger.ErrorException("StdOutMessageBroker#Publish.", ex),
-                () => Logger.Trace("StdOutMessageBroker#Publish success.")
-            );
+                Logger.Error("StdOutMessageBroker#Publish failue. message:{0}", message);
+            }
         }
 
         public IEnumerable<IDisposable> Subscribe()
@@ -75,24 +55,10 @@ namespace Flooder.Worker
             {
                 while (true)
                 {
-                    var takeCount = _option.Extraction; //initialize.
-
-                    if (_queue.Count > 0)
+                    string message;
+                    if (_queue.TryTake(out message))
                     {
-                        if (_queue.Count < takeCount)
-                        {
-                            takeCount = _queue.Count;
-                        }
-
-                        var messages = _queue.GetConsumingEnumerable()
-                            .Take(takeCount)
-                            .ToArray();
-
-                        foreach (var message in messages)
-                        {
-                            Console.WriteLine(message);
-                        }
-
+                        Console.WriteLine(message);
                         continue;
                     }
 

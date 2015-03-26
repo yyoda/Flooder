@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using Flooder.Configuration;
+﻿using Flooder.Configuration;
 using Flooder.Event;
 using Flooder.Event.EventLog;
 using Flooder.Event.FileLoad;
@@ -11,23 +7,32 @@ using Flooder.Event.IIS;
 using Flooder.Event.PerformanceCounter;
 using Flooder.Worker;
 using NLog;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 
 namespace Flooder
 {
     public class DefaultService : IFlooderService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly List<IDisposable> instances = new List<IDisposable>();
 
-        private readonly IEnumerable<SendDataSourceToServerBase> _events;
-        private readonly IMessageBroker _worker;
+        private readonly List<IDisposable> _instances = new List<IDisposable>();
+        private IEnumerable<SendDataSourceToServerBase> _events;
+        private IMessageBroker _worker;
+
+        public bool IsStart { get; private set; }
 
         public DefaultService()
         {
+            IsStart = false;
         }
 
         public DefaultService(IEnumerable<SendDataSourceToServerBase> events, IMessageBroker worker)
         {
+            IsStart = false;
+
             _events = events;
             _worker = worker;
         }
@@ -35,13 +40,12 @@ namespace Flooder
         public IFlooderService Create()
         {
             var section = ConfigurationManager.GetSection("flooder") as Section;
+            if (section == null) throw new NullReferenceException("Section");
 
-            //worker
             var worker = WorkerFactory.Create(
                 section.Worker.Type,
-                new WorkerOption(section.Worker.Select(x => Tuple.Create(x.Host, x.Port))));
+                new MessageBrokerOption(section.Worker.Select(x => Tuple.Create(x.Host, x.Port))));
 
-            //event
             var events = new List<SendDataSourceToServerBase>();
             if (section.Event.FileSystems.Any())
             {
@@ -94,8 +98,8 @@ namespace Flooder
         {
             Logger.Info("Flooder start.");
 
-            if (_worker == null) throw new NullReferenceException("Worker");
-            if (_events == null) throw new NullReferenceException("Events");
+            if (_worker == null) throw new NullReferenceException("worker");
+            if (_events == null) throw new NullReferenceException("events");
 
             var worker = _worker.Subscribe();
             var events = _events.SelectMany(x =>
@@ -103,14 +107,59 @@ namespace Flooder
                 return x.Subscribe();
             });
 
-            instances.AddRange(worker);
-            instances.AddRange(events);
+            _instances.AddRange(worker);
+            _instances.AddRange(events);
+
+            IsStart = true;
         }
 
         public void Stop()
         {
-            instances.ForEach(x => x.Dispose());
+            _instances.ForEach(x => x.Dispose());
+
+            _events = null;
+            _worker = null;
+
+            IsStart = false;
+
             Logger.Info("Flooder stop.");
         }
+
+        public void Restart()
+        {
+            this.Stop();
+            this.Create().Start();
+        }
+
+        //TODO:
+        //public IDisposable HealthCheck()
+        //{
+        //    var locationPath  = Assembly.GetExecutingAssembly().Location;
+        //    var locationDir   = Path.GetDirectoryName(locationPath);
+        //    var circuitBraker = new DefaultCircuitBreaker();
+
+        //    return Observable.Interval(TimeSpan.FromSeconds(1)).Subscribe(
+        //        i =>
+        //        {
+        //            circuitBraker.ExecuteAction(() =>
+        //            {
+        //                var fullPath = locationDir + @"\detach.txt";
+        //                if (File.Exists(fullPath))
+        //                {
+        //                    this.Stop();
+        //                    Logger.Info("detach. path:{0}", fullPath);
+        //                    throw new InvalidOperationException("detach start.");
+        //                }
+
+        //                if (!IsStart)
+        //                {
+        //                    this.Restart();
+        //                }
+
+        //                Logger.Info("attach. path:{0}", fullPath);
+        //            });
+        //        }
+        //    );
+        //}
     }
 }

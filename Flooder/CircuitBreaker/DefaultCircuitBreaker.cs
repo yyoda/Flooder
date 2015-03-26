@@ -17,6 +17,10 @@ namespace Flooder.CircuitBreaker
         public bool IsClosed { get { return _stateStore.IsClosed; } }
         public bool IsOpen { get { return !IsClosed; } }
 
+        public DefaultCircuitBreaker() : this(new CircuitBreakerStateStore())
+        {
+        }
+
         public DefaultCircuitBreaker(ICircuitBreakerStateStore stateStore)
         {
             _stateStore = stateStore;
@@ -43,13 +47,13 @@ namespace Flooder.CircuitBreaker
 
                             _stateStore.Reset();
                             _retryPolicy.Reset(out _interval);
-                            Logger.Warn("Recovery is success! CircuitBreaker is closed.");
+                            Logger.Warn("[HalfOpen => Success] CircuitBreaker is close.");
                         }
                     }
                     catch (Exception ex)
                     {
                         _stateStore.Trip(ex);
-                        Logger.Warn("CircuitBreaker is opened (rollbacked).");
+                        Logger.Warn("[HalfOpen => Failure] CircuitBreaker is open.");
                     }
                     finally
                     {
@@ -74,7 +78,7 @@ namespace Flooder.CircuitBreaker
             catch (Exception ex)
             {
                 _stateStore.Trip(ex);
-                Logger.Error("Emergency! CircuitBreaker is opend.", ex);
+                Logger.Error("CircuitBreaker is open.", ex);
             }
 
             Thread.Sleep(_interval);

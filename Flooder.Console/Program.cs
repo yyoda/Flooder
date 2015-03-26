@@ -13,6 +13,7 @@ namespace Flooder.Console
             try
             {
                 flooder.Start();
+
                 System.Console.ReadLine();  //listening...
             }
             catch (Exception ex)
