@@ -67,7 +67,7 @@ namespace Flooder.Event.Parser
             }
             catch (Exception ex)
             {
-                Logger.WarnException("Failure parse.", ex);
+                Logger.WarnException(string.Format("Failure parse. source:{0}", source), ex);
 
                 return new Dictionary<string, object>
                 {

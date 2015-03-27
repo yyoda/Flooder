@@ -43,7 +43,7 @@ namespace Flooder.Worker
             RetryMaxCount  = 3;
             Capacity       = 10000;
             ExtractCount   = 10;
-            CircuitBreaker = new DefaultCircuitBreaker();
+            CircuitBreaker = new IncrementalRetryableCircuitBreaker();
         }
 
         public IEnumerable<Tuple<string, int>> Hosts { get; private set; }
@@ -51,6 +51,6 @@ namespace Flooder.Worker
         public int RetryMaxCount { get; set; }
         public int Capacity { get; set; }
         public int ExtractCount { get; set; }
-        public DefaultCircuitBreaker CircuitBreaker { get; private set; }
+        public IncrementalRetryableCircuitBreaker CircuitBreaker { get; private set; }
     }
 }

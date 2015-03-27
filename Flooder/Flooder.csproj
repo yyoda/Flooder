@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -90,7 +91,7 @@
     <Compile Include="RetryPolicy\Incremental.cs" />
     <Compile Include="RetryPolicy\FixedInterval.cs" />
     <Compile Include="RetryPolicy\IRetryPolicy.cs" />
-    <Compile Include="CircuitBreaker\DefaultCircuitBreaker.cs" />
+    <Compile Include="CircuitBreaker\IncrementalRetryableCircuitBreaker.cs" />
     <Compile Include="DefaultService.cs" />
     <Compile Include="IFlooderService.cs" />
     <Compile Include="Event\IDataSource.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Event\IIS\IISLogDataSource.cs" />
     <Compile Include="Event\FileSystem\FileSystemDataSource.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterDataSource.cs" />
+    <Compile Include="Utility\RegexUtility.cs" />
     <Compile Include="Worker\StdOutMessageBroker.cs" />
     <Compile Include="Worker\WorkerFactory.cs" />
     <Compile Include="ServiceFactory.cs" />

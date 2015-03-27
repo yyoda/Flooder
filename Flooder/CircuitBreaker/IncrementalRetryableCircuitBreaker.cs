@@ -5,7 +5,7 @@ using NLog;
 
 namespace Flooder.CircuitBreaker
 {
-    public class DefaultCircuitBreaker
+    public class IncrementalRetryableCircuitBreaker
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -17,11 +17,11 @@ namespace Flooder.CircuitBreaker
         public bool IsClosed { get { return _stateStore.IsClosed; } }
         public bool IsOpen { get { return !IsClosed; } }
 
-        public DefaultCircuitBreaker() : this(new CircuitBreakerStateStore())
+        public IncrementalRetryableCircuitBreaker() : this(new CircuitBreakerStateStore())
         {
         }
 
-        public DefaultCircuitBreaker(ICircuitBreakerStateStore stateStore)
+        public IncrementalRetryableCircuitBreaker(ICircuitBreakerStateStore stateStore)
         {
             _stateStore = stateStore;
             _interval   = _retryPolicy.CurrentInterval;

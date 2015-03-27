@@ -62,6 +62,30 @@ namespace Flooder.Event.Parser
                     }
                 }
 
+                string datetime = "", status = "", category = "", path = "";
+
+                switch (head.Length)
+                {
+                    case 1:
+                        datetime = head[0];
+                        break;
+                    case 2:
+                        datetime = head[0];
+                        status   = head[1];
+                        break;
+                    case 3:
+                        datetime = head[0];
+                        status   = head[1];
+                        category = head[2];
+                        break;
+                    default:
+                        datetime = head[0];
+                        status   = head[1];
+                        category = head[2];
+                        path     = head[3];
+                        break;
+                }
+
                 return new Dictionary<string, object>
                 {
                     {"datetime", head[0].Replace(",", ".").Replace(" ", "T")},
@@ -72,10 +96,21 @@ namespace Flooder.Event.Parser
                     {"duplicate", duplicateCounts.Count},
                     {"messages", source}
                 };
+
+                //return new Dictionary<string, object>
+                //{
+                //    {"datetime", datetime.Replace(",", ".").Replace(" ", "T")},
+                //    {"status", status ?? ""},
+                //    {"category", category ?? ""},
+                //    {"path", path ?? ""},
+                //    {"execute", executeCounts},
+                //    {"duplicate", duplicateCounts.Count},
+                //    {"messages", source}
+                //};
             }
             catch (Exception ex)
             {
-                Logger.WarnException("Failure parse.", ex);
+                Logger.WarnException(string.Format("Failure parse. source:{0}", source), ex);
 
                 return new Dictionary<string, object>
                 {

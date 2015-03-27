@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using Flooder.Utility;
 
 namespace Flooder.Event
 {
@@ -42,6 +43,17 @@ namespace Flooder.Event
             }
 
             _messageBroker.Publish(tag, payloads);
+        }
+
+        /// <summary>Like search helper.</summary>
+        protected string ChangeRegexPattern(string fileName)
+        {
+            return RegexUtility.ChangeRegexPattern(fileName);
+        }
+
+        protected bool IsLike(string source, string keyword)
+        {
+            return RegexUtility.IsLike(source, keyword);
         }
     }
 }

@@ -16,9 +16,9 @@ namespace Flooder.Worker
         private readonly object _syncObject;
         private readonly IEnumerable<Tuple<string, int>> _hosts;
         private IDictionary<Tuple<string, int>, TcpClient> _connectionStateStore;
-        private readonly DefaultCircuitBreaker _circuitBreaker;
+        private readonly IncrementalRetryableCircuitBreaker _circuitBreaker;
         
-        public TcpManager(IEnumerable<Tuple<string, int>> hosts, DefaultCircuitBreaker circuitBreaker)
+        public TcpManager(IEnumerable<Tuple<string, int>> hosts, IncrementalRetryableCircuitBreaker circuitBreaker)
         {
             _syncObject           = new object();
             _hosts                = hosts;

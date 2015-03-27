@@ -9,7 +9,7 @@ namespace Flooder
     {
         public static void FileMonitoring(string filePath, IFlooderService service)
         {
-            var circuitBraker        = new DefaultCircuitBreaker();
+            var circuitBraker        = new IncrementalRetryableCircuitBreaker();
             var currentlastWriteTime = File.GetLastWriteTime(filePath);
 
             Observable.Interval(TimeSpan.FromSeconds(1)).Subscribe(

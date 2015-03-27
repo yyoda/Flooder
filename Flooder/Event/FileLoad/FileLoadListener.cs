@@ -20,14 +20,7 @@ namespace Flooder.Event.FileLoad
             : base(tag, messageBroker)
         {
             _filePath = filePath;
-            _fileName = Regex.Replace(fileName, ".", m =>
-            {
-                var mValue = m.Value;
-                if (mValue.Equals("?")) return ".";
-                if (mValue.Equals("*")) return ".*";
-                return Regex.Escape(mValue);
-            });
-
+            _fileName = base.ChangeRegexPattern(fileName);
             _parser   = parser;
         }
 

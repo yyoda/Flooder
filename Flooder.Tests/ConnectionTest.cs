@@ -19,7 +19,7 @@ namespace Flooder.Tests
         [TestInitialize]
         public void ConnectionTestInitialize()
         {
-            _tcp = new TcpManager(_hosts, new DefaultCircuitBreaker());
+            _tcp = new TcpManager(_hosts, new IncrementalRetryableCircuitBreaker());
             _tcp.Connect();
         }
 

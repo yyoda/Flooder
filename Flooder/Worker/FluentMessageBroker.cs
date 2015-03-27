@@ -22,7 +22,7 @@ namespace Flooder.Worker
 
         private readonly BlockingCollection<byte[]> _queue;
         private readonly TcpManager _tcp;
-        private readonly DefaultCircuitBreaker _circuitBreaker;
+        private readonly IncrementalRetryableCircuitBreaker _circuitBreaker;
         private readonly MessageBrokerOption _option;
 
         public int Count { get { return _queue.Count; } }
