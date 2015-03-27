@@ -71,7 +71,7 @@ namespace Flooder.Worker
                 }
 
                 var arraySegment = new ArraySegment<byte>(ms.ToArray(), 0, (int) ms.Length);
-                Publish(arraySegment.ToArray());
+                Publish(arraySegment.Array);
             }
         }
 
