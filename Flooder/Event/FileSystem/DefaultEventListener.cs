@@ -1,13 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
+using NLog;
 
 namespace Flooder.Event.FileSystem
 {
     public class DefaultEventListener : FileSystemEventListenerBase
     {
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>inject option.</summary>
         public static Func<string, string, string> TagGen = (tag, fileName) => tag;
@@ -54,18 +60,36 @@ namespace Flooder.Event.FileSystem
 
         protected override void OnRenameAction(FileSystemEventArgs e)
         {
-            using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            //プロセスロック対策
+            Observable.Create<Unit>(observer =>
             {
-                base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Length, (key, value) => fs.Length);
-
-                var removeFiles = base.FileSeekPositionStateStore.Where(x => !File.Exists(x.Key)).Select(x => x.Key).ToArray();
-
-                for (var i = 0; i < removeFiles.Length; i++)
+                try
                 {
-                    long _; //unused.
-                    base.FileSeekPositionStateStore.TryRemove(removeFiles[i], out _);
+                    using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Length, (key, value) => fs.Length);
+
+                        var removeFiles = base.FileSeekPositionStateStore.Where(x => !File.Exists(x.Key)).Select(x => x.Key).ToArray();
+
+                        for (var i = 0; i < removeFiles.Length; i++)
+                        {
+                            long _; //unused.
+                            base.FileSeekPositionStateStore.TryRemove(removeFiles[i], out _);
+                        }
+                    }
+
+                    observer.OnCompleted();
                 }
-            }
+                catch (IOException ioe)
+                {
+                    Thread.Sleep(300);
+                    observer.OnError(ioe);
+                }
+
+                return Disposable.Empty;
+            })
+            .Retry(3)
+            .Subscribe(x => { }, ex => Logger.WarnException("File access error.", ex));
         }
 
         protected override void OnDeleteAction(FileSystemEventArgs e)

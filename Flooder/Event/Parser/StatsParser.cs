@@ -66,6 +66,8 @@ namespace Flooder.Event.Parser
 
                 switch (head.Length)
                 {
+                    case 0:
+                        break;
                     case 1:
                         datetime = head[0];
                         break;
@@ -88,25 +90,14 @@ namespace Flooder.Event.Parser
 
                 return new Dictionary<string, object>
                 {
-                    {"datetime", head[0].Replace(",", ".").Replace(" ", "T")},
-                    {"status", head[1] ?? ""},
-                    {"category", head[2] ?? ""},
-                    {"path", head[3] ?? ""},
+                    {"datetime", datetime.Replace(",", ".").Replace(" ", "T")},
+                    {"status", status ?? ""},
+                    {"category", category ?? ""},
+                    {"path", path ?? ""},
                     {"execute", executeCounts},
                     {"duplicate", duplicateCounts.Count},
                     {"messages", source}
                 };
-
-                //return new Dictionary<string, object>
-                //{
-                //    {"datetime", datetime.Replace(",", ".").Replace(" ", "T")},
-                //    {"status", status ?? ""},
-                //    {"category", category ?? ""},
-                //    {"path", path ?? ""},
-                //    {"execute", executeCounts},
-                //    {"duplicate", duplicateCounts.Count},
-                //    {"messages", source}
-                //};
             }
             catch (Exception ex)
             {

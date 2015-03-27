@@ -68,7 +68,7 @@ namespace Flooder
                 events.Add(new SendIISLogToServer(iis, worker));
             }
 
-            if (section.Event.EventLogs.Any() && section.Event.EventLogs.Scopes.Any())
+            if (section.Event.EventLogs.Scopes.Any())
             {
                 var ev = new EventLogDataSource(
                     section.Event.EventLogs.Tag,

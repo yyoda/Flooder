@@ -21,33 +21,37 @@ namespace Flooder.Event.PerformanceCounter
         {
             return source.SelectMany(o =>
             {
-                return new PerformanceCounterCategory(o.CategoryName)
-                    .GetInstanceNames()
-                    .Where(instanceName =>
-                    {
-                        if (string.IsNullOrEmpty(o.InstanceName))
+                var categories = new PerformanceCounterCategory(o.CategoryName);
+
+                switch (categories.CategoryType)
+                {
+                    case PerformanceCounterCategoryType.SingleInstance:
+                        return categories.CounterExists(o.CounterName)
+                            ? categories.GetCounters().Where(x => x.CounterName == o.CounterName)
+                            : Enumerable.Empty<System.Diagnostics.PerformanceCounter>();
+                    case PerformanceCounterCategoryType.MultiInstance:
+                        return categories.GetInstanceNames().Where(instanceName =>
                         {
-                            return true;
-                        }
+                            if (string.IsNullOrEmpty(o.InstanceName))
+                            {
+                                return true;
+                            }
 
-                        return base.IsLike(instanceName, o.InstanceName);
-                    })
-                    .Select(instanceName =>
-                    {
-                        Logger.Trace("PerformanceCounter trace. CategoryName:{0}, CoungterName:{1}, InstanceName:{2}",
-                            o.CategoryName, o.CounterName, instanceName);
-
-                        return new System.Diagnostics.PerformanceCounter(o.CategoryName, o.CounterName, instanceName);
-                    });
+                            return base.IsLike(instanceName, o.InstanceName);
+                        })
+                        .Select(instanceName => new System.Diagnostics.PerformanceCounter(o.CategoryName, o.CounterName, instanceName));
+                    default:
+                        return Enumerable.Empty<System.Diagnostics.PerformanceCounter>();
+                }
             })
-            .Where(p =>
+            .Where(perf =>
             {
                 var path = "";
 
                 try
                 {
-                    path = BuildPath(p);
-                    p.NextValue();  //init.
+                    path = BuildPath(perf);
+                    perf.NextValue();  //init.
                     return true;
                 }
                 catch (Exception ex)
@@ -77,12 +81,20 @@ namespace Flooder.Event.PerformanceCounter
 
                     try
                     {
-                        path        = BuildPath(p);
+                        path = BuildPath(p);
                         cookedValue = p.NextValue();
                     }
                     catch (Exception ex)
                     {
-                        Logger.DebugException(string.Format("Skip2 because an error has occurred. path:{0}", path), ex);
+                        if (ex.Message.IndexOf("が指定されたカテゴリにありません。", StringComparison.Ordinal) <= 0)
+                        {
+                            Logger.ErrorException(string.Format("Skip2 because an error has occurred. path:{0}", path), ex);
+                        }
+                        else
+                        {
+                            Logger.TraceException(string.Format("Skip2 because an error has occurred. path:{0}", path), ex);
+                        }
+
                         cookedValue = -1;
                     }
 
