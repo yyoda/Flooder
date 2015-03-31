@@ -1,12 +1,13 @@
-﻿using Flooder.Event;
-using Flooder.Utility;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Web.Script.Serialization;
+using Flooder.Event;
+using Flooder.Utility;
+using Newtonsoft.Json;
+using NLog;
 
 namespace Flooder.Worker
 {
@@ -33,12 +34,14 @@ namespace Flooder.Worker
 
         public void Publish(string tag, Dictionary<string, object>[] payloads)
         {
-            Publish(JsonSerializer.Serialize(new object[]
+            var json = JsonConvert.SerializeObject(new object[]
             {
                 tag,
                 DateTime.Now.ToUnixTime(),
                 payloads
-            }));
+            });
+
+            Publish(json);
         }
 
         public void Publish(string message)

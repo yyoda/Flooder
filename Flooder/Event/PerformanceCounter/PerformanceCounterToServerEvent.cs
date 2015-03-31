@@ -5,11 +5,11 @@ using NLog;
 
 namespace Flooder.Event.PerformanceCounter
 {
-    public class SendPerformanceCounterToServer : EventBase
+    public class PerformanceCounterToServerEvent : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendPerformanceCounterToServer(IDataSource dataSource, IMessageBroker messageBroker)
+        public PerformanceCounterToServerEvent(IDataSource dataSource, IMessageBroker messageBroker)
             : base(dataSource, messageBroker)
         {
         }

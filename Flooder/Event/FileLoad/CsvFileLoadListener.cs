@@ -8,7 +8,7 @@ using NLog;
 
 namespace Flooder.Event.FileLoad
 {
-    internal class FileLoadListener : EventListenerBase, IObserver<long>
+    internal class CsvFileLoadListener : EventListenerBase<long>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
@@ -16,7 +16,7 @@ namespace Flooder.Event.FileLoad
         private readonly string _filePath, _fileName;
         private readonly IPayloadParser _parser;
 
-        public FileLoadListener(string tag, string filePath, string fileName, IMessageBroker messageBroker, IPayloadParser parser)
+        public CsvFileLoadListener(string tag, string filePath, string fileName, IMessageBroker messageBroker, IPayloadParser parser)
             : base(tag, messageBroker)
         {
             _filePath = filePath;
@@ -24,7 +24,7 @@ namespace Flooder.Event.FileLoad
             _parser   = parser;
         }
 
-        public void OnNext(long value)
+        public override void OnNext(long value)
         {
             try
             {
@@ -68,12 +68,12 @@ namespace Flooder.Event.FileLoad
             }
         }
 
-        public void OnError(Exception error)
+        public override void OnError(Exception error)
         {
             Logger.FatalException("FileLoadListener#OnError", error);
         }
 
-        public void OnCompleted()
+        public override void OnCompleted()
         {
             Logger.Fatal("FileLoadListener#OnCompleted");
         }

@@ -6,7 +6,7 @@ using NLog;
 
 namespace Flooder.Event.PerformanceCounter
 {
-    public class PerformanceCounterEventListener : EventListenerBase, IObserver<long>
+    public class PerformanceCounterEventListener : EventListenerBase<long>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly System.Diagnostics.PerformanceCounter[] _performanceCounters;
@@ -70,7 +70,7 @@ namespace Flooder.Event.PerformanceCounter
                 : string.Format("{0}({1})\\{2}", performanceCounter.CategoryName, performanceCounter.InstanceName, performanceCounter.CounterName);
         }
 
-        public void OnNext(long value)
+        public override void OnNext(long value)
         {
             try
             {
@@ -114,12 +114,12 @@ namespace Flooder.Event.PerformanceCounter
             }
         }
 
-        public void OnError(Exception error)
+        public override void OnError(Exception error)
         {
             Logger.FatalException("PerformanceCounterListener", error);
         }
 
-        public void OnCompleted()
+        public override void OnCompleted()
         {
             Logger.Fatal("PerformanceCounterListener#OnCompleted");
 

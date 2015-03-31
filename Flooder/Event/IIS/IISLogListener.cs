@@ -7,7 +7,7 @@ using NLog;
 
 namespace Flooder.Event.IIS
 {
-    internal class IISLogListener : EventListenerBase, IObserver<long>
+    internal class IISLogListener : EventListenerBase<long>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
@@ -36,7 +36,7 @@ namespace Flooder.Event.IIS
             string fullPath;
             DateTime lastWriteTime;
 
-            if (TryGetLatestFile(_filePath, out fullPath, out lastWriteTime))
+            if (base.TryGetLatestFile(_filePath, out fullPath, out lastWriteTime))
             {
                 using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var sr = new StreamReader(fs, Encoding))
@@ -55,14 +55,14 @@ namespace Flooder.Event.IIS
             }
         }
 
-        public void OnNext(long value)
+        public override void OnNext(long value)
         {
             try
             {
                 string fullPath;
                 DateTime lastWriteTime;
 
-                if (TryGetLatestFile(_filePath, out fullPath, out lastWriteTime))
+                if (base.TryGetLatestFile(_filePath, out fullPath, out lastWriteTime))
                 {
                     using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (var sr = new StreamReader(fs, Encoding))
@@ -156,43 +156,14 @@ namespace Flooder.Event.IIS
             }
         }
 
-        public void OnError(Exception error)
+        public override void OnError(Exception error)
         {
             Logger.FatalException("IISLogListener", error);
         }
 
-        public void OnCompleted()
+        public override void OnCompleted()
         {
             Logger.Fatal("IISLogListener#OnCompleted");
-        }
-
-        /// <summary>
-        /// 指定フォルダから最新のファイルを一つ取り、ファイルのフルパス、最終書き込み日時を返す
-        /// </summary>
-        /// <param name="filePath">指定フォルダ</param>
-        /// <param name="latestFilePath">フルパス</param>
-        /// <param name="lastWriteTime">最終書き込み日時</param>
-        /// <returns>ファイルが存在しなかったらfalse、そうでなければtrue</returns>
-        private static bool TryGetLatestFile(string filePath, out string latestFilePath, out DateTime lastWriteTime)
-        {
-            string tmpLatestFilePath = null;
-            var tmpLastWriteTime = new DateTime();
-            var result = false;
-
-            foreach (var path in Directory.GetFiles(filePath))
-            {
-                var nowTime = File.GetLastWriteTime(path);
-                if (tmpLastWriteTime < nowTime)
-                {
-                    tmpLastWriteTime = nowTime;
-                    tmpLatestFilePath = path;
-                    result = true;
-                }
-            }
-
-            latestFilePath = tmpLatestFilePath;
-            lastWriteTime = tmpLastWriteTime;
-            return result;
         }
     }
 }

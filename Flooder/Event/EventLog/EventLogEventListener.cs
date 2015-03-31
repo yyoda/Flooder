@@ -6,7 +6,7 @@ using NLog;
 
 namespace Flooder.Event.EventLog
 {
-    internal class EventLogEventListener : EventListenerBase, IObserver<EntryWrittenEventArgs>
+    internal class EventLogEventListener : EventListenerBase<EntryWrittenEventArgs>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -22,7 +22,7 @@ namespace Flooder.Event.EventLog
         public HashSet<Tuple<string, string>> ExcludeWarn { get; set; }
         public HashSet<Tuple<string, string>> ExcludeError { get; set; }
 
-        public void OnNext(EntryWrittenEventArgs e)
+        public override void OnNext(EntryWrittenEventArgs e)
         {
             try
             {
@@ -75,12 +75,12 @@ namespace Flooder.Event.EventLog
             }
         }
 
-        public void OnError(Exception error)
+        public override void OnError(Exception error)
         {
             Logger.FatalException("EventLogListener#OnError", error);
         }
 
-        public void OnCompleted()
+        public override void OnCompleted()
         {
             Logger.Fatal("EventLogListener#OnCompleted");
         }

@@ -36,6 +36,10 @@
     <Reference Include="MsgPack">
       <HintPath>..\packages\MsgPack.Cli.0.5.10\lib\net45\MsgPack.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.3.2.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
@@ -76,9 +80,9 @@
     <Compile Include="Configuration\Section.cs" />
     <Compile Include="Event\EventListenerBase.cs" />
     <Compile Include="Event\FileLoad\FileLoadDataSource.cs" />
-    <Compile Include="Event\FileLoad\FileLoadListener.cs" />
-    <Compile Include="Event\FileLoad\SendFileLoadToServer.cs" />
-    <Compile Include="Event\FileSystem\CreationEventListener.cs" />
+    <Compile Include="Event\FileLoad\BlgFileLoadListener.cs" />
+    <Compile Include="Event\FileLoad\CsvFileLoadListener.cs" />
+    <Compile Include="Event\FileLoad\FileLoadToServerEvent.cs" />
     <Compile Include="Event\Parser\ApiParser.cs" />
     <Compile Include="Event\Parser\CsvParser.cs" />
     <Compile Include="Event\Parser\StatsParser.cs" />
@@ -99,6 +103,7 @@
     <Compile Include="Event\IIS\IISLogDataSource.cs" />
     <Compile Include="Event\FileSystem\FileSystemDataSource.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterDataSource.cs" />
+    <Compile Include="Utility\FileUtility.cs" />
     <Compile Include="Utility\RegexUtility.cs" />
     <Compile Include="Worker\StdOutMessageBroker.cs" />
     <Compile Include="Worker\WorkerFactory.cs" />
@@ -110,15 +115,15 @@
     <Compile Include="Utility\EnumerableExtensions.cs" />
     <Compile Include="Event\EventLog\EventLogEventListener.cs" />
     <Compile Include="Event\EventLog\EventLogWatcherExtensions.cs" />
-    <Compile Include="Event\EventLog\SendEventLogToServer.cs" />
+    <Compile Include="Event\EventLog\EventLogToServerEvent.cs" />
     <Compile Include="Event\FileSystem\FileSystemWatcherExtensions.cs" />
-    <Compile Include="Event\FileSystem\SendFileSystemToServer.cs" />
+    <Compile Include="Event\FileSystem\FileSystemToServerEvent.cs" />
     <Compile Include="Event\FileSystem\DefaultEventListener.cs" />
     <Compile Include="Event\FileSystem\FileSystemEventListenerBase.cs" />
     <Compile Include="Event\IIS\IISLogListener.cs" />
-    <Compile Include="Event\IIS\SendIISLogToServer.cs" />
+    <Compile Include="Event\IIS\ISLogToServerEvent.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterEventListener.cs" />
-    <Compile Include="Event\PerformanceCounter\SendPerformanceCounterToServer.cs" />
+    <Compile Include="Event\PerformanceCounter\PerformanceCounterToServerEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

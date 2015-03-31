@@ -36,6 +36,10 @@ namespace Flooder.Worker
 
     public class MessageBrokerOption
     {
+        public MessageBrokerOption()
+        {
+        }
+
         public MessageBrokerOption(IEnumerable<Tuple<string, int>> hosts)
         {
             Hosts          = hosts;

@@ -21,18 +21,20 @@ namespace Flooder.Event.FileLoad
 
     public class FileLoadDataSourceOption
     {
-        public FileLoadDataSourceOption(string tag, string path, string file, string parser, int interval)
+        public FileLoadDataSourceOption(string tag, string path, string file, string listener, string parser, int interval)
         {
             Tag      = tag;
             Path     = path;
             File     = file;
-            Parser   = Type.GetType(parser) ?? typeof (CsvParser);
+            Listener = Type.GetType(listener) ?? typeof (CsvFileLoadListener);
+            Parser   = Type.GetType(parser)  ?? typeof (CsvParser);
             Interval = interval;
         }
 
         public string Tag { get; private set; }
         public string Path { get; private set; }
         public string File { get; private set; }
+        public Type Listener { get; private set; }
         public Type Parser { get; private set; }
         public int Interval { get; private set; }
     }

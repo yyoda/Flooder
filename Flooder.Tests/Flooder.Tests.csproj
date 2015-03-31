@@ -60,6 +60,7 @@
     <Compile Include="ConnectionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParseTest.cs" />
+    <Compile Include="LoadBlgFileTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Flooder\Flooder.csproj">

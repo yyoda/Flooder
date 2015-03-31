@@ -63,6 +63,8 @@ namespace Flooder.Event.FileSystem
             //プロセスロック対策
             Observable.Create<Unit>(observer =>
             {
+                long _; //unused.
+
                 try
                 {
                     using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -73,11 +75,15 @@ namespace Flooder.Event.FileSystem
 
                         for (var i = 0; i < removeFiles.Length; i++)
                         {
-                            long _; //unused.
                             base.FileSeekPositionStateStore.TryRemove(removeFiles[i], out _);
                         }
                     }
 
+                    observer.OnCompleted();
+                }
+                catch (FileNotFoundException)
+                {
+                    base.FileSeekPositionStateStore.TryRemove(e.FullPath, out _);
                     observer.OnCompleted();
                 }
                 catch (IOException ioe)

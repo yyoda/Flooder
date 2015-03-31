@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Threading;
 using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public abstract class FileSystemEventListenerBase : EventListenerBase, IObserver<FileSystemEventArgs>
+    public abstract class FileSystemEventListenerBase : EventListenerBase<FileSystemEventArgs>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -34,7 +33,7 @@ namespace Flooder.Event.FileSystem
         protected virtual void OnRenameAction(FileSystemEventArgs e) { }
         protected virtual void OnDeleteAction(FileSystemEventArgs e) { }
 
-        public virtual void OnNext(FileSystemEventArgs e)
+        public override void OnNext(FileSystemEventArgs e)
         {
             try
             {
@@ -62,12 +61,12 @@ namespace Flooder.Event.FileSystem
             }
         }
 
-        public void OnError(Exception error)
+        public override void OnError(Exception error)
         {
             Logger.FatalException("Handle error in FileSystemEventListener.", error);
         }
 
-        public void OnCompleted()
+        public override void OnCompleted()
         {
             Logger.Info("FileSystemEventListener is completed.");
         }

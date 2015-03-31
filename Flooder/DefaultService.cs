@@ -49,15 +49,15 @@ namespace Flooder
                 var fs = new FileSystemDataSource(
                     section.Event.FileSystems.Select(x => new FileSystemDataSourceOption(x.Tag, x.Path, x.File, x.Listener, x.Parser)));
 
-                events.Add(new SendFileSystemToServer(fs, worker));
+                events.Add(new FileSystemToServerEvent(fs, worker));
             }
 
             if (section.Event.FileLoad.Any())
             {
                 var fs = new FileLoadDataSource(
-                    section.Event.FileLoad.Select(x => new FileLoadDataSourceOption(x.Tag, x.Path, x.File, x.Parser, x.Interval)));
+                    section.Event.FileLoad.Select(x => new FileLoadDataSourceOption(x.Tag, x.Path, x.File, x.Listener, x.Parser, x.Interval)));
 
-                events.Add(new SendFileLoadToServer(fs, worker));
+                events.Add(new FileLoadToServerEvent(fs, worker));
             }
 
             if (section.Event.IIS.Any())
@@ -65,7 +65,7 @@ namespace Flooder
                 var iis = new IISLogDataSource(
                     section.Event.IIS.Select(x => new IISLogDataSourceOption(x.Tag, x.Path, x.Interval)));
 
-                events.Add(new SendIISLogToServer(iis, worker));
+                events.Add(new ISLogToServerEvent(iis, worker));
             }
 
             if (section.Event.EventLogs.Scopes.Any())
@@ -75,7 +75,7 @@ namespace Flooder
                     section.Event.EventLogs.Scopes,
                     section.Event.EventLogs.Select(x => new EventLogDataSourceOption(x.Type, x.Mode, x.Source, x.Id)));
 
-                events.Add(new SendEventLogToServer(ev, worker));
+                events.Add(new EventLogToServerEvent(ev, worker));
             }
 
             if (section.Event.PerformanceCounters.Any())
@@ -85,7 +85,7 @@ namespace Flooder
                     section.Event.PerformanceCounters.Interval,
                     section.Event.PerformanceCounters.Select(x => new PerformanceCounterDataSourceOption(x.CategoryName, x.CounterName, x.InstanceName)));
 
-                events.Add(new SendPerformanceCounterToServer(pc, worker));
+                events.Add(new PerformanceCounterToServerEvent(pc, worker));
             }
 
             return new DefaultService(events, worker);

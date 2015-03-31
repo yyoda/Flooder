@@ -37,6 +37,9 @@ namespace Flooder.Configuration.EventElements
         [ConfigurationProperty("file", IsRequired = false, DefaultValue = "*")]
         public string File { get { return (string)base["file"]; } }
 
+        [ConfigurationProperty("listener", IsRequired = false, DefaultValue = "")]
+        public string Listener { get { return (string)base["listener"]; } }
+
         [ConfigurationProperty("parser", IsRequired = false, DefaultValue = "")]
         public string Parser { get { return (string)base["parser"]; } }
 

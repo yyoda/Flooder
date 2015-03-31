@@ -37,6 +37,10 @@
     <Reference Include="MsgPack">
       <HintPath>..\packages\MsgPack.Cli.0.5.11\lib\net40-client\MsgPack.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.3.2.0.0\lib\net40\NLog.dll</HintPath>
     </Reference>
@@ -117,23 +121,23 @@
     <Compile Include="..\Flooder\Event\EventLog\EventLogEventListener.cs">
       <Link>Event\EventLog\EventLogEventListener.cs</Link>
     </Compile>
+    <Compile Include="..\Flooder\Event\EventLog\EventLogToServerEvent.cs">
+      <Link>Event\EventLog\EventLogToServerEvent.cs</Link>
+    </Compile>
     <Compile Include="..\Flooder\Event\EventLog\EventLogWatcherExtensions.cs">
       <Link>Event\EventLog\EventLogWatcherExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventLog\SendEventLogToServer.cs">
-      <Link>Event\EventLog\SendEventLogToServer.cs</Link>
+    <Compile Include="..\Flooder\Event\FileLoad\BlgFileLoadListener.cs">
+      <Link>Event\FileLoad\BlgFileLoadListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Event\FileLoad\CsvFileLoadListener.cs">
+      <Link>Event\FileLoad\CsvFileLoadListener.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Event\FileLoad\FileLoadDataSource.cs">
       <Link>Event\FileLoad\FileLoadDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileLoad\FileLoadListener.cs">
-      <Link>Event\FileLoad\FileLoadListener.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\FileLoad\SendFileLoadToServer.cs">
-      <Link>Event\FileLoad\SendFileLoadToServer.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\CreationEventListener.cs">
-      <Link>Event\FileSystem\CreationEventListener.cs</Link>
+    <Compile Include="..\Flooder\Event\FileLoad\FileLoadToServerEvent.cs">
+      <Link>Event\FileLoad\FileLoadToServerEvent.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Event\FileSystem\DefaultEventListener.cs">
       <Link>Event\FileSystem\DefaultEventListener.cs</Link>
@@ -144,11 +148,11 @@
     <Compile Include="..\Flooder\Event\FileSystem\FileSystemEventListenerBase.cs">
       <Link>Event\FileSystem\FileSystemEventListenerBase.cs</Link>
     </Compile>
+    <Compile Include="..\Flooder\Event\FileSystem\FileSystemToServerEvent.cs">
+      <Link>Event\FileSystem\FileSystemToServerEvent.cs</Link>
+    </Compile>
     <Compile Include="..\Flooder\Event\FileSystem\FileSystemWatcherExtensions.cs">
       <Link>Event\FileSystem\FileSystemWatcherExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\SendFileSystemToServer.cs">
-      <Link>Event\FileSystem\SendFileSystemToServer.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Event\IDataSource.cs">
       <Link>Event\IDataSource.cs</Link>
@@ -159,8 +163,8 @@
     <Compile Include="..\Flooder\Event\IIS\IISLogListener.cs">
       <Link>Event\IIS\IISLogListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IIS\SendIISLogToServer.cs">
-      <Link>Event\IIS\SendIISLogToServer.cs</Link>
+    <Compile Include="..\Flooder\Event\IIS\ISLogToServerEvent.cs">
+      <Link>Event\IIS\ISLogToServerEvent.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Event\IMessageBroker.cs">
       <Link>Event\IMessageBroker.cs</Link>
@@ -189,8 +193,8 @@
     <Compile Include="..\Flooder\Event\PerformanceCounter\PerformanceCounterEventListener.cs">
       <Link>Event\PerformanceCounter\PerformanceCounterEventListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\PerformanceCounter\SendPerformanceCounterToServer.cs">
-      <Link>Event\PerformanceCounter\SendPerformanceCounterToServer.cs</Link>
+    <Compile Include="..\Flooder\Event\PerformanceCounter\PerformanceCounterToServerEvent.cs">
+      <Link>Event\PerformanceCounter\PerformanceCounterToServerEvent.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\HealthCheck.cs">
       <Link>HealthCheck.cs</Link>
@@ -219,6 +223,9 @@
     <Compile Include="..\Flooder\Utility\EnumerableExtensions.cs">
       <Link>Utility\EnumerableExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Flooder\Utility\FileUtility.cs">
+      <Link>Utility\FileUtility.cs</Link>
+    </Compile>
     <Compile Include="..\Flooder\Utility\RegexUtility.cs">
       <Link>Utility\RegexUtility.cs</Link>
     </Compile>
@@ -239,6 +246,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

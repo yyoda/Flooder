@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Flooder.Utility;
 
 namespace Flooder.Event
 {
-    public abstract class EventListenerBase
+    public abstract class EventListenerBase<T> : IObserver<T>
     {
         private readonly string _tag;
         private readonly string _hostName;
@@ -16,6 +18,12 @@ namespace Flooder.Event
             _messageBroker = messageBroker;
             _hostName      = Dns.GetHostName();
         }
+
+        public abstract void OnNext(T value);
+
+        public abstract void OnError(Exception error);
+
+        public abstract void OnCompleted();
 
         protected string Tag { get { return _tag; } }
 
@@ -54,6 +62,17 @@ namespace Flooder.Event
         protected bool IsLike(string source, string keyword)
         {
             return RegexUtility.IsLike(source, keyword);
+        }
+
+        protected bool TryGetLatestFile(string filePath, out string fullPath, out DateTime lastWriteTime)
+        {
+            return FileUtility.TryGetLatestFile(filePath, out fullPath, out lastWriteTime);
+        }
+
+        protected bool TryRemoveFile(string filePath, out IEnumerable<Exception> exceptions)
+        {
+            exceptions = FileUtility.RemoveFile(filePath);
+            return !exceptions.Any();
         }
     }
 }

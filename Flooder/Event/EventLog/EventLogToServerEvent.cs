@@ -5,11 +5,11 @@ using NLog;
 
 namespace Flooder.Event.EventLog
 {
-    public class SendEventLogToServer : EventBase
+    public class EventLogToServerEvent : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SendEventLogToServer(IDataSource dataSource, IMessageBroker messageBroker)
+        public EventLogToServerEvent(IDataSource dataSource, IMessageBroker messageBroker)
             : base(dataSource, messageBroker)
         {
         }

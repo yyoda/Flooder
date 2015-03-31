@@ -7,11 +7,11 @@ using NLog;
 
 namespace Flooder.Event.FileSystem
 {
-    public class SendFileSystemToServer : EventBase
+    public class FileSystemToServerEvent : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         
-        public SendFileSystemToServer(IDataSource dataSource, IMessageBroker messageBroker)
+        public FileSystemToServerEvent(IDataSource dataSource, IMessageBroker messageBroker)
             : base(dataSource, messageBroker)
         {
         }
