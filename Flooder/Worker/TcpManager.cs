@@ -94,59 +94,60 @@ namespace Flooder.Worker
 
         public IDisposable ConnectionMonitoring()
         {
-            return Observable.Interval(TimeSpan.FromMilliseconds(1)).Subscribe(
-                e =>
+            Action monitorAction = () =>
+            {
+                foreach (var host in _hosts)
                 {
-                    _circuitBreaker.ExecuteAction(() =>
+                    try
                     {
-                        foreach (var host in _hosts)
+                        var trial = new TcpClient();
+                        trial.Connect(host.Item1, host.Item2);
+
+                        lock (_syncObject)
                         {
-                            try
+                            TcpClient pooledClient;
+                            if (_connectionStateStore.TryGetValue(host, out pooledClient) && pooledClient.Connected)
                             {
-                                var trial = new TcpClient();
-                                trial.Connect(host.Item1, host.Item2);
-
-                                lock (_syncObject)
-                                {
-                                    TcpClient pooledClient;
-                                    if (_connectionStateStore.TryGetValue(host, out pooledClient) && pooledClient.Connected)
-                                    {
-                                        trial.Close();
-                                    }
-                                    else
-                                    {
-                                        _connectionStateStore[host] = trial;
-                                    }
-                                }
+                                trial.Close();
                             }
-                            catch (SocketException)
+                            else
                             {
-                                lock (_syncObject)
-                                {
-                                    TcpClient pooledClient;
-                                    if (!_connectionStateStore.TryGetValue(host, out pooledClient))
-                                    {
-                                        continue;
-                                    }
-
-                                    pooledClient.GetStream().Close();
-                                    pooledClient.Close();
-                                    _connectionStateStore.Remove(host);
-                                }
+                                _connectionStateStore[host] = trial;
                             }
                         }
-
-                        if (!_connectionStateStore.Any())
+                    }
+                    catch (SocketException)
+                    {
+                        lock (_syncObject)
                         {
-                            throw new Exception("Problem has occurred. to help CircuitBreaker");
-                        }
+                            TcpClient pooledClient;
+                            if (!_connectionStateStore.TryGetValue(host, out pooledClient))
+                            {
+                                continue;
+                            }
 
-                        //Logger.Trace("Healthy now...");
-                    });
-                },
-                ex => Logger.FatalException("Inability to continue.", ex),
-                () => Logger.Fatal("ConnectionMonitoring stoped.")
-            );
+                            pooledClient.GetStream().Close();
+                            pooledClient.Close();
+                            _connectionStateStore.Remove(host);
+                        }
+                    }
+                }
+
+                if (!_connectionStateStore.Any())
+                {
+                    throw new Exception("Problem has occurred. to help CircuitBreaker");
+                }
+
+                //Logger.Trace("Healthy now...");
+            };
+
+            return Observable
+                .Interval(TimeSpan.FromSeconds(1))
+                .Subscribe(
+                    e => _circuitBreaker.ExecuteAction(monitorAction),
+                    ex => Logger.FatalException("Inability to continue.", ex),
+                    () => Logger.Fatal("ConnectionMonitoring stoped.")
+                );
         }
 
         public void Dispose()
