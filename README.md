@@ -16,7 +16,7 @@ send to fluentd.
   port 9901
 </source>
 ```
-##app.config
+##flooder settings sample
 ```App.config
 <configuration>
     <!-- カスタマイズされたコンフィグセクションを読み込むのでその設定を行います -->
