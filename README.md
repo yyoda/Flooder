@@ -1,5 +1,5 @@
 # Flooder
-fluent-pligin-windows.
+fluent-plugin-windows (C#) 
 
 ##supports
 * text file  
