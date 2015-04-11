@@ -65,7 +65,7 @@ namespace Flooder
                 var iis = new IISLogDataSource(
                     section.Event.IIS.Select(x => new IISLogDataSourceOption(x.Tag, x.Path, x.Interval)));
 
-                events.Add(new ISLogToServerEvent(iis, worker));
+                events.Add(new IISLogToServerEvent(iis, worker));
             }
 
             if (section.Event.EventLogs.Scopes.Any())
