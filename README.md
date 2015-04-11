@@ -1,5 +1,5 @@
 # Flooder
-fluent-pligin for windows.
+fluent-pligin-windows.
 
 ##supports
 * text file  
