@@ -5,6 +5,7 @@ fluent-pligin for windows.
 * text file  
 * iis access log  
 * eventlog  
+* performance log
 
 send to fluentd.  
 
