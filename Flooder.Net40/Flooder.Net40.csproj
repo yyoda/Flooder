@@ -163,8 +163,8 @@
     <Compile Include="..\Flooder\Event\IIS\IISLogListener.cs">
       <Link>Event\IIS\IISLogListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IIS\ISLogToServerEvent.cs">
-      <Link>Event\IIS\ISLogToServerEvent.cs</Link>
+    <Compile Include="..\Flooder\Event\IIS\IISLogToServerEvent.cs">
+      <Link>Event\IIS\IISLogToServerEvent.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Event\IMessageBroker.cs">
       <Link>Event\IMessageBroker.cs</Link>

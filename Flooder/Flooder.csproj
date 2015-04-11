@@ -83,6 +83,7 @@
     <Compile Include="Event\FileLoad\BlgFileLoadListener.cs" />
     <Compile Include="Event\FileLoad\CsvFileLoadListener.cs" />
     <Compile Include="Event\FileLoad\FileLoadToServerEvent.cs" />
+    <Compile Include="Event\IIS\IISLogToServerEvent.cs" />
     <Compile Include="Event\Parser\ApiParser.cs" />
     <Compile Include="Event\Parser\CsvParser.cs" />
     <Compile Include="Event\Parser\StatsParser.cs" />
@@ -121,7 +122,6 @@
     <Compile Include="Event\FileSystem\DefaultEventListener.cs" />
     <Compile Include="Event\FileSystem\FileSystemEventListenerBase.cs" />
     <Compile Include="Event\IIS\IISLogListener.cs" />
-    <Compile Include="Event\IIS\ISLogToServerEvent.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterEventListener.cs" />
     <Compile Include="Event\PerformanceCounter\PerformanceCounterToServerEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
