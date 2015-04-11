@@ -6,11 +6,11 @@ using NLog;
 
 namespace Flooder.Event.IIS
 {
-    public class ISLogToServerEvent : EventBase
+    public class IISLogToServerEvent : EventBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public ISLogToServerEvent(IDataSource dataSource, IMessageBroker messageBroker)
+        public IISLogToServerEvent(IDataSource dataSource, IMessageBroker messageBroker)
             : base(dataSource, messageBroker)
         {
         }
