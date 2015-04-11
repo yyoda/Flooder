@@ -1,7 +1,7 @@
 # Flooder
 fluent-pligin for windows.
 
-##supports the following
+##supports
 * text file  
 * iis access log  
 * eventlog  
