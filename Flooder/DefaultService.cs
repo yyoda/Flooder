@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 
 namespace Flooder
 {
@@ -36,6 +37,8 @@ namespace Flooder
 
         public IFlooderService Create()
         {
+            ConfigurationManager.RefreshSection("flooder");
+
             var section = ConfigurationManager.GetSection("flooder") as Section;
             if (section == null) throw new NullReferenceException("Section");
 
