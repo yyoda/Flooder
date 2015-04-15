@@ -110,7 +110,7 @@ namespace Flooder.Event.PerformanceCounter
             catch (Exception ex)
             {
                 Logger.WarnException("Skip3 because an error has occurred in PerformanceCounterEventListener.", ex);
-                throw ex;
+                throw;
             }
         }
 

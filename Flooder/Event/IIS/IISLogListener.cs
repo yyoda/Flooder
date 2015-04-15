@@ -152,7 +152,7 @@ namespace Flooder.Event.IIS
             catch (Exception ex)
             {
                 Logger.WarnException("Skip because an error has occurred in IISLogListener.", ex);
-                throw ex;
+                throw;
             }
         }
 

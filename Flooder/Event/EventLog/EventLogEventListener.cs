@@ -71,7 +71,7 @@ namespace Flooder.Event.EventLog
             catch (Exception ex)
             {
                 Logger.WarnException("Skip because an error has occurred in EventLogEventListener.", ex);
-                throw ex;
+                throw;
             }
         }
 
