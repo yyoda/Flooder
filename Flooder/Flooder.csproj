@@ -86,6 +86,7 @@
     <Compile Include="Event\IIS\IISLogToServerEvent.cs" />
     <Compile Include="Event\Parser\ApiParser.cs" />
     <Compile Include="Event\Parser\CsvParser.cs" />
+    <Compile Include="Event\Parser\JsonParser.cs" />
     <Compile Include="Event\Parser\StatsParser.cs" />
     <Compile Include="Event\Parser\DefaultParser.cs" />
     <Compile Include="Event\Parser\ApplogParser.cs" />
