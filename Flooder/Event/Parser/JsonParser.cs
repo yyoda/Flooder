@@ -2,6 +2,7 @@
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Flooder.Event.Parser
 {
@@ -13,7 +14,9 @@ namespace Flooder.Event.Parser
         {
             try
             {
-                return JsonConvert.DeserializeObject<Dictionary<string, object>>(source);
+                //TODO:複数行に対応させる
+                var first = source.Replace("\r\n", "\n").Split('\n').First();
+                return JsonConvert.DeserializeObject<Dictionary<string, object>>(first);
             }
             catch (Exception ex)
             {
@@ -24,7 +27,18 @@ namespace Flooder.Event.Parser
 
         public Dictionary<string, object>[] MultipleParse(string source)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return source.Replace("\r\n", "\n").Split('\n')
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Select(JsonConvert.DeserializeObject<Dictionary<string, object>>)
+                    .ToArray();
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
+                throw;
+            }
         }
     }
 }
