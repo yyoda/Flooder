@@ -20,7 +20,7 @@ namespace Flooder.Event.Parser
             }
             catch (Exception ex)
             {
-                Logger.ErrorException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
+                Logger.DebugException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
                 throw;
             }
         }
@@ -36,7 +36,7 @@ namespace Flooder.Event.Parser
             }
             catch (Exception ex)
             {
-                Logger.ErrorException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
+                Logger.DebugException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
                 throw;
             }
         }
