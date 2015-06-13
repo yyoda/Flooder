@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Flooder.Event.Parser
 {
-    public class JsonParser : IPayloadParser
+    public class JsonParser : IParsePlugin
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

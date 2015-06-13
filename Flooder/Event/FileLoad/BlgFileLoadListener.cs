@@ -16,10 +16,10 @@ namespace Flooder.Event.FileLoad
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
 
         private readonly string _filePath;
-        private readonly IPayloadParser _parser;
+        private readonly IParsePlugin _parser;
         private DateTime _currentlastWriteTime;
 
-        public BlgFileLoadListener(string tag, string filePath, string fileName, IMessageBroker messageBroker, IPayloadParser parser)
+        public BlgFileLoadListener(string tag, string filePath, string fileName, IMessageBroker messageBroker, IParsePlugin parser)
             : base(tag, messageBroker)
         {
             _currentlastWriteTime = new DateTime();

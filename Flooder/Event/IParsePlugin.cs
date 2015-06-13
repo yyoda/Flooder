@@ -2,7 +2,7 @@
 
 namespace Flooder.Event
 {
-    public interface IPayloadParser
+    public interface IParsePlugin
     {
         Dictionary<string, object> Parse(string source);
         Dictionary<string, object>[] MultipleParse(string source);

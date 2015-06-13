@@ -23,7 +23,7 @@ namespace Flooder.Event.FileSystem
             {
                 return source.Options.Select(x =>
                 {
-                    var parser = (IPayloadParser) Activator.CreateInstance(
+                    var parser = (IParsePlugin) Activator.CreateInstance(
                         x.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
 
                     var listener = (FileSystemEventListenerBase) Activator.CreateInstance(

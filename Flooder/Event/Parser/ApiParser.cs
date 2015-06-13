@@ -5,7 +5,7 @@ using NLog;
 
 namespace Flooder.Event.Parser
 {
-    public class ApiParser : IPayloadParser
+    public class ApiParser : IParsePlugin
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

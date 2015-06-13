@@ -5,7 +5,7 @@ using NLog;
 
 namespace Flooder.Event.Parser
 {
-    public class CsvParser : IPayloadParser
+    public class CsvParser : IParsePlugin
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

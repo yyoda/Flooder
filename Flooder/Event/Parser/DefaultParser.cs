@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Flooder.Event.Parser
 {
-    public class DefaultParser : IPayloadParser
+    public class DefaultParser : IParsePlugin
     {
         public Dictionary<string, object> Parse(string source)
         {
