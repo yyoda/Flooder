@@ -22,19 +22,19 @@ namespace Flooder.Events.FileSystem
             var source = base.DataSource as FileSystemDataSource ?? new FileSystemDataSource();
             if (source.Options.Any())
             {
-                return source.Options.Select(x =>
+                return source.Options.Select(opt =>
                 {
                     var parser = (IMultipleDictionaryParser) Activator.CreateInstance(
-                        x.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
+                        opt.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
 
                     var listener = (FileSystemEventListenerBase) Activator.CreateInstance(
-                        x.Listner, BindingFlags.CreateInstance, null, new object[] { x.Tag, x.Path, base.MessageBroker, parser }, null);
+                        opt.Listner, BindingFlags.CreateInstance, null, new object[] { opt.Tag, opt.Path, opt.File, base.MessageBroker, parser }, null);
 
-                    var subscribe = CreateSubject(x).Subscribe(listener.Create());
+                    var r = CreateFileSystemEvent(opt).Subscribe(listener.Create());
 
-                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, listner:{2}, parser:{3}", x.Tag, x.Path, x.Listner.FullName, x.Parser.FullName);
+                    Logger.Info("FileSystemEventListener start. tag:{0}, path:{1}, listner:{2}, parser:{3}", opt.Tag, opt.Path, opt.Listner.FullName, opt.Parser.FullName);
 
-                    return subscribe;
+                    return r;
                 })
                 .ToArray();
             }
@@ -42,28 +42,26 @@ namespace Flooder.Events.FileSystem
             return new IDisposable[0];
         }
 
-        private static IObservable<FileSystemEventArgs> CreateSubject(FileSystemDataSourceOption source)
+        private static IObservable<FileSystemEventArgs> CreateFileSystemEvent(FileSystemDataSourceOption option)
         {
-            if (!Directory.Exists(source.Path))
+            if (!Directory.Exists(option.Path))
             {
-                Logger.Warn("[{0}] will be skipped because it does not exist.", source.Path);
+                Logger.Warn("[{0}] will be skipped because it does not exist.", option.Path);
                 return Observable.Never<FileSystemEventArgs>();
             }
 
-            var fsw = new FileSystemWatcher(source.Path, source.File)
+            var watcher = new FileSystemWatcher(option.Path, option.File)
             {
                 EnableRaisingEvents = true
             };
 
-            var sources = new[]
+            return Observable.Merge(new[]
             {
-                fsw.CreatedAsObservable(),
-                fsw.DeletedAsObservable(),
-                fsw.ChangedAsObservable(),
-                fsw.RenamedAsObservable()
-            };
-
-            return Observable.Merge(sources);
+                watcher.CreatedAsObservable(),
+                watcher.DeletedAsObservable(),
+                watcher.ChangedAsObservable(),
+                watcher.RenamedAsObservable()
+            });
         }
     }
 }

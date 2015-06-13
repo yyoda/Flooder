@@ -31,7 +31,7 @@ namespace Flooder.Events.IIS
             _fileSeekPositionStateStore = null;
         }
 
-        public void OnInitAction()
+        public void OnInit()
         {
             string fullPath;
             DateTime lastWriteTime;
@@ -61,92 +61,69 @@ namespace Flooder.Events.IIS
             {
                 string fullPath;
                 DateTime lastWriteTime;
-
-                if (base.TryGetLatestFile(_filePath, out fullPath, out lastWriteTime))
+                if (!base.TryGetLatestFile(_filePath, out fullPath, out lastWriteTime))
                 {
-                    using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    using (var sr = new StreamReader(fs, Encoding))
+                    return;
+                }
+
+                using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var sr = new StreamReader(fs, Encoding))
+                {
+                    if (_fileSeekPositionStateStore == null)
                     {
-                        if (_fileSeekPositionStateStore == null)
+                        //initial access.
+                        _fileSeekPositionStateStore = new Tuple<string, long>(fullPath, 0);
+                    }
+                    else
+                    {
+                        //arrival new file.
+                        if (_fileSeekPositionStateStore.Item1 != fullPath)
                         {
-                            //initial access.
                             _fileSeekPositionStateStore = new Tuple<string, long>(fullPath, 0);
                         }
-                        else
-                        {
-                            //arrival new file.
-                            if (_fileSeekPositionStateStore.Item1 != fullPath)
-                            {
-                                _fileSeekPositionStateStore = new Tuple<string, long>(fullPath, 0);
-                            }
-                        }
-
-                        var stateStore = _fileSeekPositionStateStore;
-                        var isFirst = stateStore.Item2 == 0;
-                        fs.Position = stateStore.Item2;
-
-                        //Logger.Debug("[IISLog READ START] _filePath:{0}, fullPath:{1}, lastWriteTime:{2}, fs.Position:{3}", _filePath, fullPath, lastWriteTime, fs.Position);
-
-                        string line;
-                        Dictionary<string, object> payload = null;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            if (line.Length <= 0) continue;
-
-                            if (line[0] == '#')
-                            {
-                                if (line.StartsWith("#Fields"))
-                                {
-                                    _fields = line.Split(' ').Skip(1)
-                                        .Select(x => x == "date" ? "w-date" : x)
-                                        .Select(x => x == "time" ? "w-time" : x)
-                                        .ToArray();
-                                }
-
-                                continue;
-                            }
-
-                            payload = line.Split(' ').Select((x, idx) =>
-                            {
-                                string key = _fields[idx];
-                                object val = IntValues.Contains(key) ? (object)int.Parse(x) : x;
-
-                                return new
-                                {
-                                    Key = key,
-                                    Value = val,
-                                };
-                            })
-                            .ToDictionary(x => x.Key, x => x.Value);
-
-                            if (!isFirst)
-                            {
-                                string cache = line;
-
-                                var pl = cache.Split(' ').Select((x, idx) =>
-                                {
-                                    string key = _fields[idx];
-                                    object val = IntValues.Contains(key) ? (object)int.Parse(x) : x;
-
-                                    return new
-                                    {
-                                        Key = key,
-                                        Value = val,
-                                    };
-                                })
-                                .ToDictionary(x => x.Key, x => x.Value);
-
-                                base.Publish(pl);
-                            }
-                        }
-
-                        if (isFirst && payload != null)
-                        {
-                            base.Publish(payload);
-                        }
-
-                        _fileSeekPositionStateStore = Tuple.Create(fullPath, fs.Position);
                     }
+
+                    fs.Position = _fileSeekPositionStateStore.Item2;
+
+                    //Logger.Debug("[IISLog READ START] _filePath:{0}, fullPath:{1}, lastWriteTime:{2}, fs.Position:{3}", _filePath, fullPath, lastWriteTime, fs.Position);
+
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Length <= 0) continue;
+
+                        if (line[0] == '#')
+                        {
+                            if (line.StartsWith("#Fields"))
+                            {
+                                _fields = line.Split(' ').Skip(1)
+                                    .Select(x => x == "date" ? "w-date" : x)
+                                    .Select(x => x == "time" ? "w-time" : x)
+                                    .ToArray();
+                            }
+
+                            continue;
+                        }
+
+                        if (_fileSeekPositionStateStore.Item2 == 0) continue;
+
+                        var payload = line.Split(' ').Select((x, idx) =>
+                        {
+                            string key = _fields[idx];
+                            object val = IntValues.Contains(key) ? (object)int.Parse(x) : x;
+
+                            return new
+                            {
+                                Key = key,
+                                Value = val,
+                            };
+                        })
+                        .ToDictionary(x => x.Key, x => x.Value);
+
+                        base.Publish(payload);
+                    }
+
+                    _fileSeekPositionStateStore = Tuple.Create(fullPath, fs.Position);
                 }
             }
             catch (Exception ex)

@@ -19,33 +19,36 @@ namespace Flooder.Events.FileSystem
         /// <summary>inject option.</summary>
         public static Func<string, string, string> TagGen = (tag, fileName) => tag;
 
-        public DefaultEventListener(string tag, string path, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
-            : base(tag, path, messageBroker, parser)
+        public DefaultEventListener(string tag, string path, string fileName, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
+            : base(tag, path, fileName, messageBroker, parser)
         {
         }
 
-        protected override void OnInitAction()
+        protected override void OnInit()
         {
-            foreach (var path in Directory.GetFiles(base.Path))
+            foreach (var path in Directory.GetFiles(base.Path, base.FileName))
             {
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    FileSeekPositionStateStore.AddOrUpdate(path, key => fs.Length, (key, value) => fs.Length);
+                    FileSeekPositionStateStore.TryAdd(path, fs.Length);
                 }
             }
         }
 
-        protected override void OnCreateAction(FileSystemEventArgs e)
+        protected override void OnCreate(FileSystemEventArgs e)
         {
-            this.OnChangeAction(e);
+            base.FileSeekPositionStateStore.TryAdd(e.FullPath, 0);
+            this.OnChange(e);
         }
 
-        protected override void OnChangeAction(FileSystemEventArgs e)
+        protected override void OnChange(FileSystemEventArgs e)
         {
             using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding))
             {
-                fs.Position = base.FileSeekPositionStateStore.GetOrAdd(e.FullPath, key => 0);
+                long lastTimePosition;
+                fs.Position = base.FileSeekPositionStateStore
+                    .TryGetValue(e.FullPath, out lastTimePosition) ? lastTimePosition : 0;
 
                 var buffer = sr.ReadToEnd();
                 if (buffer.Length <= 0) return;
@@ -54,14 +57,16 @@ namespace Flooder.Events.FileSystem
 
                 var payload = base.Parser.Parse(buffer);
 
-                base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
+                base.FileSeekPositionStateStore
+                    .AddOrUpdate(e.FullPath, key => fs.Position, (key, value) => fs.Position);
+ 
                 base.Publish(tag, payload);
             }
         }
 
-        protected override void OnRenameAction(FileSystemEventArgs e)
+        protected override void OnRename(FileSystemEventArgs e)
         {
-            //プロセスロック対策
+            //プロセスロックでIOExceptionが発生する可能性を考慮して３回リトライさせる
             Observable.Create<Unit>(observer =>
             {
                 long _; //unused.
@@ -70,13 +75,11 @@ namespace Flooder.Events.FileSystem
                 {
                     using (var fs = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        base.FileSeekPositionStateStore.AddOrUpdate(e.FullPath, key => fs.Length, (key, value) => fs.Length);
+                        base.FileSeekPositionStateStore.TryAdd(e.FullPath, fs.Length);
 
-                        var removeFiles = base.FileSeekPositionStateStore.Where(x => !File.Exists(x.Key)).Select(x => x.Key).ToArray();
-
-                        for (var i = 0; i < removeFiles.Length; i++)
+                        foreach (var state in base.FileSeekPositionStateStore.Where(x => !File.Exists(x.Key)))
                         {
-                            base.FileSeekPositionStateStore.TryRemove(removeFiles[i], out _);
+                            base.FileSeekPositionStateStore.TryRemove(state.Key, out _);
                         }
                     }
 
@@ -96,10 +99,13 @@ namespace Flooder.Events.FileSystem
                 return Disposable.Empty;
             })
             .Retry(3)
-            .Subscribe(x => { }, ex => Logger.WarnException("File access error.", ex));
+            .Subscribe(x => { },
+                ex => Logger.DebugException("File access error.", ex),
+                () => Logger.Trace("Renamed at {0}", e.FullPath)
+            );
         }
 
-        protected override void OnDeleteAction(FileSystemEventArgs e)
+        protected override void OnDelete(FileSystemEventArgs e)
         {
             long _; //unused.
             base.FileSeekPositionStateStore.TryRemove(e.FullPath, out _);

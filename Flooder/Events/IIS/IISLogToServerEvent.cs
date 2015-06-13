@@ -32,7 +32,7 @@ namespace Flooder.Events.IIS
             return source.Options.Select(x =>
             {
                 var observer = new IISLogListener(x.Tag, x.Path, base.MessageBroker);
-                observer.OnInitAction();
+                observer.OnInit();
 
                 var subscribe = Observable
                     .Interval(TimeSpan.FromSeconds(x.Interval))

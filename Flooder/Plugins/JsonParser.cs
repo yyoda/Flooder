@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using NLog;
 
 namespace Flooder.Plugins
@@ -12,18 +12,24 @@ namespace Flooder.Plugins
 
         public Dictionary<string, object>[] Parse(string source)
         {
-            try
-            {
-                return source.Replace("\r\n", "\n").Split('\n')
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .Select(JsonConvert.DeserializeObject<Dictionary<string, object>>)
-                    .ToArray();
-            }
-            catch (Exception ex)
-            {
-                Logger.DebugException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
-                throw;
-            }
+            var r = source.Replace("\r\n", "\n").Split('\n')
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Select(x =>
+                {
+                    try
+                    {
+                        return JsonConvert.DeserializeObject<Dictionary<string, object>>(x);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.TraceException(string.Format("[SKIP] Json parse error. source:{0}", source), ex);
+                        return null;
+                    }
+                })
+                .Where(x => x != null)
+                .ToArray();
+
+            return r;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Flooder.Utility;
+using NLog;
 
 namespace Flooder.Events
 {
@@ -11,6 +12,7 @@ namespace Flooder.Events
         private readonly string _tag;
         private readonly string _hostName;
         private readonly IMessageBroker _messageBroker;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected EventListenerBase(string tag, IMessageBroker messageBroker)
         {
@@ -45,6 +47,12 @@ namespace Flooder.Events
 
         protected void Publish(string tag, Dictionary<string, object>[] payloads)
         {
+            if (payloads.Length <= 0)
+            {
+                Logger.Trace("Skip publish, because payloads is zero.");
+                return;
+            }
+
             foreach (var payload in payloads)
             {
                 payload["hostname"] = _hostName;

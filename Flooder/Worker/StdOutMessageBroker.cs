@@ -46,9 +46,9 @@ namespace Flooder.Worker
 
         public void Publish(string message)
         {
-            if (_queue.TryAdd(message))
+            if (!_queue.TryAdd(message))
             {
-                Logger.Error("StdOutMessageBroker#Publish failue. message:{0}", message);
+                Logger.Error("StdOutMessageBroker is buffer over flow. message:{0}", message);
             }
         }
 

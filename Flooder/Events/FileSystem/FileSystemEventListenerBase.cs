@@ -11,28 +11,30 @@ namespace Flooder.Events.FileSystem
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected string Path { get; private set; }
+        protected string FileName { get; private set; }
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
         protected IMultipleDictionaryParser Parser { get; private set; }
 
-        protected FileSystemEventListenerBase(string tag, string path, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
+        protected FileSystemEventListenerBase(string tag, string path, string fileName, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
             : base(tag, messageBroker)
         {
             Path                       = path;
+            FileName                   = fileName;
             FileSeekPositionStateStore = new ConcurrentDictionary<string, long>();
             Parser                     = parser;
         }
 
         public FileSystemEventListenerBase Create()
         {
-            this.OnInitAction();
+            this.OnInit();
             return this;
         }
 
-        protected virtual void OnInitAction() { }
-        protected virtual void OnCreateAction(FileSystemEventArgs e) { }
-        protected virtual void OnChangeAction(FileSystemEventArgs e) { }
-        protected virtual void OnRenameAction(FileSystemEventArgs e) { }
-        protected virtual void OnDeleteAction(FileSystemEventArgs e) { }
+        protected virtual void OnInit() { }
+        protected virtual void OnCreate(FileSystemEventArgs e) { }
+        protected virtual void OnChange(FileSystemEventArgs e) { }
+        protected virtual void OnRename(FileSystemEventArgs e) { }
+        protected virtual void OnDelete(FileSystemEventArgs e) { }
 
         public override void OnNext(FileSystemEventArgs e)
         {
@@ -41,16 +43,16 @@ namespace Flooder.Events.FileSystem
                 switch (e.ChangeType)
                 {
                     case WatcherChangeTypes.Created:
-                        OnCreateAction(e);
+                        OnCreate(e);
                         return;
                     case WatcherChangeTypes.Changed:
-                        OnChangeAction(e);
+                        OnChange(e);
                         return;
                     case WatcherChangeTypes.Renamed:
-                        OnRenameAction(e);
+                        OnRename(e);
                         return;
                     case WatcherChangeTypes.Deleted:
-                        OnDeleteAction(e);
+                        OnDelete(e);
                         return;
                     default:
                         throw new InvalidOperationException(string.Format("Unknown WatcherChangeTypes:{0}", e.ChangeType));
