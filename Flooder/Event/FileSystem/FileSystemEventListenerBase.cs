@@ -11,9 +11,9 @@ namespace Flooder.Event.FileSystem
 
         protected string Path { get; private set; }
         protected ConcurrentDictionary<string, long> FileSeekPositionStateStore { get; private set; }
-        protected IParsePlugin Parser { get; private set; }
+        protected IMultipleDictionaryParser Parser { get; private set; }
 
-        protected FileSystemEventListenerBase(string tag, string path, IMessageBroker messageBroker, IParsePlugin parser)
+        protected FileSystemEventListenerBase(string tag, string path, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
             : base(tag, messageBroker)
         {
             Path                       = path;

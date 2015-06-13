@@ -5,11 +5,11 @@ using NLog;
 
 namespace Flooder.Event.Parser
 {
-    public class ApplogParser : IParsePlugin
+    public class ApplogParser : IMultipleDictionaryParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public Dictionary<string, object> Parse(string source)
+        public Dictionary<string, object>[] Parse(string source)
         {
             try
             {
@@ -51,34 +51,55 @@ namespace Flooder.Event.Parser
                     }
                 }
 
-                return new Dictionary<string, object>
+                return new[]
                 {
-                    {"datetime",   datetime.Replace(",", ".").Replace(" ", "T")},
-                    {"uid",        uid ?? ""},
-                    {"status",     status ?? ""},
-                    {"method",     method ?? ""},
-                    {"title",      title ?? ""},
-                    {"url",        lines.Where(x => x.StartsWith(" Url: ")).Select(x => x.Replace(" Url: ", "")).FirstOrDefault() ?? ""},
-                    {"user",       lines.Where(x => x.StartsWith(" User: ")).Select(x => x.Replace(" User: ", "")).FirstOrDefault() ?? ""},
-                    {"parameters", lines.Where(x => x.StartsWith(" Parameters: ")).Select(x => x.Replace(" Parameters: ", "")).FirstOrDefault() ?? ""},
-                    {"useragent",  lines.Where(x => x.StartsWith(" UserAgent : ")).Select(x => x.Replace(" UserAgent : ", "")).FirstOrDefault() ?? ""},
-                    {"messages",   source},
+                    new Dictionary<string, object>
+                    {
+                        {"datetime", datetime.Replace(",", ".").Replace(" ", "T")},
+                        {"uid", uid ?? ""},
+                        {"status", status ?? ""},
+                        {"method", method ?? ""},
+                        {"title", title ?? ""},
+                        {
+                            "url",
+                            lines.Where(x => x.StartsWith(" Url: "))
+                                .Select(x => x.Replace(" Url: ", ""))
+                                .FirstOrDefault() ?? ""
+                        },
+                        {
+                            "user",
+                            lines.Where(x => x.StartsWith(" User: "))
+                                .Select(x => x.Replace(" User: ", ""))
+                                .FirstOrDefault() ?? ""
+                        },
+                        {
+                            "parameters",
+                            lines.Where(x => x.StartsWith(" Parameters: "))
+                                .Select(x => x.Replace(" Parameters: ", ""))
+                                .FirstOrDefault() ?? ""
+                        },
+                        {
+                            "useragent",
+                            lines.Where(x => x.StartsWith(" UserAgent : "))
+                                .Select(x => x.Replace(" UserAgent : ", ""))
+                                .FirstOrDefault() ?? ""
+                        },
+                        {"messages", source},
+                    }
                 };
             }
             catch (Exception ex)
             {
                 Logger.WarnException(string.Format("Failure parse. source:{0}", source), ex);
 
-                return new Dictionary<string, object>
+                return new[]
                 {
-                    {"messages", source},
+                    new Dictionary<string, object>
+                    {
+                        {"messages", source},
+                    }
                 };
             }
-        }
-
-        public Dictionary<string, object>[] MultipleParse(string source)
-        {
-            throw new NotImplementedException();
         }
     }
 }

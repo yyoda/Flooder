@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Flooder.Event.Parser
 {
-    public class DefaultParser : IParsePlugin
+    public class DefaultParser : IMultipleDictionaryParser
     {
-        public Dictionary<string, object> Parse(string source)
+        public Dictionary<string, object>[] Parse(string source)
         {
-            return new Dictionary<string, object>
+            return new[]
             {
-                {"messages", source},
+                new Dictionary<string, object>
+                {
+                    {"messages", source},
+                }
             };
-        }
-
-        public Dictionary<string, object>[] MultipleParse(string source)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -169,8 +169,8 @@
     <Compile Include="..\Flooder\Event\IMessageBroker.cs">
       <Link>Event\IMessageBroker.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IPayloadParser.cs">
-      <Link>Event\IPayloadParser.cs</Link>
+    <Compile Include="..\Flooder\Event\IMultipleDictionaryParser.cs">
+      <Link>Event\IMultipleDictionaryParser.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Event\Parser\ApiParser.cs">
       <Link>Event\Parser\ApiParser.cs</Link>

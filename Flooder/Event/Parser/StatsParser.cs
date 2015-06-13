@@ -5,11 +5,11 @@ using NLog;
 
 namespace Flooder.Event.Parser
 {
-    public class StatsParser : IParsePlugin
+    public class StatsParser : IMultipleDictionaryParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public Dictionary<string, object> Parse(string source)
+        public Dictionary<string, object>[] Parse(string source)
         {
             try
             {
@@ -88,31 +88,32 @@ namespace Flooder.Event.Parser
                         break;
                 }
 
-                return new Dictionary<string, object>
+                return new[]
                 {
-                    {"datetime", datetime.Replace(",", ".").Replace(" ", "T")},
-                    {"status", status ?? ""},
-                    {"category", category ?? ""},
-                    {"path", path ?? ""},
-                    {"execute", executeCounts},
-                    {"duplicate", duplicateCounts.Count},
-                    {"messages", source}
+                    new Dictionary<string, object>
+                    {
+                        {"datetime", datetime.Replace(",", ".").Replace(" ", "T")},
+                        {"status", status ?? ""},
+                        {"category", category ?? ""},
+                        {"path", path ?? ""},
+                        {"execute", executeCounts},
+                        {"duplicate", duplicateCounts.Count},
+                        {"messages", source}
+                    }
                 };
             }
             catch (Exception ex)
             {
                 Logger.WarnException(string.Format("Failure parse. source:{0}", source), ex);
 
-                return new Dictionary<string, object>
+                return new[]
                 {
-                    {"messages", source},
+                    new Dictionary<string, object>
+                    {
+                        {"messages", source},
+                    }
                 };
             }
-        }
-
-        public Dictionary<string, object>[] MultipleParse(string source)
-        {
-            throw new NotImplementedException();
         }
     }
 }

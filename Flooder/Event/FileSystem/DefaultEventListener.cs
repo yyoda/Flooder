@@ -18,7 +18,7 @@ namespace Flooder.Event.FileSystem
         /// <summary>inject option.</summary>
         public static Func<string, string, string> TagGen = (tag, fileName) => tag;
 
-        public DefaultEventListener(string tag, string path, IMessageBroker messageBroker, IParsePlugin parser)
+        public DefaultEventListener(string tag, string path, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
             : base(tag, path, messageBroker, parser)
         {
         }

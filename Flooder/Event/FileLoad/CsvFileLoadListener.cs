@@ -14,9 +14,9 @@ namespace Flooder.Event.FileLoad
         private static readonly Encoding Encoding = Encoding.GetEncoding("Shift_JIS");
 
         private readonly string _filePath, _fileName;
-        private readonly IParsePlugin _parser;
+        private readonly IMultipleDictionaryParser _parser;
 
-        public CsvFileLoadListener(string tag, string filePath, string fileName, IMessageBroker messageBroker, IParsePlugin parser)
+        public CsvFileLoadListener(string tag, string filePath, string fileName, IMessageBroker messageBroker, IMultipleDictionaryParser parser)
             : base(tag, messageBroker)
         {
             _filePath = filePath;
@@ -45,7 +45,7 @@ namespace Flooder.Event.FileLoad
                         var lines = sr.ReadToEnd();
                         if (lines.Length > 0)
                         {
-                            var payloads = _parser.MultipleParse(lines);
+                            var payloads = _parser.Parse(lines);
 
                             if (payloads.Any())
                             {

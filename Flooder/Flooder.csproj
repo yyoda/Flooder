@@ -90,7 +90,7 @@
     <Compile Include="Event\Parser\StatsParser.cs" />
     <Compile Include="Event\Parser\DefaultParser.cs" />
     <Compile Include="Event\Parser\ApplogParser.cs" />
-    <Compile Include="Event\IPayloadParser.cs" />
+    <Compile Include="Event\IMultipleDictionaryParser.cs" />
     <Compile Include="Event\EventBase.cs" />
     <Compile Include="HealthCheck.cs" />
     <Compile Include="RetryPolicy\ExponentialBackoff.cs" />

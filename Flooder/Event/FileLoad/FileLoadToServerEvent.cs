@@ -21,7 +21,7 @@ namespace Flooder.Event.FileLoad
             var source = base.DataSource as FileLoadDataSource ?? new FileLoadDataSource();
             return source.Options.Select(x =>
             {
-                var parser = (IParsePlugin) Activator.CreateInstance(
+                var parser = (IMultipleDictionaryParser) Activator.CreateInstance(
                     x.Parser, BindingFlags.CreateInstance, null, new object[] { }, null);
 
                 var listener = (EventListenerBase<long>) Activator.CreateInstance(

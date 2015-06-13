@@ -6,26 +6,11 @@ using System.Linq;
 
 namespace Flooder.Event.Parser
 {
-    public class JsonParser : IParsePlugin
+    public class JsonParser : IMultipleDictionaryParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public Dictionary<string, object> Parse(string source)
-        {
-            try
-            {
-                //TODO:複数行に対応させる
-                var first = source.Replace("\r\n", "\n").Split('\n').First();
-                return JsonConvert.DeserializeObject<Dictionary<string, object>>(first);
-            }
-            catch (Exception ex)
-            {
-                Logger.DebugException(string.Format("JsonParserのデシリアライズが失敗しました. source:{0}", source), ex);
-                throw;
-            }
-        }
-
-        public Dictionary<string, object>[] MultipleParse(string source)
+        public Dictionary<string, object>[] Parse(string source)
         {
             try
             {

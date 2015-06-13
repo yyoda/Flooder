@@ -5,16 +5,11 @@ using NLog;
 
 namespace Flooder.Event.Parser
 {
-    public class CsvParser : IParsePlugin
+    public class CsvParser : IMultipleDictionaryParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public Dictionary<string, object> Parse(string source)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Dictionary<string, object>[] MultipleParse(string source)
+        public Dictionary<string, object>[] Parse(string source)
         {
             try
             {
