@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Web.Script.Serialization;
-using Flooder.Event;
+using Flooder.Events;
 using Flooder.Utility;
 using Newtonsoft.Json;
 using NLog;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Flooder.CircuitBreaker;
-using Flooder.Event;
+using Flooder.Events;
 
 namespace Flooder.Worker
 {

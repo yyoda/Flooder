@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Flooder.CircuitBreaker;
-using Flooder.Event;
+using Flooder.Events;
 using Flooder.Utility;
 using MsgPack.Serialization;
 using NLog;

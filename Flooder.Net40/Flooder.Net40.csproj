@@ -68,133 +68,115 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Flooder\CircuitBreaker\CircuitBreakerOpenException.cs">
-      <Link>CircuitBreaker\CircuitBreakerOpenException.cs</Link>
+      <Link>CircuitBreakerOpenException.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\CircuitBreaker\CircuitBreakerState.cs">
-      <Link>CircuitBreaker\CircuitBreakerState.cs</Link>
+      <Link>CircuitBreakerState.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\CircuitBreaker\CircuitBreakerStateStore.cs">
-      <Link>CircuitBreaker\CircuitBreakerStateStore.cs</Link>
+      <Link>CircuitBreakerStateStore.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\CircuitBreaker\ICircuitBreakerStateStore.cs">
-      <Link>CircuitBreaker\ICircuitBreakerStateStore.cs</Link>
+      <Link>ICircuitBreakerStateStore.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\CircuitBreaker\IncrementalRetryableCircuitBreaker.cs">
-      <Link>CircuitBreaker\IncrementalRetryableCircuitBreaker.cs</Link>
+      <Link>IncrementalRetryableCircuitBreaker.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\EventElement.cs">
-      <Link>Configuration\EventElement.cs</Link>
+      <Link>EventElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\EventElements\EventLogEventElement.cs">
-      <Link>Configuration\EventElements\EventLogEventElement.cs</Link>
+      <Link>EventLogEventElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\EventElements\FileLoadEventElement.cs">
-      <Link>Configuration\EventElements\FileLoadEventElement.cs</Link>
+      <Link>FileLoadEventElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\EventElements\FileSystemEventElement.cs">
-      <Link>Configuration\EventElements\FileSystemEventElement.cs</Link>
+      <Link>FileSystemEventElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\EventElements\IISEventElement.cs">
-      <Link>Configuration\EventElements\IISEventElement.cs</Link>
+      <Link>IISEventElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\EventElements\PerformanceCounterEventElement.cs">
-      <Link>Configuration\EventElements\PerformanceCounterEventElement.cs</Link>
+      <Link>PerformanceCounterEventElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\Section.cs">
-      <Link>Configuration\Section.cs</Link>
+      <Link>Section.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Configuration\WorkerElement.cs">
-      <Link>Configuration\WorkerElement.cs</Link>
+      <Link>WorkerElement.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\DefaultService.cs">
       <Link>DefaultService.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventBase.cs">
-      <Link>Event\EventBase.cs</Link>
+    <Compile Include="..\Flooder\Events\EventBase.cs">
+      <Link>EventBase.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventListenerBase.cs">
-      <Link>Event\EventListenerBase.cs</Link>
+    <Compile Include="..\Flooder\Events\EventListenerBase.cs">
+      <Link>EventListenerBase.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventLog\EventLogDataSource.cs">
-      <Link>Event\EventLog\EventLogDataSource.cs</Link>
+    <Compile Include="..\Flooder\Events\EventLog\EventLogDataSource.cs">
+      <Link>EventLogDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventLog\EventLogEventListener.cs">
-      <Link>Event\EventLog\EventLogEventListener.cs</Link>
+    <Compile Include="..\Flooder\Events\EventLog\EventLogEventListener.cs">
+      <Link>EventLogEventListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventLog\EventLogToServerEvent.cs">
-      <Link>Event\EventLog\EventLogToServerEvent.cs</Link>
+    <Compile Include="..\Flooder\Events\EventLog\EventLogToServerEvent.cs">
+      <Link>EventLogToServerEvent.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\EventLog\EventLogWatcherExtensions.cs">
-      <Link>Event\EventLog\EventLogWatcherExtensions.cs</Link>
+    <Compile Include="..\Flooder\Events\EventLog\EventLogWatcherExtensions.cs">
+      <Link>EventLogWatcherExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileLoad\BlgFileLoadListener.cs">
-      <Link>Event\FileLoad\BlgFileLoadListener.cs</Link>
+    <Compile Include="..\Flooder\Events\FileLoad\BlgFileLoadListener.cs">
+      <Link>BlgFileLoadListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileLoad\CsvFileLoadListener.cs">
-      <Link>Event\FileLoad\CsvFileLoadListener.cs</Link>
+    <Compile Include="..\Flooder\Events\FileLoad\CsvFileLoadListener.cs">
+      <Link>CsvFileLoadListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileLoad\FileLoadDataSource.cs">
-      <Link>Event\FileLoad\FileLoadDataSource.cs</Link>
+    <Compile Include="..\Flooder\Events\FileLoad\FileLoadDataSource.cs">
+      <Link>FileLoadDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileLoad\FileLoadToServerEvent.cs">
-      <Link>Event\FileLoad\FileLoadToServerEvent.cs</Link>
+    <Compile Include="..\Flooder\Events\FileLoad\FileLoadToServerEvent.cs">
+      <Link>FileLoadToServerEvent.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\DefaultEventListener.cs">
-      <Link>Event\FileSystem\DefaultEventListener.cs</Link>
+    <Compile Include="..\Flooder\Events\FileSystem\DefaultEventListener.cs">
+      <Link>DefaultEventListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\FileSystemDataSource.cs">
-      <Link>Event\FileSystem\FileSystemDataSource.cs</Link>
+    <Compile Include="..\Flooder\Events\FileSystem\FileSystemDataSource.cs">
+      <Link>FileSystemDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\FileSystemEventListenerBase.cs">
-      <Link>Event\FileSystem\FileSystemEventListenerBase.cs</Link>
+    <Compile Include="..\Flooder\Events\FileSystem\FileSystemEventListenerBase.cs">
+      <Link>FileSystemEventListenerBase.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\FileSystemToServerEvent.cs">
-      <Link>Event\FileSystem\FileSystemToServerEvent.cs</Link>
+    <Compile Include="..\Flooder\Events\FileSystem\FileSystemToServerEvent.cs">
+      <Link>FileSystemToServerEvent.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\FileSystem\FileSystemWatcherExtensions.cs">
-      <Link>Event\FileSystem\FileSystemWatcherExtensions.cs</Link>
+    <Compile Include="..\Flooder\Events\FileSystem\FileSystemWatcherExtensions.cs">
+      <Link>FileSystemWatcherExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IDataSource.cs">
-      <Link>Event\IDataSource.cs</Link>
+    <Compile Include="..\Flooder\Events\IDataSource.cs">
+      <Link>IDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IIS\IISLogDataSource.cs">
-      <Link>Event\IIS\IISLogDataSource.cs</Link>
+    <Compile Include="..\Flooder\Events\IIS\IISLogDataSource.cs">
+      <Link>IISLogDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IIS\IISLogListener.cs">
-      <Link>Event\IIS\IISLogListener.cs</Link>
+    <Compile Include="..\Flooder\Events\IIS\IISLogListener.cs">
+      <Link>IISLogListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IIS\IISLogToServerEvent.cs">
-      <Link>Event\IIS\IISLogToServerEvent.cs</Link>
+    <Compile Include="..\Flooder\Events\IIS\IISLogToServerEvent.cs">
+      <Link>IISLogToServerEvent.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IMessageBroker.cs">
-      <Link>Event\IMessageBroker.cs</Link>
+    <Compile Include="..\Flooder\Events\IMessageBroker.cs">
+      <Link>IMessageBroker.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\IMultipleDictionaryParser.cs">
-      <Link>Event\IMultipleDictionaryParser.cs</Link>
+    <Compile Include="..\Flooder\Events\PerformanceCounter\PerformanceCounterDataSource.cs">
+      <Link>PerformanceCounterDataSource.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\Parser\ApiParser.cs">
-      <Link>Event\Parser\ApiParser.cs</Link>
+    <Compile Include="..\Flooder\Events\PerformanceCounter\PerformanceCounterEventListener.cs">
+      <Link>PerformanceCounterEventListener.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Event\Parser\ApplogParser.cs">
-      <Link>Event\Parser\ApplogParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\Parser\CsvParser.cs">
-      <Link>Event\Parser\CsvParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\Parser\DefaultParser.cs">
-      <Link>Event\Parser\DefaultParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\Parser\StatsParser.cs">
-      <Link>Event\Parser\StatsParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\PerformanceCounter\PerformanceCounterDataSource.cs">
-      <Link>Event\PerformanceCounter\PerformanceCounterDataSource.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\PerformanceCounter\PerformanceCounterEventListener.cs">
-      <Link>Event\PerformanceCounter\PerformanceCounterEventListener.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Event\PerformanceCounter\PerformanceCounterToServerEvent.cs">
-      <Link>Event\PerformanceCounter\PerformanceCounterToServerEvent.cs</Link>
+    <Compile Include="..\Flooder\Events\PerformanceCounter\PerformanceCounterToServerEvent.cs">
+      <Link>PerformanceCounterToServerEvent.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\HealthCheck.cs">
       <Link>HealthCheck.cs</Link>
@@ -202,44 +184,74 @@
     <Compile Include="..\Flooder\IFlooderService.cs">
       <Link>IFlooderService.cs</Link>
     </Compile>
+    <Compile Include="..\Flooder\obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs">
+      <Link>TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs">
+      <Link>TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs">
+      <Link>TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\ApiParser.cs">
+      <Link>ApiParser.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\ApplogParser.cs">
+      <Link>ApplogParser.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\CsvParser.cs">
+      <Link>CsvParser.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\DefaultParser.cs">
+      <Link>DefaultParser.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\IMultipleDictionaryParser.cs">
+      <Link>IMultipleDictionaryParser.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Plugins\StatsParser.cs">
+      <Link>StatsParser.cs</Link>
+    </Compile>
     <Compile Include="..\Flooder\RetryPolicy\ExponentialBackoff.cs">
-      <Link>RetryPliciy\ExponentialBackoff.cs</Link>
+      <Link>ExponentialBackoff.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\RetryPolicy\FixedInterval.cs">
-      <Link>RetryPliciy\FixedInterval.cs</Link>
+      <Link>FixedInterval.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\RetryPolicy\Incremental.cs">
-      <Link>RetryPliciy\Incremental.cs</Link>
+      <Link>Incremental.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\RetryPolicy\IRetryPolicy.cs">
-      <Link>RetryPliciy\IRetryPolicy.cs</Link>
+      <Link>IRetryPolicy.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\ServiceFactory.cs">
       <Link>ServiceFactory.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Utility\DateTimeExtensions.cs">
-      <Link>Utility\DateTimeExtensions.cs</Link>
+      <Link>DateTimeExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Utility\EnumerableExtensions.cs">
-      <Link>Utility\EnumerableExtensions.cs</Link>
+      <Link>EnumerableExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Utility\FileUtility.cs">
-      <Link>Utility\FileUtility.cs</Link>
+      <Link>FileUtility.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Utility\RegexUtility.cs">
-      <Link>Utility\RegexUtility.cs</Link>
+      <Link>RegexUtility.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Worker\FluentMessageBroker.cs">
-      <Link>Worker\FluentMessageBroker.cs</Link>
+      <Link>FluentMessageBroker.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Worker\StdOutMessageBroker.cs">
-      <Link>Worker\StdOutMessageBroker.cs</Link>
+      <Link>StdOutMessageBroker.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Worker\TcpManager.cs">
-      <Link>Worker\TcpManager.cs</Link>
+      <Link>TcpManager.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Worker\WorkerFactory.cs">
-      <Link>Worker\WorkerFactory.cs</Link>
+      <Link>WorkerFactory.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

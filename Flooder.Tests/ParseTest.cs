@@ -1,4 +1,4 @@
-﻿using Flooder.Event.Parser;
+﻿using Flooder.Plugins;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Flooder.Tests

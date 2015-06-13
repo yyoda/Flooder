@@ -1,5 +1,5 @@
-﻿using Flooder.Event.FileLoad;
-using Flooder.Event.Parser;
+﻿using Flooder.Events.FileLoad;
+using Flooder.Plugins;
 using Flooder.Worker;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

@@ -1,16 +1,16 @@
 ﻿using Flooder.Configuration;
-using Flooder.Event;
-using Flooder.Event.EventLog;
-using Flooder.Event.FileLoad;
-using Flooder.Event.FileSystem;
-using Flooder.Event.IIS;
-using Flooder.Event.PerformanceCounter;
 using Flooder.Worker;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using Flooder.Events;
+using Flooder.Events.EventLog;
+using Flooder.Events.FileLoad;
+using Flooder.Events.FileSystem;
+using Flooder.Events.IIS;
+using Flooder.Events.PerformanceCounter;
 
 namespace Flooder
 {
