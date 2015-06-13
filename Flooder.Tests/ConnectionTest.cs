@@ -14,7 +14,7 @@ namespace Flooder.Tests
     {
         readonly Logger _logger = LogManager.GetCurrentClassLogger();
         TcpManager _tcp;
-        readonly Tuple<string, int>[] _hosts = {Tuple.Create("localhost", 9999)};
+        readonly Tuple<string, int, int>[] _hosts = {Tuple.Create("localhost", 9999, 100)};
 
         [TestInitialize]
         public void ConnectionTestInitialize()

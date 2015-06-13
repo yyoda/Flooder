@@ -40,7 +40,7 @@ namespace Flooder.Worker
         {
         }
 
-        public MessageBrokerOption(IEnumerable<Tuple<string, int>> hosts)
+        public MessageBrokerOption(IEnumerable<Tuple<string, int, int>> hosts)
         {
             Hosts          = hosts;
             Interval       = TimeSpan.FromSeconds(1);
@@ -50,7 +50,7 @@ namespace Flooder.Worker
             CircuitBreaker = new IncrementalRetryableCircuitBreaker();
         }
 
-        public IEnumerable<Tuple<string, int>> Hosts { get; private set; }
+        public IEnumerable<Tuple<string, int, int>> Hosts { get; private set; }
         public TimeSpan Interval { get; set; }
         public int RetryMaxCount { get; set; }
         public int Capacity { get; set; }

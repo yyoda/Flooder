@@ -43,7 +43,7 @@ namespace Flooder
 
             var worker = WorkerFactory.Create(
                 section.Worker.Type,
-                new MessageBrokerOption(section.Worker.Select(x => Tuple.Create(x.Host, x.Port))));
+                new MessageBrokerOption(section.Worker.Select(x => Tuple.Create(x.Host, x.Port, x.Weight))));
 
             var events = new List<EventBase>();
             if (section.Event.FileSystems.Any())

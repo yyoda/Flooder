@@ -84,15 +84,13 @@
     <Compile Include="Events\FileLoad\CsvFileLoadListener.cs" />
     <Compile Include="Events\FileLoad\FileLoadToServerEvent.cs" />
     <Compile Include="Events\IIS\IISLogToServerEvent.cs" />
-    <Compile Include="Plugins\ApiParser.cs" />
     <Compile Include="Plugins\CsvParser.cs" />
     <Compile Include="Plugins\JsonParser.cs" />
-    <Compile Include="Plugins\StatsParser.cs" />
     <Compile Include="Plugins\DefaultParser.cs" />
-    <Compile Include="Plugins\ApplogParser.cs" />
     <Compile Include="Plugins\IMultipleDictionaryParser.cs" />
     <Compile Include="Events\EventBase.cs" />
     <Compile Include="HealthCheck.cs" />
+    <Compile Include="Utility\RandomUtility.cs" />
     <Compile Include="RetryPolicy\ExponentialBackoff.cs" />
     <Compile Include="RetryPolicy\Incremental.cs" />
     <Compile Include="RetryPolicy\FixedInterval.cs" />
@@ -114,7 +112,6 @@
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Worker\TcpManager.cs" />
     <Compile Include="Utility\DateTimeExtensions.cs" />
-    <Compile Include="Utility\EnumerableExtensions.cs" />
     <Compile Include="Events\EventLog\EventLogEventListener.cs" />
     <Compile Include="Events\EventLog\EventLogWatcherExtensions.cs" />
     <Compile Include="Events\EventLog\EventLogToServerEvent.cs" />

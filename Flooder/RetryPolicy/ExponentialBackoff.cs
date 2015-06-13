@@ -1,4 +1,5 @@
 ﻿using System;
+using Flooder.Utility;
 
 namespace Flooder.RetryPolicy
 {
@@ -32,7 +33,7 @@ namespace Flooder.RetryPolicy
                 return false;
             }
 
-            var rnd = new Random();
+            var rnd = RandomProvider.Random;
             var delta = (int)((Math.Pow(2.0, _currentRetryCount) - 1.0) * rnd.Next((int)(_deltaBackoff.TotalMilliseconds * 0.8), (int)(_deltaBackoff.TotalMilliseconds * 1.2)));
             var interval = (int)Math.Min(checked(_minBackoff.TotalMilliseconds + delta), _maxBackoff.TotalMilliseconds);
 

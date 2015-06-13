@@ -193,12 +193,6 @@
     <Compile Include="..\Flooder\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs">
       <Link>TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Plugins\ApiParser.cs">
-      <Link>ApiParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Plugins\ApplogParser.cs">
-      <Link>ApplogParser.cs</Link>
-    </Compile>
     <Compile Include="..\Flooder\Plugins\CsvParser.cs">
       <Link>CsvParser.cs</Link>
     </Compile>
@@ -210,9 +204,6 @@
     </Compile>
     <Compile Include="..\Flooder\Plugins\JsonParser.cs">
       <Link>JsonParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Plugins\StatsParser.cs">
-      <Link>StatsParser.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\RetryPolicy\ExponentialBackoff.cs">
       <Link>ExponentialBackoff.cs</Link>
@@ -232,11 +223,11 @@
     <Compile Include="..\Flooder\Utility\DateTimeExtensions.cs">
       <Link>DateTimeExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Flooder\Utility\EnumerableExtensions.cs">
-      <Link>EnumerableExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\Flooder\Utility\FileUtility.cs">
       <Link>FileUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\Flooder\Utility\RandomUtility.cs">
+      <Link>RandomUtility.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Utility\RegexUtility.cs">
       <Link>RegexUtility.cs</Link>

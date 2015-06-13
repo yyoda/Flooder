@@ -14,15 +14,16 @@ namespace Flooder.Worker
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly object _syncObject;
-        private readonly IEnumerable<Tuple<string, int>> _hosts;
-        private IDictionary<Tuple<string, int>, TcpClient> _connectionStateStore;
+        private readonly IEnumerable<Tuple<string, int, int>> _hosts;
+        /// <summary>TupleSpec is Item1:Ip, Item2:Port, Item3:Weight</summary>
+        private IDictionary<Tuple<string, int, int>, TcpClient> _connectionStateStore;
         private readonly IncrementalRetryableCircuitBreaker _circuitBreaker;
-        
-        public TcpManager(IEnumerable<Tuple<string, int>> hosts, IncrementalRetryableCircuitBreaker circuitBreaker)
+
+        public TcpManager(IEnumerable<Tuple<string, int, int>> hosts, IncrementalRetryableCircuitBreaker circuitBreaker)
         {
             _syncObject           = new object();
             _hosts                = hosts;
-            _connectionStateStore = new Dictionary<Tuple<string, int>, TcpClient>();
+            _connectionStateStore = new Dictionary<Tuple<string, int, int>, TcpClient>();
             _circuitBreaker       = circuitBreaker;
         }
 
@@ -40,10 +41,10 @@ namespace Flooder.Worker
                     }
                     catch (SocketException)
                     {
-                        return new KeyValuePair<Tuple<string, int>, TcpClient>(host, null);
+                        return new KeyValuePair<Tuple<string, int, int>, TcpClient>(host, null);
                     }
 
-                    return new KeyValuePair<Tuple<string, int>, TcpClient>(host, tcp);
+                    return new KeyValuePair<Tuple<string, int, int>, TcpClient>(host, tcp);
                 })
                 .Where(x => x.Value != null && x.Value.Connected)
                 .ToDictionary(x => x.Key, x => x.Value);
@@ -56,18 +57,18 @@ namespace Flooder.Worker
         {
             lock (_syncObject)
             {
-                var source = _connectionStateStore.ShuffleSlim().ToArray();
-                if (source.Any())
-                {
-                    var client = source.First().Value;
-                    var stream = client.GetStream();
+                if (_connectionStateStore.Count <= 0)
+                    throw new NullReferenceException("Zero connection.");
 
-                    stream.Write(bytes, 0, bytes.Length);
-                    stream.Flush();
-                    return;
-                }
+                var client = new WeightedSampleSeed<KeyValuePair<Tuple<string, int, int>, TcpClient>>(
+                    _connectionStateStore.ToArray(),
+                    x => x.Key.Item3    //Item3 is Weight
+                )
+                .Sample().Value;
 
-                throw new NullReferenceException("Zero connection.");
+                var stream = client.GetStream();
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Flush();
             }
         }
 

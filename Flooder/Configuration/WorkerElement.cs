@@ -38,5 +38,8 @@ namespace Flooder.Configuration
 
         [ConfigurationProperty("port", IsRequired = true)]
         public int Port { get { return (int)base["port"]; } }
+
+        [ConfigurationProperty("weight", IsRequired = true)]
+        public int Weight { get { return (int)base["weight"]; } }
     }
 }

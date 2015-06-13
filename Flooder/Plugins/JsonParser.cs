@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
 
 namespace Flooder.Plugins
 {
