@@ -1,5 +1,5 @@
-## Flooder is
-send to fluentd, from windows log.
+## Flooder is data transfer
+Windows環境で動作し、Fluentdサーバーへデータ転送を行う事ができます
 
 ##supports
 * text file  
