@@ -87,7 +87,7 @@
     <Compile Include="Plugins\CsvParser.cs" />
     <Compile Include="Plugins\JsonParser.cs" />
     <Compile Include="Plugins\DefaultParser.cs" />
-    <Compile Include="Plugins\IMultipleDictionaryParser.cs" />
+    <Compile Include="Events\IMultipleDictionaryParser.cs" />
     <Compile Include="Events\EventBase.cs" />
     <Compile Include="HealthCheck.cs" />
     <Compile Include="Utility\RandomUtility.cs" />

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Flooder.Events;
 
 namespace Flooder.Plugins
 {

@@ -169,6 +169,9 @@
     <Compile Include="..\Flooder\Events\IMessageBroker.cs">
       <Link>IMessageBroker.cs</Link>
     </Compile>
+    <Compile Include="..\Flooder\Events\IMultipleDictionaryParser.cs">
+      <Link>IMultipleDictionaryParser.cs</Link>
+    </Compile>
     <Compile Include="..\Flooder\Events\PerformanceCounter\PerformanceCounterDataSource.cs">
       <Link>PerformanceCounterDataSource.cs</Link>
     </Compile>
@@ -198,9 +201,6 @@
     </Compile>
     <Compile Include="..\Flooder\Plugins\DefaultParser.cs">
       <Link>DefaultParser.cs</Link>
-    </Compile>
-    <Compile Include="..\Flooder\Plugins\IMultipleDictionaryParser.cs">
-      <Link>IMultipleDictionaryParser.cs</Link>
     </Compile>
     <Compile Include="..\Flooder\Plugins\JsonParser.cs">
       <Link>JsonParser.cs</Link>
