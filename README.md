@@ -34,8 +34,8 @@ send to fluentd.
                     path:   監視したいファイルのパスを指定します(必須)
                     file:   監視したいファイル名を指定します。アスタリスクによるあいまい検索が可能です(必須)
                     parser: 取得したデータを転送前に加工するためのパーサを指定可能です(省略可)
-                            省略時はFlooder.Event.Parser.DefaultParser(何もしない)が適用されます
-                            Flooder.Event.IPayloadParserを実装したクラスを作成してココに指定することで拡張することができます
+                            省略時はFlooder.Plugins.DefaultParser(何もしない)が適用されます
+                            Flooder.Events.IMultipleDictionaryParserを実装したクラスを作成してココに指定することで拡張することができます
                 -->
                 <add tag="myapp1_log" path="C:\myapp1\log" file="app.log"/>
                 <add tag="myapp1_log" path="C:\myapp1\log" file="perf.log"/>
