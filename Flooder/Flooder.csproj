@@ -85,6 +85,7 @@
     <Compile Include="Events\FileLoad\FileLoadToServerEvent.cs" />
     <Compile Include="Events\IIS\IISLogToServerEvent.cs" />
     <Compile Include="Plugins\CsvParser.cs" />
+    <Compile Include="Plugins\JsonEofParser.cs" />
     <Compile Include="Plugins\JsonParser.cs" />
     <Compile Include="Plugins\DefaultParser.cs" />
     <Compile Include="Events\IMultipleDictionaryParser.cs" />
